@@ -1,0 +1,113 @@
+/* Custom styles for merchant onboarding component */
+
+.form-step {
+  @apply min-h-96;
+}
+
+.form-field {
+  @apply space-y-2;
+}
+
+.custom-steps .p-steps-item {
+  @apply text-sm;
+}
+
+.custom-steps .p-steps-item .p-steps-number {
+  @apply text-sm font-semibold;
+}
+
+.custom-steps .p-steps-item .p-steps-title {
+  @apply text-xs sm:text-sm font-medium;
+}
+
+@media (max-width: 640px) {
+  .custom-steps .p-steps-item .p-steps-title {
+    @apply hidden;
+  }
+
+  .custom-steps .p-steps-item .p-steps-number {
+    @apply text-xs w-6 h-6;
+  }
+}
+
+.p-fileupload .p-fileupload-buttonbar .p-button {
+  @apply bg-netpay-primary-blue border-netpay-primary-blue hover:bg-netpay-accent-blue;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight {
+  @apply bg-netpay-primary-blue border-netpay-primary-blue;
+}
+
+.p-progress-spinner .p-progress-spinner-circle {
+  stroke: var(--netpay-primary-blue);
+}
+
+.p-dialog .p-dialog-header {
+  @apply bg-gradient-to-r from-netpay-primary-blue to-netpay-teal text-white;
+}
+
+.form-step {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .form-step {
+    @apply px-2;
+  }
+
+  .grid {
+    @apply grid-cols-1 gap-4;
+  }
+
+  .p-card .p-card-body {
+    @apply p-4;
+  }
+}
+
+@media (max-width: 480px) {
+  .netpay-gradient {
+    @apply w-10 h-10;
+  }
+
+  h1 {
+    @apply text-xl;
+  }
+
+  .p-steps {
+    @apply overflow-x-auto;
+  }
+}
+
+.p-inputtext:focus,
+.p-dropdown:focus,
+.p-inputtextarea:focus {
+  @apply ring-2 ring-netpay-primary-blue ring-opacity-20;
+}
+
+.success-message {
+  @apply text-netpay-teal font-medium;
+}
+
+.error-message {
+  @apply text-red-500 text-sm;
+}
+
+.p-button:hover {
+  @apply transform transition-transform duration-200 scale-105;
+}
+
+.p-button[data-pc-section='loadingicon'] {
+  @apply animate-spin;
+}

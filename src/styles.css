@@ -1,1 +1,118 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --netpay-white: #ffffff;
+  --netpay-dark-blue: #05113b;
+  --netpay-primary-blue: #016cfb;
+  --netpay-teal: #2bc4ad;
+  --netpay-light-gray: #f2f2f2;
+  --netpay-blue-gray: #dae3f3;
+  --netpay-medium-blue: #013d8d;
+  --netpay-accent-blue: #014db3;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--netpay-light-gray);
+}
+
+/* Custom PrimeNG theme overrides */
+.p-component {
+  font-family: 'Inter', sans-serif;
+}
+
+.p-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.p-button.p-button-primary {
+  background-color: var(--netpay-primary-blue);
+  border-color: var(--netpay-primary-blue);
+}
+
+.p-button.p-button-primary:hover {
+  background-color: var(--netpay-accent-blue);
+  border-color: var(--netpay-accent-blue);
+}
+
+.p-inputtext {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.p-inputtext:focus {
+  border-color: var(--netpay-primary-blue);
+  box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
+}
+
+.p-dropdown {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.p-dropdown:focus {
+  border-color: var(--netpay-primary-blue);
+  box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
+}
+
+.p-fileupload .p-fileupload-buttonbar {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.p-steps .p-steps-item.p-highlight .p-steps-number {
+  background-color: var(--netpay-primary-blue);
+  color: white;
+}
+
+.p-steps .p-steps-item.p-highlight .p-steps-title {
+  color: var(--netpay-primary-blue);
+  font-weight: 600;
+}
+
+.p-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.p-progress-spinner .p-progress-spinner-circle {
+  stroke: var(--netpay-primary-blue);
+}
+
+/* Custom utility classes */
+.netpay-gradient {
+  background: linear-gradient(135deg, var(--netpay-primary-blue), var(--netpay-teal));
+}
+
+.form-section {
+  @apply bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6;
+}
+
+.error-message {
+  @apply text-red-500 text-sm mt-1;
+}
+
+.success-message {
+  @apply text-green-600 text-sm mt-1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .p-card .p-card-body {
+    padding: 1rem;
+  }
+
+  .form-section {
+    @apply p-4 mb-4;
+  }
+}
