@@ -1,257 +1,312 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {
-  MerchantOnboardingData,
-  BusinessType,
-  BusinessCategory,
-  Country,
-} from '../../models/merchant.component';
+import { MerchantOnboardingData, BusinessType, BusinessCategory, Country } from '../../models/merchant.component';
+import { ProgressStepsComponent } from '../../shared/components/progress-steps.component';
+import { BusinessInfoStepComponent } from './steps/business-info-step.component';
+import { ContactInfoStepComponent } from './steps/contact-info-step.component';
+import { DocumentsStepComponent } from './steps/documents-step.component';
+import { ReviewStepComponent } from './steps/review-step.component';
+import { SuccessDialogComponent } from '../../shared/components/success-dialog.component';
+import { FormService } from '../../services/form.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-merchant-onboarding',
-  templateUrl: './merchant-form.component.html',
-  styleUrls: ['./merchant-form.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    ProgressStepsComponent,
+    BusinessInfoStepComponent,
+    ContactInfoStepComponent,
+    DocumentsStepComponent,
+    ReviewStepComponent,
+    SuccessDialogComponent
+  ],
+  template: `
+    <div class="min-h-screen bg-netpay-light-gray py-4 px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="max-w-4xl mx-auto mb-8">
+        <div class="text-center bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <div class="flex items-center justify-center mb-4">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+              <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-12 h-12" />
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-netpay-dark-blue">
+                Netpay Merchant Onboarding
+              </h1>
+              <p class="text-gray-600 mt-1">Complete your registration to start accepting payments</p>
+            </div>
+          </div>
+
+          <!-- Progress Steps -->
+          <div class="mt-6">
+            <app-progress-steps [steps]="steps()" [activeIndex]="activeIndex()" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Form Container -->
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg border-0 p-6">
+          @if (!isLoading()) {
+            <!-- Step 1: Business Information -->
+            @if (activeIndex() === 0) {
+              <app-business-info-step 
+                [form]="businessInfoForm" 
+                [businessTypes]="businessTypes()" 
+                [businessCategories]="businessCategories()" 
+              />
+            }
+
+            <!-- Step 2: Contact Information -->
+            @if (activeIndex() === 1) {
+              <app-contact-info-step 
+                [form]="contactForm" 
+                [countries]="countries()" 
+              />
+            }
+
+            <!-- Step 3: Documents -->
+            @if (activeIndex() === 2) {
+              <app-documents-step 
+                (onFileSelect)="onFileSelect($event)"
+                (onFileRemove)="onFileRemove($event)"
+              />
+            }
+
+            <!-- Step 4: Review -->
+            @if (activeIndex() === 3) {
+              <app-review-step [data]="formData()" />
+            }
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8 pt-6 border-t">
+              @if (activeIndex() > 0) {
+                <button
+                  (click)="previousStep()"
+                  class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue"
+                >
+                  Previous
+                </button>
+              }
+              <div></div>
+              
+              @if (activeIndex() < steps().length - 1) {
+                <button
+                  (click)="nextStep()"
+                  class="px-6 py-2 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-primary-blue-dark focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue"
+                >
+                  Next
+                </button>
+              } @else {
+                <button
+                  (click)="submitForm()"
+                  [disabled]="isSubmitting()"
+                  class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+                >
+                  {{ isSubmitting() ? 'Submitting...' : 'Submit Application' }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Success Dialog -->
+      @if (showSuccessDialog()) {
+        <app-success-dialog 
+          [merchantId]="merchantId()" 
+          (close)="closeSuccessDialog()" 
+        />
+      }
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MerchantOnboardingComponent implements OnInit {
-  activeIndex: number = 0;
-  steps: string[] = ['Business Info', 'Address', 'Contact', 'Banking', 'Documents', 'Review'];
-  isLoading: boolean = false;
-  isSubmitting: boolean = false;
-  showSuccessDialog: boolean = false;
-  merchantId: string = '';
+  private formService = inject(FormService);
+  private apiService = inject(ApiService);
 
+  // State signals
+  readonly activeIndex = signal(0);
+  readonly isLoading = signal(false);
+  readonly isSubmitting = signal(false);
+  readonly showSuccessDialog = signal(false);
+  readonly merchantId = signal('');
+
+  // Computed values
+  readonly steps = computed(() => ['Business Info', 'Contact / Personal Info', 'Identity & Verification Docs', 'Review']);
+  readonly currentStep = computed(() => this.steps()[this.activeIndex()]);
+
+  // Form groups
   businessInfoForm!: FormGroup;
-  addressForm!: FormGroup;
   contactForm!: FormGroup;
-  bankingForm!: FormGroup;
-  documentsForm!: FormGroup;
-  agreementsForm!: FormGroup;
 
-  // Dropdown Mock Data
-  businessTypes: BusinessType[] = [];
-  businessCategories: BusinessCategory[] = [];
-  countries: Country[] = [];
-  employeeRanges = [
-    { label: '1-5', value: '1-5' },
-    { label: '6-20', value: '6-20' },
-    { label: '21-50', value: '21-50' },
-    { label: '51-100', value: '51-100' },
-    { label: '101-500', value: '101-500' },
-    { label: '500+', value: '500+' },
-  ];
+  // Dropdown data
+  readonly businessTypes = signal<BusinessType[]>([]);
+  readonly businessCategories = signal<BusinessCategory[]>([]);
+  readonly countries = signal<Country[]>([]);
 
-  accountTypes = [
-    { label: 'Checking', value: 'checking' },
-    { label: 'Savings', value: 'savings' },
-    { label: 'Business Checking', value: 'business_checking' },
-    { label: 'Business Savings', value: 'business_savings' },
-  ];
+  // File management
+  readonly uploadedFiles = signal<{ [key: string]: File }>({});
 
-  uploadedFiles: { [key: string]: File } = {};
-  maxFileSize = 5000000; // 5MB
-
-  constructor(private fb: FormBuilder) {
-    this.initializeForms();
-  }
+  // Computed form data for review
+  readonly formData = computed(() => this.buildFormData());
 
   ngOnInit() {
+    this.initializeForms();
     this.loadDropdownData();
   }
 
-  private initializeForms() {
-    // Business Information Form
-    this.businessInfoForm = this.fb.group({
-      businessName: ['', [Validators.required, Validators.minLength(2)]],
-      businessType: ['', Validators.required],
-      businessCategory: ['', Validators.required],
-      registrationNumber: ['', [Validators.required, Validators.minLength(6)]],
-      taxId: ['', [Validators.required, Validators.minLength(9)]],
-      yearEstablished: [
-        '',
-        [Validators.required, Validators.min(1800), Validators.max(new Date().getFullYear())],
-      ],
-      numberOfEmployees: ['', Validators.required],
-      website: [''],
-      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-    });
-
-    // Address Form
-    this.addressForm = this.fb.group({
-      street: ['', [Validators.required, Validators.minLength(5)]],
-      city: ['', [Validators.required, Validators.minLength(2)]],
-      state: ['', [Validators.required, Validators.minLength(2)]],
-      postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}(-\d{4})?$/)]],
-      country: ['', Validators.required],
-    });
-
-    // Contact Form
-    this.contactForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      position: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
-      alternatePhone: ['', [Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
-    });
-
-    // Banking Form
-    this.bankingForm = this.fb.group({
-      bankName: ['', [Validators.required, Validators.minLength(2)]],
-      accountNumber: ['', [Validators.required, Validators.minLength(8)]],
-      routingNumber: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      accountType: ['', Validators.required],
-      accountHolderName: ['', [Validators.required, Validators.minLength(2)]],
-    });
-
-    // Documents Form
-    this.documentsForm = this.fb.group({
-      businessLicense: [''],
-      taxCertificate: [''],
-      bankStatement: [''],
-      identityDocument: [''],
-    });
-
-    // Agreements Form
-    this.agreementsForm = this.fb.group({
-      termsAccepted: [false, Validators.requiredTrue],
-      privacyPolicyAccepted: [false, Validators.requiredTrue],
-      processingAgreementAccepted: [false, Validators.requiredTrue],
-      marketingConsent: [false],
-    });
+  private initializeForms(): void {
+    this.businessInfoForm = this.formService.createBusinessInfoForm();
+    this.contactForm = this.formService.createContactForm();
   }
 
-  private loadDropdownData() {
-    this.isLoading = true;
+    private loadDropdownData(): void {
+    this.isLoading.set(true);
 
-    // Mock data for now to avoid service dependency issues
-    this.businessTypes = [
-      { label: 'Sole Proprietorship', value: 'sole_proprietorship' },
-      { label: 'Partnership', value: 'partnership' },
-      { label: 'Limited Liability Company (LLC)', value: 'llc' },
-      { label: 'Corporation', value: 'corporation' },
-      { label: 'Non-Profit Organization', value: 'non_profit' },
-    ];
+    // Use mock data directly for now (until backend is ready)
+    this.businessTypes.set([
+      { label: "Sole Proprietorship", value: "sole_prop" },
+      { label: "Partnership", value: "partnership" },
+      { label: "Limited Liability Company (LLC)", value: "llc" },
+      { label: "Corporation", value: "corporation" },
+      { label: "Cooperative", value: "cooperative" },
+      { label: "Non-Profit", value: "non_profit" }
+    ]);
 
-    this.businessCategories = [
+    this.businessCategories.set([
       { label: 'Retail', value: 'retail' },
       { label: 'E-commerce', value: 'ecommerce' },
       { label: 'Restaurant/Food Service', value: 'restaurant' },
       { label: 'Professional Services', value: 'professional_services' },
       { label: 'Healthcare', value: 'healthcare' },
       { label: 'Technology', value: 'technology' },
-    ];
+      { label: 'Manufacturing', value: 'manufacturing' },
+      { label: 'Education', value: 'education' },
+      { label: 'Other', value: 'other' }
+    ]);
 
-    this.countries = [
+    this.countries.set([
       { label: 'United States', value: 'US', code: 'US' },
       { label: 'Canada', value: 'CA', code: 'CA' },
       { label: 'United Kingdom', value: 'GB', code: 'GB' },
       { label: 'Germany', value: 'DE', code: 'DE' },
       { label: 'France', value: 'FR', code: 'FR' },
-    ];
+      { label: 'Australia', value: 'AU', code: 'AU' },
+      { label: 'Japan', value: 'JP', code: 'JP' },
+      { label: 'Singapore', value: 'SG', code: 'SG' }
+    ]);
 
-    this.isLoading = false;
+    this.isLoading.set(false);
+
+    // TODO: When backend is ready, replace above with API calls:
+    /*
+    this.apiService.getBusinessTypes().subscribe({
+      next: (types) => this.businessTypes.set(types),
+      error: (error) => {
+        console.error('Error loading business types:', error);
+        // Fallback to mock data if API fails
+        this.businessTypes.set([...mock data...]);
+      }
+    });
+    */
   }
 
-  nextStep() {
+  nextStep(): void {
     if (this.isCurrentStepValid()) {
-      this.activeIndex++;
+      this.activeIndex.update(index => index + 1);
     } else {
       this.markCurrentFormGroupTouched();
     }
   }
 
-  previousStep() {
-    this.activeIndex--;
+  previousStep(): void {
+    this.activeIndex.update(index => index - 1);
   }
 
-  isCurrentStepValid(): boolean {
-    switch (this.activeIndex) {
-      case 0:
-        return this.businessInfoForm.valid;
-      case 1:
-        return this.addressForm.valid;
-      case 2:
-        return this.contactForm.valid;
-      case 3:
-        return this.bankingForm.valid;
-      case 4:
-        return this.documentsForm.valid;
-      case 5:
-        return this.agreementsForm.valid;
-      default:
-        return false;
+  private isCurrentStepValid(): boolean {
+    switch (this.activeIndex()) {
+      case 0: return this.businessInfoForm.valid;
+      case 1: return this.contactForm.valid;
+      case 2: return true; // Documents are optional
+      case 3: return this.isAllFormsValid();
+      default: return false;
     }
   }
 
-  private markCurrentFormGroupTouched() {
-    switch (this.activeIndex) {
-      case 0:
-        this.markFormGroupTouched(this.businessInfoForm);
-        break;
-      case 1:
-        this.markFormGroupTouched(this.addressForm);
-        break;
-      case 2:
-        this.markFormGroupTouched(this.contactForm);
-        break;
-      case 3:
-        this.markFormGroupTouched(this.bankingForm);
-        break;
-      case 4:
-        this.markFormGroupTouched(this.documentsForm);
-        break;
-      case 5:
-        this.markFormGroupTouched(this.agreementsForm);
-        break;
-    }
+  private isAllFormsValid(): boolean {
+    return this.businessInfoForm.valid && this.contactForm.valid;
   }
 
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach((key) => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
+  private markCurrentFormGroupTouched(): void {
+    const form = this.activeIndex() === 0 ? this.businessInfoForm : this.contactForm;
+    this.formService.markFormGroupTouched(form);
+  }
+
+  onFileSelect(event: {file: File, type: string}): void {
+    this.uploadedFiles.update(files => ({ ...files, [event.type]: event.file }));
+  }
+
+  onFileRemove(documentType: string): void {
+    this.uploadedFiles.update(files => {
+      const newFiles = { ...files };
+      delete newFiles[documentType];
+      return newFiles;
     });
   }
 
-  onFileSelect(event: any, documentType: string) {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploadedFiles[documentType] = file;
-      this.documentsForm.patchValue({ [documentType]: file.name });
-    }
+  submitForm(): void {
+    if (!this.isAllFormsValid()) return;
+
+    this.isSubmitting.set(true);
+
+    // Mock form submission (replace with real API when backend is ready)
+    setTimeout(() => {
+      this.isSubmitting.set(false);
+      this.merchantId.set('MERCH_' + Date.now());
+      this.showSuccessDialog.set(true);
+    }, 2000); // Simulate 2-second API call
+
+    // TODO: When backend is ready, replace above with real API call:
+    /*
+    const formData = this.buildFormData();
+    this.apiService.submitMerchantApplication(formData).subscribe({
+      next: (response) => {
+        this.isSubmitting.set(false);
+        this.merchantId.set(response.merchantId || 'MERCH_' + Date.now());
+        this.showSuccessDialog.set(true);
+      },
+      error: (error) => {
+        console.error('Error submitting application:', error);
+        this.isSubmitting.set(false);
+        alert('Error submitting application. Please try again.');
+      }
+    });
+    */
   }
 
-  onFileRemove(documentType: string) {
-    delete this.uploadedFiles[documentType];
-    this.documentsForm.patchValue({ [documentType]: '' });
-  }
-
-  submitForm() {
-    if (!this.isAllFormsValid()) {
-      return;
-    }
-
-    this.isSubmitting = true;
-
-    const formData: MerchantOnboardingData = {
+  private buildFormData(): MerchantOnboardingData {
+    return {
       businessName: this.businessInfoForm.get('businessName')?.value,
       businessType: this.businessInfoForm.get('businessType')?.value,
       businessCategory: this.businessInfoForm.get('businessCategory')?.value,
-      registrationNumber: this.businessInfoForm.get('registrationNumber')?.value,
-      taxId: this.businessInfoForm.get('taxId')?.value,
+      registrationNumber: this.businessInfoForm.get('registrationNumber')?.value || '',
+      taxId: '',
       yearEstablished: this.businessInfoForm.get('yearEstablished')?.value,
       numberOfEmployees: this.businessInfoForm.get('numberOfEmployees')?.value,
-      website: this.businessInfoForm.get('website')?.value,
+      website: this.businessInfoForm.get('website')?.value || '',
       description: this.businessInfoForm.get('description')?.value,
       businessAddress: {
-        street: this.addressForm.get('street')?.value,
-        city: this.addressForm.get('city')?.value,
-        state: this.addressForm.get('state')?.value,
-        postalCode: this.addressForm.get('postalCode')?.value,
-        country: this.addressForm.get('country')?.value,
+        street: this.contactForm.get('street')?.value,
+        city: this.contactForm.get('city')?.value,
+        state: this.contactForm.get('state')?.value,
+        postalCode: this.contactForm.get('postalCode')?.value,
+        country: this.contactForm.get('country')?.value,
       },
       contactPerson: {
         firstName: this.contactForm.get('firstName')?.value,
@@ -259,82 +314,26 @@ export class MerchantOnboardingComponent implements OnInit {
         position: this.contactForm.get('position')?.value,
         email: this.contactForm.get('email')?.value,
         phone: this.contactForm.get('phone')?.value,
-        alternatePhone: this.contactForm.get('alternatePhone')?.value,
+        alternatePhone: this.contactForm.get('alternatePhone')?.value || '',
       },
-      bankingDetails: {
-        bankName: this.bankingForm.get('bankName')?.value,
-        accountNumber: this.bankingForm.get('accountNumber')?.value,
-        routingNumber: this.bankingForm.get('routingNumber')?.value,
-        accountType: this.bankingForm.get('accountType')?.value,
-        accountHolderName: this.bankingForm.get('accountHolderName')?.value,
-      },
+      bankingDetails: { bankName: '', accountNumber: '', routingNumber: '', accountType: '', accountHolderName: '' },
       documents: {
-        businessLicense: this.uploadedFiles['businessLicense'],
-        taxCertificate: this.uploadedFiles['taxCertificate'],
-        bankStatement: this.uploadedFiles['bankStatement'],
-        identityDocument: this.uploadedFiles['identityDocument'],
+        businessLicense: this.uploadedFiles()['businessLicense'],
+        identityDocument: this.uploadedFiles()['validId'],
       },
-      agreements: {
-        termsAccepted: this.agreementsForm.get('termsAccepted')?.value,
-        privacyPolicyAccepted: this.agreementsForm.get('privacyPolicyAccepted')?.value,
-        processingAgreementAccepted: this.agreementsForm.get('processingAgreementAccepted')?.value,
-        marketingConsent: this.agreementsForm.get('marketingConsent')?.value,
-      },
+      agreements: { termsAccepted: true, privacyPolicyAccepted: true, processingAgreementAccepted: true, marketingConsent: false },
     };
-
-    // Mock successful submission for now
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.merchantId = 'MERCH_' + Date.now();
-      this.showSuccessDialog = true;
-    }, 2000);
   }
 
-  private isAllFormsValid(): boolean {
-    return (
-      this.businessInfoForm.valid &&
-      this.addressForm.valid &&
-      this.contactForm.valid &&
-      this.bankingForm.valid &&
-      this.documentsForm.valid &&
-      this.agreementsForm.valid
-    );
-  }
-
-  getFieldError(form: FormGroup, fieldName: string): string {
-    const field = form.get(fieldName);
-    if (field?.errors && field.touched) {
-      if (field.errors['required']) return 'This field is required';
-      if (field.errors['minlength'])
-        return `Minimum length is ${field.errors['minlength'].requiredLength}`;
-      if (field.errors['maxlength'])
-        return `Maximum length is ${field.errors['maxlength'].requiredLength}`;
-      if (field.errors['email']) return 'Please enter a valid email address';
-      if (field.errors['pattern']) return 'Please enter a valid format';
-      if (field.errors['min']) return `Minimum value is ${field.errors['min'].min}`;
-      if (field.errors['max']) return `Maximum value is ${field.errors['max'].max}`;
-    }
-    return '';
-  }
-
-  isFieldInvalid(form: FormGroup, fieldName: string): boolean {
-    const field = form.get(fieldName);
-    return !!(field?.errors && field.touched);
-  }
-
-  closeSuccessDialog() {
-    this.showSuccessDialog = false;
+  closeSuccessDialog(): void {
+    this.showSuccessDialog.set(false);
     this.resetForm();
   }
 
-  private resetForm() {
+  private resetForm(): void {
     this.businessInfoForm.reset();
-    this.addressForm.reset();
     this.contactForm.reset();
-    this.bankingForm.reset();
-    this.documentsForm.reset();
-    this.agreementsForm.reset();
-    this.uploadedFiles = {};
-    this.activeIndex = 0;
+    this.uploadedFiles.set({});
+    this.activeIndex.set(0);
   }
 }

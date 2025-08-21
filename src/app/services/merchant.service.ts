@@ -71,10 +71,10 @@ export class MerchantService {
   // Get business types
   getBusinessTypes(): Observable<BusinessType[]> {
     return of([
-      { label: 'gengeng1', value: 'gengeng1' },
-      { label: 'gengeng2', value: 'gengeng2' },
-      { label: 'gengeng3', value: 'gengeng3' },
-      { label: 'gengeng4', value: 'gengeng4' },
+      { label: 'Sole Proprietorship', value: 'sole_proprietorship' },
+      { label: 'Partnership', value: 'partnership' },
+      { label: 'Limited Liability Company (LLC)', value: 'llc' },
+      { label: 'Corporation', value: 'corporation' },
       { label: 'Non-Profit Organization', value: 'non_profit' },
       { label: 'Government Entity', value: 'government' },
     ]);
