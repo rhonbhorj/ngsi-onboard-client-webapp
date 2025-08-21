@@ -58,6 +58,7 @@ import { ApiService } from '../../services/api.service';
                 [form]="businessInfoForm" 
                 [businessTypes]="businessTypes()" 
                 [businessCategories]="businessCategories()" 
+                [countries]="countries()"
               />
             }
 
@@ -65,7 +66,6 @@ import { ApiService } from '../../services/api.service';
             @if (activeIndex() === 1) {
               <app-contact-info-step 
                 [form]="contactForm" 
-                [countries]="countries()" 
               />
             }
 
@@ -295,18 +295,15 @@ export class MerchantOnboardingComponent implements OnInit {
       businessName: this.businessInfoForm.get('businessName')?.value,
       businessType: this.businessInfoForm.get('businessType')?.value,
       businessCategory: this.businessInfoForm.get('businessCategory')?.value,
-      registrationNumber: this.businessInfoForm.get('registrationNumber')?.value || '',
+      registrationNumber: this.businessInfoForm.get('registrationNumber')?.value,
       taxId: '',
       yearEstablished: this.businessInfoForm.get('yearEstablished')?.value,
-      numberOfEmployees: this.businessInfoForm.get('numberOfEmployees')?.value,
-      website: this.businessInfoForm.get('website')?.value || '',
-      description: this.businessInfoForm.get('description')?.value,
       businessAddress: {
-        street: this.contactForm.get('street')?.value,
-        city: this.contactForm.get('city')?.value,
-        state: this.contactForm.get('state')?.value,
-        postalCode: this.contactForm.get('postalCode')?.value,
-        country: this.contactForm.get('country')?.value,
+        street: this.businessInfoForm.get('address')?.value,
+        city: '',
+        state: '',
+        postalCode: '',
+        country: this.businessInfoForm.get('country')?.value,
       },
       contactPerson: {
         firstName: this.contactForm.get('firstName')?.value,

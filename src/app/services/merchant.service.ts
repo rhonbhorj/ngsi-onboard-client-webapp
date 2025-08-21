@@ -16,11 +16,9 @@ export class MerchantService {
 
   constructor(private http: HttpClient) {}
 
-  // Submit merchant onboarding data
   submitMerchantOnboarding(data: MerchantOnboardingData): Observable<any> {
     const formData = new FormData();
 
-    // Add basic merchant data
     formData.append(
       'merchantData',
       JSON.stringify({
@@ -30,9 +28,6 @@ export class MerchantService {
         registrationNumber: data.registrationNumber,
         taxId: data.taxId,
         yearEstablished: data.yearEstablished,
-        numberOfEmployees: data.numberOfEmployees,
-        website: data.website,
-        description: data.description,
         businessAddress: data.businessAddress,
         contactPerson: data.contactPerson,
         bankingDetails: data.bankingDetails,

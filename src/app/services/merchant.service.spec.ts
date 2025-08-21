@@ -38,9 +38,6 @@ describe('MerchantService', () => {
         registrationNumber: '123456789',
         taxId: '123456789',
         yearEstablished: 2020,
-        numberOfEmployees: '1-5',
-        website: 'https://test.com',
-        description: 'Test business description',
         businessAddress: {
           street: '123 Test St',
           city: 'Test City',
@@ -93,9 +90,6 @@ describe('MerchantService', () => {
         registrationNumber: '123456789',
         taxId: '123456789',
         yearEstablished: 2020,
-        numberOfEmployees: '1-5',
-        website: '',
-        description: 'Test business description',
         businessAddress: {
           street: '123 Test St',
           city: 'Test City',

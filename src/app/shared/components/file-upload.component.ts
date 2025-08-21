@@ -58,12 +58,11 @@ import { CommonModule } from '@angular/common';
   `,
 })
 export class FileUploadComponent {
-  // Inputs
   readonly label = input.required<string>();
   readonly fieldId = input.required<string>();
   readonly accept = input<string>('*/*');
   readonly required = input(false);
-  readonly maxSize = input<number>(5000000); // 5MB default
+  readonly maxSize = input<number>(5000000); 
   
   // State
   readonly uploadedFile = signal<File | null>(null);

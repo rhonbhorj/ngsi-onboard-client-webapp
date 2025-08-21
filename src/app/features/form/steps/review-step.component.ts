@@ -25,15 +25,12 @@ import { MerchantOnboardingData } from '../../../models/merchant.component';
             Business Information
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                         <div><span class="font-medium">Business Name:</span> {{ data().businessName }}</div>
-             <div><span class="font-medium">Business Type:</span> {{ data().businessType }}</div>
-             <div><span class="font-medium">Category:</span> {{ data().businessCategory }}</div>
-             <div><span class="font-medium">Year Established:</span> {{ data().yearEstablished }}</div>
-             <div><span class="font-medium">Employees:</span> {{ data().numberOfEmployees }}</div>
-             <div><span class="font-medium">Website:</span> {{ data().website || 'Not provided' }}</div>
-             <div class="md:col-span-2">
-               <span class="font-medium">Description:</span> {{ data().description }}
-             </div>
+            <div><span class="font-medium">Business Name:</span> {{ data().businessName }}</div>
+            <div><span class="font-medium">Business Type:</span> {{ data().businessType }}</div>
+            <div><span class="font-medium">Category:</span> {{ data().businessCategory }}</div>
+            <div><span class="font-medium">Registration #:</span> {{ data().registrationNumber }}</div>
+            <div><span class="font-medium">Year Established:</span> {{ data().yearEstablished }}</div>
+            <div class="md:col-span-2"><span class="font-medium">Address:</span> {{ data().businessAddress.street }}, {{ data().businessAddress.country }}</div>
           </div>
         </div>
 
@@ -46,14 +43,10 @@ import { MerchantOnboardingData } from '../../../models/merchant.component';
             Contact Information
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                         <div><span class="font-medium">Name:</span> {{ data().contactPerson.firstName }} {{ data().contactPerson.lastName }}</div>
-             <div><span class="font-medium">Position:</span> {{ data().contactPerson.position }}</div>
-             <div><span class="font-medium">Email:</span> {{ data().contactPerson.email }}</div>
-             <div><span class="font-medium">Phone:</span> {{ data().contactPerson.phone }}</div>
-             <div><span class="font-medium">Address:</span> {{ data().businessAddress.street }}</div>
-             <div><span class="font-medium">City:</span> {{ data().businessAddress.city }}, {{ data().businessAddress.state }}</div>
-             <div><span class="font-medium">Postal Code:</span> {{ data().businessAddress.postalCode }}</div>
-             <div><span class="font-medium">Country:</span> {{ data().businessAddress.country }}</div>
+            <div><span class="font-medium">Name:</span> {{ data().contactPerson.firstName }} {{ data().contactPerson.lastName }}</div>
+            <div><span class="font-medium">Position:</span> {{ data().contactPerson.position }}</div>
+            <div><span class="font-medium">Email:</span> {{ data().contactPerson.email }}</div>
+            <div><span class="font-medium">Phone:</span> {{ data().contactPerson.phone }}</div>
           </div>
         </div>
 
@@ -66,8 +59,8 @@ import { MerchantOnboardingData } from '../../../models/merchant.component';
             Documents
           </h3>
           <div class="space-y-2 text-sm">
-                         <div><span class="font-medium">Business License:</span> {{ data().documents.businessLicense?.name || 'Not uploaded' }}</div>
-             <div><span class="font-medium">Government ID:</span> {{ data().documents.identityDocument?.name || 'Not uploaded' }}</div>
+            <div><span class="font-medium">Business License:</span> {{ data().documents.businessLicense?.name || 'Not uploaded' }}</div>
+            <div><span class="font-medium">Government ID:</span> {{ data().documents.identityDocument?.name || 'Not uploaded' }}</div>
           </div>
         </div>
 

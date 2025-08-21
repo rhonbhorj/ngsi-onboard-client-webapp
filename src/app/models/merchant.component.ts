@@ -6,9 +6,7 @@ export interface MerchantOnboardingData {
   registrationNumber: string;
   taxId: string;
   yearEstablished: number;
-  numberOfEmployees: string;
-  website?: string;
-  description: string;
+  
 
   // Business Address
   businessAddress: {

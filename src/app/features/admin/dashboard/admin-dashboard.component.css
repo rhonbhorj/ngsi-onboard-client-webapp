@@ -1,0 +1,91 @@
+/* Admin Dashboard Custom Styles */
+
+.notifications-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notifications-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.notifications-scroll::-webkit-scrollbar-thumb {
+  background: var(--netpay-primary-blue);
+  border-radius: 3px;
+}
+
+.notifications-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--netpay-accent-blue);
+}
+
+.table-row-hover:hover {
+  background-color: var(--netpay-blue-gray);
+  transition: background-color 0.2s ease;
+}
+
+.admin-button:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--netpay-primary-blue);
+  ring-offset: 2px;
+}
+
+.notification-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.admin-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.admin-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.status-badge {
+  transition: all 0.2s ease;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+}
+
+.action-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 0 1rem;
+  }
+  
+  .admin-main {
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-table {
+    font-size: 0.875rem;
+  }
+}

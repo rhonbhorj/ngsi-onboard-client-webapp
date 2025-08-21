@@ -26,7 +26,7 @@ export class ErrorHandlerService {
       userMessage = 'Server is temporarily unavailable. Please try again later.';
     }
     
-    // You can integrate with a toast/notification service here
+    // can integrate with a toast/notification service here
     alert(userMessage);
   }
   

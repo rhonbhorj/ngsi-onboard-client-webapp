@@ -1,3 +1,5 @@
+/* General styles */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,15 +16,14 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   background-color: var(--netpay-light-gray);
 }
 
-/* Custom PrimeNG theme overrides */
 .p-component {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', 'Inter', sans-serif;
 }
 
 .p-button {

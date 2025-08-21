@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormFieldComponent } from '../../../shared/components/form-field.component';
-import { BusinessType, BusinessCategory } from '../../../models/merchant.component';
+import { BusinessType, BusinessCategory, Country } from '../../../models/merchant.component';
 
 @Component({
   selector: 'app-business-info-step',
@@ -53,7 +53,8 @@ import { BusinessType, BusinessCategory } from '../../../models/merchant.compone
             fieldId="registrationNumber"
             [control]="getControl('registrationNumber')"
             type="text"
-            placeholder="Enter registration number (optional)"
+            placeholder="Enter registration number"
+            [required]="true"
           />
           
           <app-form-field
@@ -66,53 +67,26 @@ import { BusinessType, BusinessCategory } from '../../../models/merchant.compone
             [min]="1800"
             [max]="2024"
           />
-          
+
           <app-form-field
-            label="Number of Employees"
-            fieldId="numberOfEmployees"
-            [control]="getControl('numberOfEmployees')"
+            label="Country"
+            fieldId="country"
+            [control]="getControl('country')"
             type="select"
-            placeholder="Select employee range"
+            placeholder="Select country"
             [required]="true"
-            [options]="employeeRanges"
+            [options]="countries()"
           />
         </div>
-        
-        <div class="form-field">
-          <label for="website" class="block text-sm font-medium text-gray-700 mb-2">Website</label>
-          <input
-            type="url"
-            id="website"
-            formControlName="website"
-            placeholder="https://yourwebsite.com (optional)"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-netpay-primary-blue focus:border-transparent"
-          />
-        </div>
-        
-        <div class="form-field">
-          <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-            Business Description @if (true) { <span class="text-red-500">*</span> }
-          </label>
-          <textarea
-            id="description"
-            formControlName="description"
-            rows="4"
-            placeholder="Describe your business (10-500 characters)"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-netpay-primary-blue focus:border-transparent"
-            [class.border-red-500]="form().get('description')?.errors && form().get('description')?.touched"
-          ></textarea>
-          @if (form().get('description')?.errors && form().get('description')?.touched) {
-            <div class="error-message text-red-500 text-sm mt-1">
-              @if (form().get('description')?.errors?.['required']) {
-                This field is required
-              } @else if (form().get('description')?.errors?.['minlength']) {
-                Minimum length is {{ form().get('description')?.errors?.['minlength'].requiredLength }}
-              } @else if (form().get('description')?.errors?.['maxlength']) {
-                Maximum length is {{ form().get('description')?.errors?.['maxlength'].requiredLength }}
-              }
-            </div>
-          }
-        </div>
+
+        <app-form-field
+          label="Business / Company Address"
+          fieldId="address"
+          [control]="getControl('address')"
+          type="text"
+          placeholder="Enter full business address"
+          [required]="true"
+        />
       </form>
     </div>
   `,
@@ -121,15 +95,7 @@ export class BusinessInfoStepComponent {
   readonly form = input.required<FormGroup>();
   readonly businessTypes = input.required<BusinessType[]>();
   readonly businessCategories = input.required<BusinessCategory[]>();
-  
-  readonly employeeRanges = [
-    { label: '1-5', value: '1-5' },
-    { label: '6-20', value: '6-20' },
-    { label: '21-50', value: '21-50' },
-    { label: '51-100', value: '51-100' },
-    { label: '101-500', value: '101-500' },
-    { label: '500+', value: '500+' },
-  ];
+  readonly countries = input.required<Country[]>();
   
   getControl(fieldName: string): FormControl {
     return this.form().get(fieldName) as FormControl;

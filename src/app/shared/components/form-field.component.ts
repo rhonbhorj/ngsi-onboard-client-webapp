@@ -58,7 +58,6 @@ export class FormFieldComponent {
   readonly min = input<number>();
   readonly max = input<number>();
 
-  // Computed
   readonly inputClasses = () => 
     'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-netpay-primary-blue focus:border-transparent';
   

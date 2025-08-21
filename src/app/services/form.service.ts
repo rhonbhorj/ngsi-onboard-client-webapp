@@ -9,14 +9,13 @@ export class FormService {
 
   createBusinessInfoForm(): FormGroup {
     return this.fb.group({
-      businessName: ['', [Validators.required, Validators.minLength(2)]],
-      businessType: ['', Validators.required],
-      businessCategory: ['', Validators.required],
-      registrationNumber: [''],
+      businessName: ['', [Validators.required, Validators.minLength(2)]], 
+      businessType: ['', Validators.required], 
+      businessCategory: ['', Validators.required], 
+      registrationNumber: ['', [Validators.required, Validators.minLength(3)]],
       yearEstablished: ['', [Validators.required, Validators.min(1800), Validators.max(new Date().getFullYear())]],
-      numberOfEmployees: ['', Validators.required],
-      website: [''],
-      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+      country: ['', Validators.required], 
+      address: ['', [Validators.required, Validators.minLength(5)]], 
     });
   }
 
@@ -28,11 +27,6 @@ export class FormService {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
       alternatePhone: ['', [Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
-      street: ['', [Validators.required, Validators.minLength(5)]],
-      city: ['', [Validators.required, Validators.minLength(2)]],
-      state: ['', [Validators.required, Validators.minLength(2)]],
-      postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}(-\d{4})?$/)]],
-      country: ['', Validators.required],
     });
   }
 
