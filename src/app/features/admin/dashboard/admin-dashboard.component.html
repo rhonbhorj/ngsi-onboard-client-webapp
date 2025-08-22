@@ -124,13 +124,19 @@
                 class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
                 style="color: var(--netpay-medium-blue)"
               >
-                Company
+                Business
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
                 style="color: var(--netpay-medium-blue)"
               >
                 Contact
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                style="color: var(--netpay-medium-blue)"
+              >
+                Business Type
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
@@ -153,21 +159,32 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ application.companyName }}
+                  {{ application.businessName }}
                 </div>
                 <div class="text-sm" style="color: var(--netpay-medium-blue)">
-                  {{ application.positionTitle }}
+                  {{ application.industryOrBusinessStyle }}
+                </div>
+                <div class="text-sm" style="color: var(--netpay-medium-blue)">
+                  {{ application.businessAddress }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ application.representativeName }}
+                  {{ application.contactPerson }}
                 </div>
                 <div class="text-sm" style="color: var(--netpay-medium-blue)">
-                  {{ application.emailAddress }}
+                  {{ application.contactNumber }}
                 </div>
                 <div class="text-sm" style="color: var(--netpay-medium-blue)">
-                  {{ application.mobileNumber }}
+                  {{ application.businessEmail }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm" style="color: var(--netpay-dark-blue)">
+                  {{ application.typeOfBusiness }}
+                </div>
+                <div class="text-sm" style="color: var(--netpay-medium-blue)">
+                  Portal: {{ application.hasExistingPaymentPortal }}
                 </div>
               </td>
               <td

@@ -9,11 +9,30 @@ export class FormService {
 
   createBusinessInfoForm(): FormGroup {
     return this.fb.group({
-      representativeName: ['', [Validators.required, Validators.minLength(2)]],
-      positionTitle: ['', [Validators.required, Validators.minLength(2)]],
-      companyName: ['', [Validators.required, Validators.minLength(2)]],
-      emailAddress: ['', [Validators.required, Validators.email]],
-      mobileNumber: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
+      // Step 1: Basic Business Information
+      registeredByName: ['', [Validators.required, Validators.minLength(2)]],
+      registeredByContact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
+      businessName: ['', [Validators.required, Validators.minLength(2)]],
+      businessEmail: ['', [Validators.required, Validators.email]],
+      businessAddress: ['', [Validators.required, Validators.minLength(10)]],
+      businessWebsite: [''],
+      industryOrBusinessStyle: ['', [Validators.required, Validators.minLength(2)]],
+      telephoneNo: [''],
+      typeOfBusiness: ['', [Validators.required]],
+      contactPerson: ['', [Validators.required, Validators.minLength(2)]],
+      contactNumber: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
+      sameAsRegisteredBy: [false],
+
+      // Step 2: Payment & Transaction Details
+      hasExistingPaymentPortal: ['', [Validators.required]],
+      currentModeOfPayment: this.fb.group({
+        cash: [false],
+        eWallets: [false],
+        qrph: [false],
+        cardPayment: [false],
+      }),
+      estimatedTransactionNumbers: [''],
+      estimatedAverageAmount: [''],
     });
   }
 
@@ -31,7 +50,11 @@ export class FormService {
   markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
-      control?.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      } else {
+        control?.markAsTouched();
+      }
     });
   }
 

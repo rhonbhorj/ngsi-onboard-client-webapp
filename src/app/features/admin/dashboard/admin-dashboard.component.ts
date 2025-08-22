@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminAuthService } from '../services/admin-auth.service';
 import { AdminDashboardService } from '../services/admin-dashboard.service';
-import { MerchantApplication } from '../models/admin.model';
+import { MerchantApplication } from '../../../services/application.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -77,11 +77,11 @@ export class AdminDashboardComponent implements OnInit {
     const filtered = this.allApplications().filter(
       (application) =>
         application.id.toLowerCase().includes(searchTerm) ||
-        application.representativeName.toLowerCase().includes(searchTerm) ||
-        application.companyName.toLowerCase().includes(searchTerm) ||
-        application.emailAddress.toLowerCase().includes(searchTerm) ||
-        application.mobileNumber.toLowerCase().includes(searchTerm) ||
-        application.positionTitle.toLowerCase().includes(searchTerm)
+        application.contactPerson.toLowerCase().includes(searchTerm) ||
+        application.businessName.toLowerCase().includes(searchTerm) ||
+        application.businessEmail.toLowerCase().includes(searchTerm) ||
+        application.contactNumber.toLowerCase().includes(searchTerm) ||
+        application.industryOrBusinessStyle.toLowerCase().includes(searchTerm)
     );
 
     this.filteredApplications.set(filtered);

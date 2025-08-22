@@ -11,36 +11,34 @@ import { CommonModule } from '@angular/common';
       <label [for]="fieldId()" class="block text-sm font-medium text-gray-700 mb-2">
         {{ label() }} @if (required()) { <span class="text-red-500">*</span> }
       </label>
-      
+
       @if (type() === 'select') {
-        <select
-          [id]="fieldId()"
-          [formControl]="control()"
-          [class]="inputClasses()"
-          [class.border-red-500]="isInvalid()"
-        >
-          <option value="">{{ placeholder() }}</option>
-          @for (option of options(); track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
-        </select>
+      <select
+        [id]="fieldId()"
+        [formControl]="control()"
+        [class]="inputClasses()"
+        [class.border-red-500]="isInvalid()"
+      >
+        <option value="">{{ placeholder() }}</option>
+        @for (option of options(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
       } @else {
-        <input
-          [type]="type()"
-          [id]="fieldId()"
-          [formControl]="control()"
-          [placeholder]="placeholder()"
-          [class]="inputClasses()"
-          [class.border-red-500]="isInvalid()"
-          [min]="min()"
-          [max]="max()"
-        />
-      }
-      
-      @if (isInvalid()) {
-        <div class="error-message text-red-500 text-sm mt-1">
-          {{ getErrorMessage() }}
-        </div>
+      <input
+        [type]="type()"
+        [id]="fieldId()"
+        [formControl]="control()"
+        [placeholder]="placeholder()"
+        [class]="inputClasses()"
+        [class.border-red-500]="isInvalid()"
+        [min]="min()"
+        [max]="max()"
+      />
+      } @if (isInvalid()) {
+      <div class="error-message text-red-500 text-sm mt-1">
+        {{ getErrorMessage() }}
+      </div>
       }
     </div>
   `,
@@ -54,20 +52,19 @@ export class FormFieldComponent {
   readonly type = input<'text' | 'email' | 'number' | 'select'>('text');
   readonly placeholder = input<string>('');
   readonly required = input(false);
-  readonly options = input<{label: string, value: string}[]>([]);
+  readonly options = input<{ label: string; value: string }[]>([]);
   readonly min = input<number>();
   readonly max = input<number>();
 
-  readonly inputClasses = () => 
-    'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-netpay-primary-blue focus:border-transparent';
-  
-  readonly isInvalid = () => 
-    this.control()?.errors && this.control()?.touched;
+  readonly inputClasses = () =>
+    'w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-transparent';
+
+  readonly isInvalid = () => this.control()?.errors && this.control()?.touched;
 
   getErrorMessage(): string {
     const control = this.control();
     if (!control?.errors || !control.touched) return '';
-    
+
     const errors = control.errors;
     if (errors['required']) return 'This field is required';
     if (errors['minlength']) return `Minimum length is ${errors['minlength'].requiredLength}`;

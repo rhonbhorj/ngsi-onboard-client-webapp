@@ -3,11 +3,32 @@ import { Observable, of } from 'rxjs';
 
 export interface MerchantApplication {
   id: string;
-  representativeName: string;
-  positionTitle: string;
-  companyName: string;
-  emailAddress: string;
-  mobileNumber: string;
+  // Step 1: Basic Business Information
+  registeredByName: string;
+  registeredByContact: string;
+  businessName: string;
+  businessEmail: string;
+  businessAddress: string;
+  businessWebsite?: string;
+  industryOrBusinessStyle: string;
+  telephoneNo?: string;
+  typeOfBusiness: string;
+  contactPerson: string;
+  contactNumber: string;
+  sameAsRegisteredBy: boolean;
+
+  // Step 2: Payment & Transaction Details
+  hasExistingPaymentPortal: string;
+  currentModeOfPayment: {
+    cash: boolean;
+    eWallets: boolean;
+    qrph: boolean;
+    cardPayment: boolean;
+  };
+  estimatedTransactionNumbers?: string;
+  estimatedAverageAmount?: string;
+
+  // System fields
   status: 'pending' | 'approved' | 'rejected' | 'under_review';
   submittedAt: string;
   reviewedAt?: string;
@@ -27,21 +48,53 @@ export class ApplicationService {
     this.applications.set([
       {
         id: 'app_001',
-        representativeName: 'Ritchmond Tajarros',
-        positionTitle: 'Front-End Web Developer',
-        companyName: 'NetGlobal Solutions Inc',
-        emailAddress: 'tajarrosrj@gmail.com',
-        mobileNumber: '09177589353',
+        registeredByName: 'Ritchmond Tajarros',
+        registeredByContact: '09177589353',
+        businessName: 'NetGlobal Solutions Inc',
+        businessEmail: 'tajarrosrj@gmail.com',
+        businessAddress: '123 Business Street, Metro Manila, Philippines',
+        businessWebsite: 'https://netglobal.com',
+        industryOrBusinessStyle: 'Technology Solutions',
+        telephoneNo: '02-1234-5678',
+        typeOfBusiness: 'Corporation',
+        contactPerson: 'Ritchmond Tajarros',
+        contactNumber: '09177589353',
+        sameAsRegisteredBy: true,
+        hasExistingPaymentPortal: 'NO',
+        currentModeOfPayment: {
+          cash: false,
+          eWallets: true,
+          qrph: false,
+          cardPayment: true,
+        },
+        estimatedTransactionNumbers: '51 – 100',
+        estimatedAverageAmount: '10,001 – 50,000',
         status: 'pending',
         submittedAt: '2025-08-15T10:30:00Z',
       },
       {
         id: 'app_002',
-        representativeName: 'Raven David',
-        positionTitle: 'Back-End Web Developer',
-        companyName: 'NetGlobal Solutions Inc',
-        emailAddress: 'ravendavid@gmail.com',
-        mobileNumber: '09123456789',
+        registeredByName: 'Raven David',
+        registeredByContact: '09123456789',
+        businessName: 'NetGlobal Solutions Inc',
+        businessEmail: 'ravendavid@gmail.com',
+        businessAddress: '456 Tech Avenue, Cebu City, Philippines',
+        businessWebsite: 'https://netglobal.com',
+        industryOrBusinessStyle: 'Software Development',
+        telephoneNo: '032-9876-5432',
+        typeOfBusiness: 'Corporation',
+        contactPerson: 'Raven David',
+        contactNumber: '09123456789',
+        sameAsRegisteredBy: true,
+        hasExistingPaymentPortal: 'YES',
+        currentModeOfPayment: {
+          cash: true,
+          eWallets: true,
+          qrph: true,
+          cardPayment: true,
+        },
+        estimatedTransactionNumbers: 'ABOVE 100',
+        estimatedAverageAmount: 'ABOVE 50,000',
         status: 'approved',
         submittedAt: '2025-08-21T14:20:00Z',
         reviewedAt: '2025-08-21T09:15:00Z',

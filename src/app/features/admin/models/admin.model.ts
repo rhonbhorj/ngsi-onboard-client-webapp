@@ -17,20 +17,6 @@ export interface AdminLoginResponse {
   message: string;
 }
 
-export interface MerchantApplication {
-  id: string;
-  representativeName: string;
-  positionTitle: string;
-  companyName: string;
-  emailAddress: string;
-  mobileNumber: string;
-  status: 'pending' | 'approved' | 'rejected' | 'under_review';
-  submittedAt: string;
-  reviewedAt?: string;
-  reviewedBy?: string;
-  notes?: string;
-}
-
 export interface AdminNotification {
   id: string;
   type: 'new_application' | 'status_change' | 'system_alert';
