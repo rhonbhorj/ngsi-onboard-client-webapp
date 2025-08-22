@@ -16,7 +16,7 @@ export interface MerchantApplication {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApplicationService {
   // Shared applications data
@@ -27,36 +27,38 @@ export class ApplicationService {
     this.applications.set([
       {
         id: 'app_001',
-        representativeName: 'John Doe',
-        positionTitle: 'Manager',
-        companyName: 'Tech Solutions Inc.',
-        emailAddress: 'john.doe@techsolutions.com',
-        mobileNumber: '+1-555-123-4567',
+        representativeName: 'Ritchmond Tajarros',
+        positionTitle: 'Front-End Web Developer',
+        companyName: 'NetGlobal Solutions Inc',
+        emailAddress: 'tajarrosrj@gmail.com',
+        mobileNumber: '09177589353',
         status: 'pending',
-        submittedAt: '2024-01-15T10:30:00Z'
+        submittedAt: '2025-08-15T10:30:00Z',
       },
       {
         id: 'app_002',
-        representativeName: 'Jane Smith',
-        positionTitle: 'CEO',
-        companyName: 'Innovation Corp',
-        emailAddress: 'jane.smith@innovation.com',
-        mobileNumber: '+1-555-987-6543',
+        representativeName: 'Raven David',
+        positionTitle: 'Back-End Web Developer',
+        companyName: 'NetGlobal Solutions Inc',
+        emailAddress: 'ravendavid@gmail.com',
+        mobileNumber: '09123456789',
         status: 'approved',
-        submittedAt: '2024-01-14T14:20:00Z',
-        reviewedAt: '2024-01-15T09:15:00Z',
-        reviewedBy: 'admin_001'
-      }
+        submittedAt: '2025-08-21T14:20:00Z',
+        reviewedAt: '2025-08-21T09:15:00Z',
+        reviewedBy: 'admin_001',
+      },
     ]);
   }
 
   // Submit new application from form
-  submitApplication(formData: Omit<MerchantApplication, 'id' | 'status' | 'submittedAt'>): Observable<MerchantApplication> {
+  submitApplication(
+    formData: Omit<MerchantApplication, 'id' | 'status' | 'submittedAt'>
+  ): Observable<MerchantApplication> {
     const newApplication: MerchantApplication = {
       ...formData,
       id: 'app_' + Date.now(),
       status: 'pending',
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
     };
 
     const currentApplications = this.applications();
@@ -71,27 +73,33 @@ export class ApplicationService {
   }
 
   // Update application status (admin action)
-  updateApplicationStatus(applicationId: string, status: MerchantApplication['status'], notes?: string): void {
+  updateApplicationStatus(
+    applicationId: string,
+    status: MerchantApplication['status'],
+    notes?: string
+  ): void {
     const currentApplications = this.applications();
-    const appIndex = currentApplications.findIndex(app => app.id === applicationId);
-    
+    const appIndex = currentApplications.findIndex((app) => app.id === applicationId);
+
     if (appIndex !== -1) {
       const updatedApp = {
         ...currentApplications[appIndex],
         status,
         reviewedAt: new Date().toISOString(),
         reviewedBy: 'admin_001',
-        notes
+        notes,
       };
-      
+
       currentApplications[appIndex] = updatedApp;
       this.applications.set([...currentApplications]);
     }
   }
 
   // Get applications by status
-  getApplicationsByStatus(status: MerchantApplication['status']): Observable<MerchantApplication[]> {
-    const filtered = this.applications().filter(app => app.status === status);
+  getApplicationsByStatus(
+    status: MerchantApplication['status']
+  ): Observable<MerchantApplication[]> {
+    const filtered = this.applications().filter((app) => app.status === status);
     return of(filtered);
   }
 }
