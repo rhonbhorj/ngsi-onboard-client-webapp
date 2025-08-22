@@ -2,20 +2,18 @@ import { Injectable, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FormService {
   private fb = inject(FormBuilder);
 
   createBusinessInfoForm(): FormGroup {
     return this.fb.group({
-      businessName: ['', [Validators.required, Validators.minLength(2)]], 
-      businessType: ['', Validators.required], 
-      businessCategory: ['', Validators.required], 
-      registrationNumber: ['', [Validators.required, Validators.minLength(3)]],
-      yearEstablished: ['', [Validators.required, Validators.min(1800), Validators.max(new Date().getFullYear())]],
-      country: ['', Validators.required], 
-      address: ['', [Validators.required, Validators.minLength(5)]], 
+      representativeName: ['', [Validators.required, Validators.minLength(2)]],
+      positionTitle: ['', [Validators.required, Validators.minLength(2)]],
+      companyName: ['', [Validators.required, Validators.minLength(2)]],
+      emailAddress: ['', [Validators.required, Validators.email]],
+      mobileNumber: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
     });
   }
 
@@ -31,7 +29,7 @@ export class FormService {
   }
 
   markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });

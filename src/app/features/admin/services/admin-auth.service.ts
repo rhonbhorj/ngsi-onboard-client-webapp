@@ -5,7 +5,7 @@ import { delay } from 'rxjs/operators';
 import { AdminUser, AdminLoginCredentials, AdminLoginResponse } from '../models/admin.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminAuthService {
   private router = inject(Router);
@@ -17,12 +17,6 @@ export class AdminAuthService {
       username: 'admin',
       email: 'admin@netpay.com',
       role: 'super_admin',
-      firstName: 'NetGlobal',
-      lastName: 'Solutions Inc.',
-      avatar: 'images/ngsi-logo.png',
-      lastLogin: new Date(),
-      isActive: true,
-      permissions: ['read', 'write', 'delete', 'approve', 'reject']
     },
   ];
 
@@ -37,10 +31,8 @@ export class AdminAuthService {
   }
 
   login(credentials: AdminLoginCredentials): Observable<AdminLoginResponse> {
-  
-    const user = this.mockAdminUsers.find(u => 
-      u.username === credentials.username && 
-      credentials.password === 'admin123' 
+    const user = this.mockAdminUsers.find(
+      (u) => u.username === credentials.username && credentials.password === 'admin123'
     );
 
     if (user) {
@@ -49,7 +41,7 @@ export class AdminAuthService {
         success: true,
         token,
         user,
-        message: 'Login successful'
+        message: 'Login successful',
       };
 
       // Store authentication data
@@ -69,16 +61,11 @@ export class AdminAuthService {
     return this.currentUser();
   }
 
-  hasPermission(permission: string): boolean {
-    const user = this.currentUser();
-    return user?.permissions.includes(permission) ?? false;
-  }
-
   private setAuthData(user: AdminUser, token: string): void {
     this.currentUser.set(user);
     this.isAuthenticated.set(true);
     this.authToken.set(token);
-    
+
     // Store in localStorage for persistence
     localStorage.setItem('admin_user', JSON.stringify(user));
     localStorage.setItem('admin_token', token);
@@ -88,7 +75,7 @@ export class AdminAuthService {
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.authToken.set(null);
-    
+
     localStorage.removeItem('admin_user');
     localStorage.removeItem('admin_token');
   }
@@ -96,7 +83,7 @@ export class AdminAuthService {
   private checkExistingSession(): void {
     const storedUser = localStorage.getItem('admin_user');
     const storedToken = localStorage.getItem('admin_token');
-    
+
     if (storedUser && storedToken) {
       try {
         const user = JSON.parse(storedUser);

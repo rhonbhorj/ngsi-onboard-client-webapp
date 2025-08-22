@@ -3,12 +3,6 @@ export interface AdminUser {
   username: string;
   email: string;
   role: 'super_admin' | 'admin' | 'moderator';
-  firstName: string;
-  lastName: string;
-  avatar?: string;
-  lastLogin: Date;
-  isActive: boolean;
-  permissions: string[];
 }
 
 export interface AdminLoginCredentials {
@@ -18,40 +12,31 @@ export interface AdminLoginCredentials {
 
 export interface AdminLoginResponse {
   success: boolean;
-  token?: string;
   user: AdminUser;
-  message?: string;
+  token: string;
+  message: string;
 }
 
 export interface MerchantApplication {
   id: string;
-  referenceNumber: string;
-  businessName: string;
-  businessType: string;
-  businessCategory: string;
+  representativeName: string;
+  positionTitle: string;
+  companyName: string;
+  emailAddress: string;
+  mobileNumber: string;
   status: 'pending' | 'approved' | 'rejected' | 'under_review';
-  submittedDate: Date;
-  contactPerson: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-  };
-  estimatedRevenue: number;
-  documents: {
-    businessLicense: boolean;
-    taxCertificate: boolean;
-    bankStatement: boolean;
-    identityDocument: boolean;
-  };
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  notes?: string;
 }
 
 export interface AdminNotification {
   id: string;
-  type: 'info' | 'warning' | 'error' | 'success';
+  type: 'new_application' | 'status_change' | 'system_alert';
   title: string;
   message: string;
-  timestamp: Date;
-  isRead: boolean;
+  timestamp: string;
+  read: boolean;
   actionUrl?: string;
 }
