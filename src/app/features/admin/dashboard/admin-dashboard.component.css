@@ -1,91 +1,78 @@
 /* Admin Dashboard Custom Styles */
 
-.notifications-scroll::-webkit-scrollbar {
-  width: 6px;
+.admin-dashboard {
+  background-color: var(--netpay-light-gray);
 }
 
-.notifications-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+.admin-header {
+  background-color: var(--netpay-white);
+  border-color: var(--netpay-blue-gray);
 }
 
-.notifications-scroll::-webkit-scrollbar-thumb {
-  background: var(--netpay-primary-blue);
-  border-radius: 3px;
+.admin-main {
+  background-color: var(--netpay-light-gray);
 }
 
-.notifications-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--netpay-accent-blue);
+.admin-card {
+  background-color: var(--netpay-white);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.table-row-hover:hover {
-  background-color: var(--netpay-blue-gray);
-  transition: background-color 0.2s ease;
+.admin-button {
+  background-color: var(--netpay-primary-blue);
+  transition: all 0.3s ease;
+}
+
+.admin-button:hover {
+  background-color: var(--netpay-accent-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(1, 108, 251, 0.3);
 }
 
 .admin-button:focus {
   outline: none;
-  ring: 2px;
-  ring-color: var(--netpay-primary-blue);
-  ring-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
 }
 
-.notification-badge {
-  animation: pulse 2s infinite;
+.admin-table {
+  border-color: var(--netpay-blue-gray);
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+.admin-table thead {
+  background-color: var(--netpay-light-gray);
 }
 
-.admin-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.3s ease;
+.admin-table th {
+  color: var(--netpay-medium-blue);
 }
 
-.admin-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.admin-table tbody {
+  background-color: var(--netpay-white);
 }
 
-.status-badge {
-  transition: all 0.2s ease;
+.admin-table tbody tr:hover {
+  background-color: rgba(1, 108, 251, 0.05);
 }
 
-.status-badge:hover {
-  transform: scale(1.05);
+/* Search input focus styles */
+.admin-main input:focus {
+  outline: none;
+  border-color: var(--netpay-primary-blue);
+  box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
 }
 
-.action-loading {
-  opacity: 0.6;
-  pointer-events: none;
+/* Loading spinner color */
+.admin-main .animate-spin {
+  color: var(--netpay-medium-blue);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .admin-header {
-    padding: 0 1rem;
-  }
-  
   .admin-main {
     padding: 1rem;
   }
-  
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
-@media (max-width: 640px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .admin-table {
-    font-size: 0.875rem;
+  .admin-card {
+    margin-bottom: 1rem;
   }
 }

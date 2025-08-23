@@ -4,12 +4,10 @@ export const routes: Routes = [
   { path: '', redirectTo: 'onboard', pathMatch: 'full' },
   {
     path: 'onboard',
-    loadComponent: () =>
-      import('./features/form/merchant-form.component').then((m) => m.MerchantOnboardingComponent),
+    loadChildren: () => import('./features/form/form.routes').then((m) => m.formRoutes),
   },
   {
     path: 'admin',
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes),
-
+    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoutes),
   },
 ];

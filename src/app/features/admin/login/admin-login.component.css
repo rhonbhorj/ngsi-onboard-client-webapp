@@ -6,9 +6,19 @@
   box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
 }
 
-.admin-button:hover {
+.admin-button {
+  background-color: var(--netpay-primary-blue);
+  transition: all 0.3s ease;
+}
+
+.admin-button:hover:not(:disabled) {
+  background-color: var(--netpay-accent-blue);
   transform: translateY(-1px);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.admin-button:focus {
+  box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
 }
 
 .admin-logo {
@@ -16,7 +26,8 @@
 }
 
 @keyframes logoFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -27,6 +38,7 @@
 .admin-form-container {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   transition: all 0.3s ease;
+  background-color: var(--netpay-white);
 }
 
 .admin-form-container:hover {
@@ -67,11 +79,11 @@
   .admin-login-container {
     padding: 1rem;
   }
-  
+
   .admin-form-container {
     padding: 1.5rem;
   }
-  
+
   .admin-logo {
     height: 3rem;
     width: 3rem;

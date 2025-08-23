@@ -1,92 +1,94 @@
-import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+  WritableSignal,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AdminAuthService } from '../services/admin-auth.service';
 import { AdminDashboardService } from '../services/admin-dashboard.service';
-import { MerchantApplication, AdminNotification } from '../models/admin.model';
+import { MerchantApplication } from '../../../services/application.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'block'
-  }
 })
 export class AdminDashboardComponent implements OnInit {
   private authService = inject(AdminAuthService);
   private dashboardService = inject(AdminDashboardService);
   private router = inject(Router);
 
-  // State signals
-  readonly merchantApplications = signal<MerchantApplication[]>([]);
+  // Dashboard data
+  readonly allApplications = signal<MerchantApplication[]>([]);
   readonly filteredApplications = signal<MerchantApplication[]>([]);
-  readonly notifications = signal<AdminNotification[]>([]);
-  readonly showNotifications = signal(false);
-  readonly searchQuery = signal('');
+  readonly isLoading = signal(false);
+  readonly searchTerm: WritableSignal<string> = signal('');
 
-  readonly currentUser = computed(() => this.authService.getCurrentUser());
-  readonly unreadNotificationsCount = computed(() => 
-    this.notifications().filter(n => !n.isRead).length
-  );
-
-  ngOnInit(): void {
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/admin/login']);
-      return;
-    }
-
+  ngOnInit() {
+    this.checkAuth();
     this.loadDashboardData();
   }
 
-  toggleNotifications(): void {
-    this.showNotifications.update(show => !show);
+  private checkAuth(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/admin/login']);
+    }
   }
 
-  markNotificationAsRead(notificationId: string): void {
-    this.dashboardService.markNotificationAsRead(notificationId);
-    this.showNotifications.set(false);
+  private loadDashboardData(): void {
+    this.isLoading.set(true);
+
+    // Load all applications
+    this.dashboardService.getRecentApplications().subscribe({
+      next: (applications) => {
+        this.allApplications.set(applications);
+        this.filteredApplications.set(applications);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading applications:', error);
+        this.isLoading.set(false);
+      },
+    });
   }
 
-  logout(): void {
-    this.authService.logout();
-  }
-
-  onSearchChange(query: string): void {
-    this.searchQuery.set(query);
+  onSearchChange(searchValue: string): void {
+    this.searchTerm.set(searchValue);
     this.filterApplications();
   }
 
   private filterApplications(): void {
-    const query = this.searchQuery().toLowerCase().trim();
-    
-    if (!query) {
-      this.filteredApplications.set(this.merchantApplications());
+    const searchTerm = this.searchTerm().toLowerCase().trim();
+
+    if (!searchTerm) {
+      this.filteredApplications.set(this.allApplications());
       return;
     }
 
-    const filtered = this.merchantApplications().filter(application => 
-      application.referenceNumber?.toLowerCase().includes(query) ||
-      application.businessName.toLowerCase().includes(query) ||
-      application.contactPerson.firstName.toLowerCase().includes(query) ||
-      application.contactPerson.lastName.toLowerCase().includes(query) ||
-      application.contactPerson.email.toLowerCase().includes(query)
+    const filtered = this.allApplications().filter(
+      (application) =>
+        application.id.toLowerCase().includes(searchTerm) ||
+        application.contactPerson.toLowerCase().includes(searchTerm) ||
+        application.businessName.toLowerCase().includes(searchTerm) ||
+        application.businessEmail.toLowerCase().includes(searchTerm) ||
+        application.contactNumber.toLowerCase().includes(searchTerm) ||
+        application.industryOrBusinessStyle.toLowerCase().includes(searchTerm)
     );
 
     this.filteredApplications.set(filtered);
   }
 
-  private loadDashboardData(): void {
-    this.dashboardService.getMerchantApplications().subscribe(applications => {
-      this.merchantApplications.set(applications);
-      this.filteredApplications.set(applications);
-    });
-
-    this.dashboardService.getNotifications().subscribe(notifications => {
-      this.notifications.set(notifications);
-    });
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/admin/login']);
   }
 }
