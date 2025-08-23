@@ -34,7 +34,7 @@ export class AdminLoginComponent {
       password: ['', [Validators.required]]
     });
 
-    // Redirect if already authenticated
+    
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/admin/dashboard']);
     }
