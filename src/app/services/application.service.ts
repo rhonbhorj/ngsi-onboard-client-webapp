@@ -1,21 +1,20 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface MerchantApplication {
   id: string;
-  // Step 1: Basic Business Information
-  registeredByName: string;
-  registeredByContact: string;
+  reference?: string;
+  // Step 1: Business Information
+  contactPersonName: string;
+  contactNumber: string;
   businessName: string;
   businessEmail: string;
   businessAddress: string;
-  businessWebsite?: string;
   industryOrBusinessStyle: string;
   telephoneNo?: string;
-  typeOfBusiness: string;
-  contactPerson: string;
-  contactNumber: string;
-  sameAsRegisteredBy: boolean;
+  typeOfBusiness: 'Sole Proprietorship' | 'Partnership' | 'Corporation' | 'Others';
 
   // Step 2: Payment & Transaction Details
   hasExistingPaymentPortal: string;
@@ -43,23 +42,20 @@ export class ApplicationService {
   // Shared applications data
   private readonly applications = signal<MerchantApplication[]>([]);
 
-  constructor() {
+  constructor(private http: HttpClient) {
     // Initialize with some mock data
     this.applications.set([
       {
         id: 'app_001',
-        registeredByName: 'Ritchmond Tajarros',
-        registeredByContact: '09177589353',
+        reference: 'ngsi-25-00001',
+        contactPersonName: 'Ritchmond Tajarros',
+        contactNumber: '09177589353',
         businessName: 'NetGlobal Solutions Inc',
         businessEmail: 'tajarrosrj@gmail.com',
         businessAddress: '123 Business Street, Metro Manila, Philippines',
-        businessWebsite: 'https://netglobal.com',
         industryOrBusinessStyle: 'Technology Solutions',
         telephoneNo: '02-1234-5678',
         typeOfBusiness: 'Corporation',
-        contactPerson: 'Ritchmond Tajarros',
-        contactNumber: '09177589353',
-        sameAsRegisteredBy: true,
         hasExistingPaymentPortal: 'NO',
         currentModeOfPayment: {
           cash: false,
@@ -74,18 +70,15 @@ export class ApplicationService {
       },
       {
         id: 'app_002',
-        registeredByName: 'Raven David',
-        registeredByContact: '09123456789',
+        reference: 'ngsi-25-00002',
+        contactPersonName: 'Raven David',
+        contactNumber: '09123456789',
         businessName: 'NetGlobal Solutions Inc',
         businessEmail: 'ravendavid@gmail.com',
         businessAddress: '456 Tech Avenue, Cebu City, Philippines',
-        businessWebsite: 'https://netglobal.com',
         industryOrBusinessStyle: 'Software Development',
         telephoneNo: '032-9876-5432',
         typeOfBusiness: 'Corporation',
-        contactPerson: 'Raven David',
-        contactNumber: '09123456789',
-        sameAsRegisteredBy: true,
         hasExistingPaymentPortal: 'YES',
         currentModeOfPayment: {
           cash: true,
@@ -103,56 +96,42 @@ export class ApplicationService {
     ]);
   }
 
-  // Submit new application from form
+  // Submit new application from form TO BACKEND
   submitApplication(
     formData: Omit<MerchantApplication, 'id' | 'status' | 'submittedAt'>
   ): Observable<MerchantApplication> {
-    const newApplication: MerchantApplication = {
-      ...formData,
-      id: 'app_' + Date.now(),
-      status: 'pending',
-      submittedAt: new Date().toISOString(),
-    };
-
-    const currentApplications = this.applications();
-    this.applications.set([newApplication, ...currentApplications]);
-
-    return of(newApplication);
+    // Send to backend API
+    return this.http.post<MerchantApplication>(
+      `${environment.apiUrl}/api/merchant-applications`,
+      formData
+    );
   }
 
-  // Get all applications for admin dashboard
+  // Get all applications from backend
   getApplications(): Observable<MerchantApplication[]> {
-    return of(this.applications());
+    return this.http.get<MerchantApplication[]>(
+      `${environment.apiUrl}/api/merchant-applications`
+    );
   }
 
-  // Update application status (admin action)
+  // Update application status via backend
   updateApplicationStatus(
     applicationId: string,
     status: MerchantApplication['status'],
     notes?: string
-  ): void {
-    const currentApplications = this.applications();
-    const appIndex = currentApplications.findIndex((app) => app.id === applicationId);
-
-    if (appIndex !== -1) {
-      const updatedApp = {
-        ...currentApplications[appIndex],
-        status,
-        reviewedAt: new Date().toISOString(),
-        reviewedBy: 'admin_001',
-        notes,
-      };
-
-      currentApplications[appIndex] = updatedApp;
-      this.applications.set([...currentApplications]);
-    }
+  ): Observable<MerchantApplication> {
+    return this.http.patch<MerchantApplication>(
+      `${environment.apiUrl}/api/merchant-applications/${applicationId}`,
+      { status, notes }
+    );
   }
 
-  // Get applications by status
+  // Get applications by status from backend
   getApplicationsByStatus(
     status: MerchantApplication['status']
   ): Observable<MerchantApplication[]> {
-    const filtered = this.applications().filter((app) => app.status === status);
-    return of(filtered);
+    return this.http.get<MerchantApplication[]>(
+      `${environment.apiUrl}/api/merchant-applications?status=${status}`
+    );
   }
 }

@@ -76,8 +76,9 @@ export class AdminDashboardComponent implements OnInit {
 
     const filtered = this.allApplications().filter(
       (application) =>
+        (application.reference || '').toLowerCase().includes(searchTerm) ||
         application.id.toLowerCase().includes(searchTerm) ||
-        application.contactPerson.toLowerCase().includes(searchTerm) ||
+        application.contactPersonName.toLowerCase().includes(searchTerm) ||
         application.businessName.toLowerCase().includes(searchTerm) ||
         application.businessEmail.toLowerCase().includes(searchTerm) ||
         application.contactNumber.toLowerCase().includes(searchTerm) ||

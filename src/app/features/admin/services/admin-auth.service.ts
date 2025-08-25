@@ -15,8 +15,6 @@ export class AdminAuthService {
     {
       id: 'admin_001',
       username: 'admin',
-      email: 'admin@netpay.com',
-      role: 'super_admin',
     },
   ];
 

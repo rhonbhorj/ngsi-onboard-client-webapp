@@ -27,23 +27,23 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
       </h2>
 
       <form [formGroup]="form()" class="space-y-6">
-        <!-- Registered By Section -->
+        <!-- Contact Person Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <app-form-field
-            label="REGISTERED BY (NAME)"
-            fieldId="registeredByName"
-            [control]="getControl('registeredByName')"
+            label="CONTACT PERSON NAME*"
+            fieldId="contactPersonName"
+            [control]="getControl('contactPersonName')"
             type="text"
-            placeholder="Enter registered by name"
+            placeholder="Enter full name of business owner / authorized representative"
             [required]="true"
           />
 
           <app-form-field
-            label="CONTACT NUMBER"
-            fieldId="registeredByContact"
-            [control]="getControl('registeredByContact')"
+            label="CONTACT NUMBER*"
+            [control]="getControl('contactNumber')"
+            fieldId="contactNumber"
             type="text"
-            placeholder="Enter contact number"
+            placeholder="Enter mobile number"
             [required]="true"
           />
         </div>
@@ -51,62 +51,53 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Business Details Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <app-form-field
-            label="BUSINESS NAME (REQUIRED)"
+            label="BUSINESS / COMPANY NAME*"
             fieldId="businessName"
             [control]="getControl('businessName')"
             type="text"
-            placeholder="Enter business name"
+            placeholder="Enter registered business name"
             [required]="true"
           />
 
           <app-form-field
-            label="BUSINESS EMAIL (REQUIRED)"
+            label="BUSINESS EMAIL*"
             fieldId="businessEmail"
             [control]="getControl('businessEmail')"
             type="email"
-            placeholder="Enter business email"
+            placeholder="Enter official business email address"
             [required]="true"
           />
         </div>
 
-        <!-- Address and Website Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Address Section -->
+        <div class="grid grid-cols-1 gap-6">
           <app-form-field
-            label="BUSINESS ADDRESS (REQUIRED)"
+            label="BUSINESS ADDRESS*"
             fieldId="businessAddress"
             [control]="getControl('businessAddress')"
             type="text"
-            placeholder="Enter complete business address"
+            placeholder="Enter complete business address (street, city, country)"
             [required]="true"
-          />
-
-          <app-form-field
-            label="BUSINESS WEBSITE (OPTIONAL)"
-            fieldId="businessWebsite"
-            [control]="getControl('businessWebsite')"
-            type="text"
-            placeholder="Enter business website"
-            [required]="false"
           />
         </div>
 
         <!-- Industry and Telephone Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <app-form-field
-            label="INDUSTRY OR BUSINESS STYLE (REQUIRED)"
+            label="INDUSTRY / BUSINESS CATEGORY*"
             fieldId="industryOrBusinessStyle"
             [control]="getControl('industryOrBusinessStyle')"
             type="text"
-            placeholder="Enter industry or business style"
+            placeholder="Enter industry type (e.g., Retail, Food & Beverage, Tech, etc.)"
             [required]="true"
           />
 
           <app-form-field
-            label="TELEPHONE NO (OPTIONAL)"
+            label="TELEPHONE NUMBER (OPTIONAL)"
             fieldId="telephoneNo"
             [control]="getControl('telephoneNo')"
             type="text"
-            placeholder="Enter telephone number"
+            placeholder="Enter landline number if available"
             [required]="false"
           />
         </div>
@@ -114,7 +105,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Type of Business Section -->
         <div class="space-y-4">
           <label class="block text-sm font-medium text-netpay-dark-blue">
-            TYPE OF BUSINESS (REQUIRED)
+            TYPE OF BUSINESS*
           </label>
           <div class="space-y-2">
             <label class="flex items-center">
@@ -155,41 +146,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
             </label>
           </div>
         </div>
-
-        <!-- Contact Person Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <app-form-field
-            label="CONTACT PERSON (REQUIRED)"
-            fieldId="contactPerson"
-            [control]="getControl('contactPerson')"
-            type="text"
-            placeholder="Enter contact person name"
-            [required]="true"
-          />
-
-          <app-form-field
-            label="CONTACT NUMBER (REQUIRED)"
-            fieldId="contactNumber"
-            [control]="getControl('contactNumber')"
-            type="text"
-            placeholder="Enter contact number"
-            [required]="true"
-          />
-        </div>
-
-        <!-- Same as Registered By Checkbox -->
-        <div class="space-y-2">
-          <label class="flex items-center">
-            <input
-              type="checkbox"
-              formControlName="sameAsRegisteredBy"
-              (change)="onSameAsRegisteredByChange($event)"
-              class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
-            />
-            (SAME WITH REGISTERED BY - check if the contact person and contact number is same on
-            registered by above)
-          </label>
-        </div>
       </form>
     </div>
   `,
@@ -199,17 +155,5 @@ export class BusinessInfoStepComponent {
 
   getControl(fieldName: string): FormControl {
     return this.form().get(fieldName) as FormControl;
-  }
-
-  onSameAsRegisteredByChange(event: any): void {
-    if (event.target.checked) {
-      const registeredByName = this.form().get('registeredByName')?.value;
-      const registeredByContact = this.form().get('registeredByContact')?.value;
-
-      this.form().patchValue({
-        contactPerson: registeredByName,
-        contactNumber: registeredByContact,
-      });
-    }
   }
 }

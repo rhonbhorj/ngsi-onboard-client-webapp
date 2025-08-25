@@ -9,19 +9,15 @@ export class FormService {
 
   createBusinessInfoForm(): FormGroup {
     return this.fb.group({
-      // Step 1: Basic Business Information
-      registeredByName: ['', [Validators.required, Validators.minLength(2)]],
-      registeredByContact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
+      // Step 1: Business Information
+      contactPersonName: ['', [Validators.required, Validators.minLength(2)]],
+      contactNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]], // Philippine mobile format
       businessName: ['', [Validators.required, Validators.minLength(2)]],
       businessEmail: ['', [Validators.required, Validators.email]],
       businessAddress: ['', [Validators.required, Validators.minLength(10)]],
-      businessWebsite: [''],
       industryOrBusinessStyle: ['', [Validators.required, Validators.minLength(2)]],
-      telephoneNo: [''],
+      telephoneNo: [''], // Optional
       typeOfBusiness: ['', [Validators.required]],
-      contactPerson: ['', [Validators.required, Validators.minLength(2)]],
-      contactNumber: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)]+$/)]],
-      sameAsRegisteredBy: [false],
 
       // Step 2: Payment & Transaction Details
       hasExistingPaymentPortal: ['', [Validators.required]],

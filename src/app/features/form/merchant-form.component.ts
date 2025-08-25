@@ -176,15 +176,13 @@ export class MerchantOnboardingComponent implements OnInit {
     if (this.currentStep() === 1) {
       // Check if required fields in step 1 are valid
       const step1Fields = [
-        'registeredByName',
-        'registeredByContact',
+        'contactPersonName',
+        'contactNumber',
         'businessName',
         'businessEmail',
         'businessAddress',
         'industryOrBusinessStyle',
         'typeOfBusiness',
-        'contactPerson',
-        'contactNumber',
       ];
       return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid);
     }
@@ -215,18 +213,14 @@ export class MerchantOnboardingComponent implements OnInit {
   private buildFormData(): any {
     const formValue = this.businessInfoForm.value;
     return {
-      registeredByName: formValue.registeredByName,
-      registeredByContact: formValue.registeredByContact,
+      contactPersonName: formValue.contactPersonName,
+      contactNumber: formValue.contactNumber,
       businessName: formValue.businessName,
       businessEmail: formValue.businessEmail,
       businessAddress: formValue.businessAddress,
-      businessWebsite: formValue.businessWebsite,
       industryOrBusinessStyle: formValue.industryOrBusinessStyle,
       telephoneNo: formValue.telephoneNo,
       typeOfBusiness: formValue.typeOfBusiness,
-      contactPerson: formValue.contactPerson,
-      contactNumber: formValue.contactNumber,
-      sameAsRegisteredBy: formValue.sameAsRegisteredBy,
       hasExistingPaymentPortal: formValue.hasExistingPaymentPortal,
       currentModeOfPayment: formValue.currentModeOfPayment,
       estimatedTransactionNumbers: formValue.estimatedTransactionNumbers,

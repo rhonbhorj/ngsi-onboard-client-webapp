@@ -62,7 +62,7 @@
             (ngModelChange)="onSearchChange($event)"
             class="block w-full pl-10 pr-3 py-2 border rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-offset-2 transition-all duration-200 sm:text-sm"
             style="border-color: var(--netpay-blue-gray)"
-            placeholder="Search by reference number, name, company, email..."
+            placeholder="Search by reference number, name, company..."
           />
         </div>
       </div>
@@ -154,7 +154,7 @@
             <tr class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
-                  {{ application.id }}
+                  {{ application.reference || application.id }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -170,7 +170,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ application.contactPerson }}
+                  {{ application.contactPersonName }}
                 </div>
                 <div class="text-sm" style="color: var(--netpay-medium-blue)">
                   {{ application.contactNumber }}
