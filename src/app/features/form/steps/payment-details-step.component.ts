@@ -26,36 +26,38 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         Payment & Transaction Details
       </h2>
 
-      <form [formGroup]="form()" class="space-y-6">
+      <form [formGroup]="form()" class="space-y-8">
         <!-- Existing Payment Portal Section -->
-        <div class="space-y-4">
+        <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
-            DO YOU HAVE EXISTING PAYMENT PORTAL?
+            DO YOU HAVE EXISTING PAYMENT PORTAL?*
           </label>
-          <div class="space-y-2">
+          <div class="space-y-3">
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="hasExistingPaymentPortal"
                 value="YES"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="paymentPortal"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              YES
+              <span class="text-sm">YES</span>
             </label>
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="hasExistingPaymentPortal"
                 value="NO"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="paymentPortal"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              NO
+              <span class="text-sm">NO</span>
             </label>
           </div>
         </div>
 
         <!-- Current Mode of Payment Section -->
-        <div class="space-y-4">
+        <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
             CURRENT MODE OF PAYMENT (OPTIONAL)
           </label>
@@ -64,108 +66,127 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
               <input
                 type="checkbox"
                 formControlName="currentModeOfPayment.cash"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              CASH
+              <span class="text-sm">CASH</span>
             </label>
             <label class="flex items-center">
               <input
                 type="checkbox"
                 formControlName="currentModeOfPayment.eWallets"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              E-WALLETS (GCASH, PAYMAYA, SEABANK, & ETC.)
+              <span class="text-sm">E-WALLETS (GCASH, PAYMAYA, SEABANK, & ETC.)</span>
             </label>
             <label class="flex items-center">
               <input
                 type="checkbox"
                 formControlName="currentModeOfPayment.qrph"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              QRPH
+              <span class="text-sm">QRPH</span>
             </label>
             <label class="flex items-center">
               <input
                 type="checkbox"
                 formControlName="currentModeOfPayment.cardPayment"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              CARD PAYMENT
+              <span class="text-sm">CARD PAYMENT</span>
             </label>
           </div>
         </div>
 
         <!-- Estimated Transaction Numbers Section -->
-        <div class="space-y-4">
+        <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
             ESTIMATED TRANSACTION NUMBERS (PER MONTH) (OPTIONAL)
           </label>
-          <div class="space-y-2">
+          <div class="space-y-3">
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="estimatedTransactionNumbers"
                 value="1 – 50"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="transactionNumbers"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              1 – 50
+              <span class="text-sm">1 – 50</span>
             </label>
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="estimatedTransactionNumbers"
                 value="51 – 100"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="transactionNumbers"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              51 – 100
+              <span class="text-sm">51 – 100</span>
             </label>
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="estimatedTransactionNumbers"
                 value="ABOVE 100"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="transactionNumbers"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              ABOVE 100
+              <span class="text-sm">ABOVE 100</span>
             </label>
           </div>
         </div>
 
         <!-- Estimated Average Amount Section -->
-        <div class="space-y-4">
+        <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
             ESTIMATED AVERAGE AMOUNT (PER TRANSACTION) (OPTIONAL)
           </label>
-          <div class="space-y-2">
+          <div class="space-y-3">
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="estimatedAverageAmount"
                 value="1 – 10,000"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="averageAmount"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              1 – 10,000
+              <span class="text-sm">1 – 10,000</span>
             </label>
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="estimatedAverageAmount"
                 value="10,001 – 50,000"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="averageAmount"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              10,001 – 50,000
+              <span class="text-sm">10,001 – 50,000</span>
             </label>
             <label class="flex items-center">
               <input
                 type="radio"
                 formControlName="estimatedAverageAmount"
                 value="ABOVE 50,000"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                name="averageAmount"
+                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              ABOVE 50,000
+              <span class="text-sm">ABOVE 50,000</span>
             </label>
           </div>
         </div>
+
+        <!-- Reset Button -->
+        @if (hasSelections()) {
+        <div class="flex justify-center pt-4">
+          <button
+            type="button"
+            (click)="resetStep()"
+            class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors text-sm"
+          >
+            Reset All Selections
+          </button>
+        </div>
+        }
       </form>
     </div>
   `,
@@ -175,5 +196,37 @@ export class PaymentDetailsStepComponent {
 
   getControl(fieldName: string): FormControl {
     return this.form().get(fieldName) as FormControl;
+  }
+
+  // Reset all selections in this step
+  resetStep(): void {
+    const form = this.form();
+    
+    // Reset payment portal selection
+    form.patchValue({
+      hasExistingPaymentPortal: '',
+      currentModeOfPayment: {
+        cash: false,
+        eWallets: false,
+        qrph: false,
+        cardPayment: false
+      },
+      estimatedTransactionNumbers: '',
+      estimatedAverageAmount: ''
+    });
+  }
+
+  // Check if step has any selections
+  hasSelections(): boolean {
+    const form = this.form();
+    const hasPaymentPortal = form.get('hasExistingPaymentPortal')?.value;
+    const paymentModes = form.get('currentModeOfPayment')?.value;
+    const hasTransactionNumbers = form.get('estimatedTransactionNumbers')?.value;
+    const hasAverageAmount = form.get('estimatedAverageAmount')?.value;
+
+    return !!(hasPaymentPortal || 
+              (paymentModes && Object.values(paymentModes).some(mode => mode === true)) ||
+              hasTransactionNumbers || 
+              hasAverageAmount);
   }
 }

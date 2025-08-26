@@ -119,10 +119,11 @@ import { ApplicationService } from '../../services/application.service';
             } @else {
             <button
               (click)="submitForm()"
-              [disabled]="isSubmitting() || !businessInfoForm.valid"
+              [disabled]="isSubmitting() || !businessInfoForm.valid || !isStep2Complete()"
               class="px-8 py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium transition-colors"
+              style="color: white;"
             >
-              {{ isSubmitting() ? 'Submitting...' : 'Submit Application' }}
+              Submit Application
             </button>
             }
           </div>
@@ -152,23 +153,90 @@ export class MerchantOnboardingComponent implements OnInit {
   // Form group
   businessInfoForm!: FormGroup;
 
+  // Method to get submit button text
+  getSubmitButtonText(): string {
+    return this.isSubmitting() ? 'Submitting...' : 'Submit Application';
+  }
+
   ngOnInit() {
     this.initializeForm();
+    this.loadSavedData();
   }
 
   private initializeForm(): void {
     this.businessInfoForm = this.formService.createBusinessInfoForm();
+    
+    // Auto-save form changes
+    this.businessInfoForm.valueChanges.subscribe(() => {
+      this.saveFormData();
+    });
+  }
+
+  // Auto-save form data to localStorage
+  private saveFormData(): void {
+    const formData = {
+      step: this.currentStep(),
+      formValues: this.businessInfoForm.value
+    };
+    localStorage.setItem('merchant_form_data', JSON.stringify(formData));
+  }
+
+  // Load saved form data from localStorage
+  private loadSavedData(): void {
+    const savedData = localStorage.getItem('merchant_form_data');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        if (data.step) {
+          this.currentStep.set(data.step);
+        }
+        if (data.formValues) {
+          this.businessInfoForm.patchValue(data.formValues);
+        }
+      } catch (error) {
+        console.error('Error loading saved form data:', error);
+      }
+    }
+  }
+
+  // Clear saved form data
+  private clearSavedData(): void {
+    localStorage.removeItem('merchant_form_data');
+  }
+
+  // Check if step 2 is complete
+  isStep2Complete(): boolean {
+    // Check if hasExistingPaymentPortal is selected
+    const hasPaymentPortal = this.businessInfoForm.get('hasExistingPaymentPortal')?.value;
+    if (!hasPaymentPortal || hasPaymentPortal === '') {
+      return false;
+    }
+
+    // Check if at least one payment mode is selected
+    const paymentModes = this.businessInfoForm.get('currentModeOfPayment')?.value;
+    if (!paymentModes) {
+      return false;
+    }
+
+    const hasPaymentMode = Object.values(paymentModes).some(mode => mode === true);
+    if (!hasPaymentMode) {
+      return false;
+    }
+
+    return true;
   }
 
   nextStep(): void {
     if (this.isStepValid() && this.currentStep() < 2) {
       this.currentStep.set(this.currentStep() + 1);
+      this.saveFormData(); // Save current step
     }
   }
 
   previousStep(): void {
     if (this.currentStep() > 1) {
       this.currentStep.set(this.currentStep() - 1);
+      this.saveFormData(); // Save current step
     }
   }
 
@@ -201,6 +269,7 @@ export class MerchantOnboardingComponent implements OnInit {
         this.isSubmitting.set(false);
         this.merchantId.set(application.id);
         this.showSuccessDialog.set(true);
+        this.clearSavedData(); // Clear saved data after successful submission
       },
       error: (error) => {
         console.error('Error submitting application:', error);

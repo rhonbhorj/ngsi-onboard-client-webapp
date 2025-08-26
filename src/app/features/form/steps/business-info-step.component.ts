@@ -28,7 +28,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
 
       <form [formGroup]="form()" class="space-y-6">
         <!-- Contact Person Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
             label="CONTACT PERSON NAME*"
             fieldId="contactPersonName"
@@ -49,7 +49,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         </div>
 
         <!-- Business Details Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
             label="BUSINESS / COMPANY NAME*"
             fieldId="businessName"
@@ -70,7 +70,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         </div>
 
         <!-- Address Section -->
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 gap-4 md:gap-6">
           <app-form-field
             label="BUSINESS ADDRESS*"
             fieldId="businessAddress"
@@ -82,7 +82,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         </div>
 
         <!-- Industry and Telephone Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
             label="INDUSTRY / BUSINESS CATEGORY*"
             fieldId="industryOrBusinessStyle"
@@ -107,7 +107,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
           <label class="block text-sm font-medium text-netpay-dark-blue">
             TYPE OF BUSINESS*
           </label>
-          <div class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <label class="flex items-center">
               <input
                 type="radio"
@@ -115,7 +115,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
                 value="Sole Proprietorship"
                 class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              Sole Proprietorship
+              <span class="text-sm">Sole Proprietorship</span>
             </label>
             <label class="flex items-center">
               <input
@@ -124,7 +124,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
                 value="Partnership"
                 class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              Partnership
+              <span class="text-sm">Partnership</span>
             </label>
             <label class="flex items-center">
               <input
@@ -133,7 +133,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
                 value="Corporation"
                 class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              Corporation
+              <span class="text-sm">Corporation</span>
             </label>
             <label class="flex items-center">
               <input
@@ -142,7 +142,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
                 value="Others"
                 class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
-              Others
+              <span class="text-sm">Others</span>
             </label>
           </div>
         </div>
