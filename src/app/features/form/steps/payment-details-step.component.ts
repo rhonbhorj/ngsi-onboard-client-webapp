@@ -1,7 +1,6 @@
-import { Component, input, signal, computed, inject } from '@angular/core';
-import { FormGroup, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { Component, input } from '@angular/core';
+import { type FormGroup, ReactiveFormsModule, type FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormFieldComponent } from '../../../shared/components/form-field.component';
 
 @Component({
   selector: 'app-payment-details-step',
@@ -20,7 +19,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M3 10h18M7 15h1m2 0h5m-9 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+            d="M3 10h18M7 15h1m2 0h5m-9 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3v8a3 3 0 003 3z"
           ></path>
         </svg>
         Payment & Transaction Details
@@ -30,7 +29,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Existing Payment Portal Section -->
         <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
-            DO YOU HAVE EXISTING PAYMENT PORTAL?*
+            DO YOU HAVE EXISTING PAYMENT PORTAL?
           </label>
           <div class="space-y-3">
             <label class="flex items-center">
@@ -57,15 +56,18 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         </div>
 
         <!-- Current Mode of Payment Section -->
-        <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <div
+          class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50"
+          formGroupName="currentModeOfPayment"
+        >
           <label class="block text-sm font-medium text-netpay-dark-blue">
-            CURRENT MODE OF PAYMENT (OPTIONAL)
+            CURRENT MODE OF PAYMENT
           </label>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label class="flex items-center">
               <input
                 type="checkbox"
-                formControlName="currentModeOfPayment.cash"
+                formControlName="cash"
                 class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
               <span class="text-sm">CASH</span>
@@ -73,7 +75,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
             <label class="flex items-center">
               <input
                 type="checkbox"
-                formControlName="currentModeOfPayment.eWallets"
+                formControlName="eWallets"
                 class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
               <span class="text-sm">E-WALLETS (GCASH, PAYMAYA, SEABANK, & ETC.)</span>
@@ -81,7 +83,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
             <label class="flex items-center">
               <input
                 type="checkbox"
-                formControlName="currentModeOfPayment.qrph"
+                formControlName="qrph"
                 class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
               <span class="text-sm">QRPH</span>
@@ -89,7 +91,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
             <label class="flex items-center">
               <input
                 type="checkbox"
-                formControlName="currentModeOfPayment.cardPayment"
+                formControlName="cardPayment"
                 class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
               />
               <span class="text-sm">CARD PAYMENT</span>
@@ -100,7 +102,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Estimated Transaction Numbers Section -->
         <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
-            ESTIMATED TRANSACTION NUMBERS (PER MONTH) (OPTIONAL)
+            ESTIMATED TRANSACTION NUMBERS (PER MONTH)
           </label>
           <div class="space-y-3">
             <label class="flex items-center">
@@ -139,7 +141,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Estimated Average Amount Section -->
         <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <label class="block text-sm font-medium text-netpay-dark-blue">
-            ESTIMATED AVERAGE AMOUNT (PER TRANSACTION) (OPTIONAL)
+            ESTIMATED AVERAGE AMOUNT (PER TRANSACTION)
           </label>
           <div class="space-y-3">
             <label class="flex items-center">
@@ -174,19 +176,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
             </label>
           </div>
         </div>
-
-        <!-- Reset Button -->
-        @if (hasSelections()) {
-        <div class="flex justify-center pt-4">
-          <button
-            type="button"
-            (click)="resetStep()"
-            class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors text-sm"
-          >
-            Reset All Selections
-          </button>
-        </div>
-        }
       </form>
     </div>
   `,
@@ -201,7 +190,7 @@ export class PaymentDetailsStepComponent {
   // Reset all selections in this step
   resetStep(): void {
     const form = this.form();
-    
+
     // Reset payment portal selection
     form.patchValue({
       hasExistingPaymentPortal: '',
@@ -209,10 +198,10 @@ export class PaymentDetailsStepComponent {
         cash: false,
         eWallets: false,
         qrph: false,
-        cardPayment: false
+        cardPayment: false,
       },
       estimatedTransactionNumbers: '',
-      estimatedAverageAmount: ''
+      estimatedAverageAmount: '',
     });
   }
 
@@ -224,9 +213,11 @@ export class PaymentDetailsStepComponent {
     const hasTransactionNumbers = form.get('estimatedTransactionNumbers')?.value;
     const hasAverageAmount = form.get('estimatedAverageAmount')?.value;
 
-    return !!(hasPaymentPortal || 
-              (paymentModes && Object.values(paymentModes).some(mode => mode === true)) ||
-              hasTransactionNumbers || 
-              hasAverageAmount);
+    return !!(
+      hasPaymentPortal ||
+      (paymentModes && Object.values(paymentModes).some((mode) => mode === true)) ||
+      hasTransactionNumbers ||
+      hasAverageAmount
+    );
   }
 }

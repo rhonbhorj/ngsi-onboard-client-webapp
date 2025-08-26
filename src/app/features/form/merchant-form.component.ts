@@ -1,8 +1,9 @@
-import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, type OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BusinessInfoStepComponent } from './steps/business-info-step.component';
 import { PaymentDetailsStepComponent } from './steps/payment-details-step.component';
+import { ReviewInformationStepComponent } from './steps/review-information-step.component';
 import { SuccessDialogComponent } from '../../shared/components/success-dialog.component';
 import { FormService } from './services/form.service';
 import { ApplicationService } from '../../services/application.service';
@@ -15,22 +16,26 @@ import { ApplicationService } from '../../services/application.service';
     ReactiveFormsModule,
     BusinessInfoStepComponent,
     PaymentDetailsStepComponent,
+    ReviewInformationStepComponent,
     SuccessDialogComponent,
   ],
   template: `
-    <div class="min-h-screen bg-netpay-light-gray py-4 px-4 sm:px-6 lg:px-8">
+    <!-- Enhanced responsive layout with better mobile spacing and typography -->
+    <div class="min-h-screen bg-netpay-light-gray py-2 sm:py-4 px-2 sm:px-4 md:px-6 lg:px-8">
       <!-- Header -->
-      <div class="max-w-4xl mx-auto mb-8">
-        <div class="text-center bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <div class="flex items-center justify-center mb-4">
-            <div class="w-12 h-12 rounded-lg flex items-center justify-center mr-4">
-              <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-12 h-12" />
+      <div class="max-w-4xl mx-auto mb-4 sm:mb-8">
+        <div class="text-center bg-white rounded-lg shadow-sm p-3 sm:p-6 border border-gray-200">
+          <div class="flex flex-col sm:flex-row items-center justify-center mb-2 sm:mb-4">
+            <div
+              class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center mb-2 sm:mb-0 sm:mr-4"
+            >
+              <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-10 h-10 sm:w-12 sm:h-12" />
             </div>
-            <div>
-              <h1 class="text-2xl sm:text-3xl font-bold text-netpay-dark-blue">
+            <div class="text-center sm:text-left">
+              <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-netpay-dark-blue">
                 NetPay Merchant Onboarding
               </h1>
-              <p class="text-gray-600 mt-1">
+              <p class="text-sm sm:text-base text-gray-600 mt-1">
                 Complete your registration to start accepting payments
               </p>
             </div>
@@ -39,10 +44,13 @@ import { ApplicationService } from '../../services/application.service';
       </div>
 
       <!-- Step Indicator -->
-      <div class="max-w-4xl mx-auto mb-6">
-        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-          <div class="flex items-center justify-center space-x-8">
-            <div class="flex items-center">
+      <div class="max-w-4xl mx-auto mb-4 sm:mb-6">
+        <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
+          <!-- Mobile-first step indicator with responsive layout -->
+          <div
+            class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8"
+          >
+            <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
@@ -54,14 +62,14 @@ import { ApplicationService } from '../../services/application.service';
                 1
               </div>
               <span
-                class="ml-2 text-sm font-medium"
+                class="ml-2 text-xs sm:text-sm font-medium"
                 [class]="currentStep() >= 1 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Business Information
               </span>
             </div>
-            <div class="w-16 h-0.5 bg-gray-300"></div>
-            <div class="flex items-center">
+            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
+            <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
@@ -73,10 +81,29 @@ import { ApplicationService } from '../../services/application.service';
                 2
               </div>
               <span
-                class="ml-2 text-sm font-medium"
+                class="ml-2 text-xs sm:text-sm font-medium"
                 [class]="currentStep() >= 2 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Payment Details
+              </span>
+            </div>
+            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
+            <div class="flex items-center w-full sm:w-auto justify-center">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                [class]="
+                  currentStep() >= 3
+                    ? 'bg-netpay-primary-blue text-white'
+                    : 'bg-gray-200 text-gray-500'
+                "
+              >
+                3
+              </div>
+              <span
+                class="ml-2 text-xs sm:text-sm font-medium"
+                [class]="currentStep() >= 3 ? 'text-netpay-dark-blue' : 'text-gray-500'"
+              >
+                Review Information
               </span>
             </div>
           </div>
@@ -85,7 +112,7 @@ import { ApplicationService } from '../../services/application.service';
 
       <!-- Main Form Container -->
       <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border-0 p-6">
+        <div class="bg-white rounded-lg shadow-lg border-0 p-3 sm:p-6">
           @if (!isLoading()) {
           <!-- Step 1: Business Information -->
           @if (currentStep() === 1) {
@@ -97,22 +124,30 @@ import { ApplicationService } from '../../services/application.service';
           <app-payment-details-step [form]="businessInfoForm" />
           }
 
+          <!-- Step 3: Review Information -->
+          @if (currentStep() === 3) {
+          <app-review-information-step [form]="businessInfoForm" />
+          }
+
           <!-- Navigation Buttons -->
-          <div class="flex justify-between mt-8 pt-6 border-t">
+          <!-- Responsive button layout with better mobile spacing -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t space-y-3 sm:space-y-0"
+          >
             @if (currentStep() > 1) {
             <button
               (click)="previousStep()"
-              class="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors text-sm sm:text-base"
             >
               Previous
             </button>
             } @else {
-            <div></div>
-            } @if (currentStep() < 2) {
+            <div class="hidden sm:block"></div>
+            } @if (currentStep() < 3) {
             <button
               (click)="nextStep()"
               [disabled]="!isStepValid()"
-              class="px-6 py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
             >
               Next
             </button>
@@ -120,7 +155,7 @@ import { ApplicationService } from '../../services/application.service';
             <button
               (click)="submitForm()"
               [disabled]="isSubmitting() || !businessInfoForm.valid || !isStep2Complete()"
-              class="px-8 py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium transition-colors"
+              class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               style="color: white;"
             >
               Submit Application
@@ -165,7 +200,7 @@ export class MerchantOnboardingComponent implements OnInit {
 
   private initializeForm(): void {
     this.businessInfoForm = this.formService.createBusinessInfoForm();
-    
+
     // Auto-save form changes
     this.businessInfoForm.valueChanges.subscribe(() => {
       this.saveFormData();
@@ -176,7 +211,7 @@ export class MerchantOnboardingComponent implements OnInit {
   private saveFormData(): void {
     const formData = {
       step: this.currentStep(),
-      formValues: this.businessInfoForm.value
+      formValues: this.businessInfoForm.value,
     };
     localStorage.setItem('merchant_form_data', JSON.stringify(formData));
   }
@@ -218,8 +253,20 @@ export class MerchantOnboardingComponent implements OnInit {
       return false;
     }
 
-    const hasPaymentMode = Object.values(paymentModes).some(mode => mode === true);
+    const hasPaymentMode = Object.values(paymentModes).some((mode) => mode === true);
     if (!hasPaymentMode) {
+      return false;
+    }
+
+    // Check if estimatedTransactionNumbers is selected
+    const transactionNumbers = this.businessInfoForm.get('estimatedTransactionNumbers')?.value;
+    if (!transactionNumbers || transactionNumbers === '') {
+      return false;
+    }
+
+    // Check if estimatedAverageAmount is selected
+    const averageAmount = this.businessInfoForm.get('estimatedAverageAmount')?.value;
+    if (!averageAmount || averageAmount === '') {
       return false;
     }
 
@@ -227,22 +274,21 @@ export class MerchantOnboardingComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.isStepValid() && this.currentStep() < 2) {
+    if (this.isStepValid() && this.currentStep() < 3) {
       this.currentStep.set(this.currentStep() + 1);
-      this.saveFormData(); // Save current step
+      this.saveFormData();
     }
   }
 
   previousStep(): void {
     if (this.currentStep() > 1) {
       this.currentStep.set(this.currentStep() - 1);
-      this.saveFormData(); // Save current step
+      this.saveFormData();
     }
   }
 
   isStepValid(): boolean {
     if (this.currentStep() === 1) {
-      // Check if required fields in step 1 are valid
       const step1Fields = [
         'contactPersonName',
         'contactNumber',
@@ -253,6 +299,9 @@ export class MerchantOnboardingComponent implements OnInit {
         'typeOfBusiness',
       ];
       return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid);
+    }
+    if (this.currentStep() === 2) {
+      return this.isStep2Complete();
     }
     return true;
   }

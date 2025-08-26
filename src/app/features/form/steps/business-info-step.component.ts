@@ -30,7 +30,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Contact Person Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
-            label="CONTACT PERSON NAME*"
+            label="CONTACT PERSON NAME"
             fieldId="contactPersonName"
             [control]="getControl('contactPersonName')"
             type="text"
@@ -39,7 +39,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
           />
 
           <app-form-field
-            label="CONTACT NUMBER*"
+            label="CONTACT NUMBER"
             [control]="getControl('contactNumber')"
             fieldId="contactNumber"
             type="text"
@@ -51,7 +51,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Business Details Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
-            label="BUSINESS / COMPANY NAME*"
+            label="BUSINESS / COMPANY NAME"
             fieldId="businessName"
             [control]="getControl('businessName')"
             type="text"
@@ -60,7 +60,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
           />
 
           <app-form-field
-            label="BUSINESS EMAIL*"
+            label="BUSINESS EMAIL"
             fieldId="businessEmail"
             [control]="getControl('businessEmail')"
             type="email"
@@ -72,7 +72,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Address Section -->
         <div class="grid grid-cols-1 gap-4 md:gap-6">
           <app-form-field
-            label="BUSINESS ADDRESS*"
+            label="BUSINESS ADDRESS"
             fieldId="businessAddress"
             [control]="getControl('businessAddress')"
             type="text"
@@ -84,7 +84,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
         <!-- Industry and Telephone Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
-            label="INDUSTRY / BUSINESS CATEGORY*"
+            label="INDUSTRY / BUSINESS CATEGORY"
             fieldId="industryOrBusinessStyle"
             [control]="getControl('industryOrBusinessStyle')"
             type="text"
@@ -104,9 +104,7 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
 
         <!-- Type of Business Section -->
         <div class="space-y-4">
-          <label class="block text-sm font-medium text-netpay-dark-blue">
-            TYPE OF BUSINESS*
-          </label>
+          <label class="block text-sm font-medium text-netpay-dark-blue"> TYPE OF BUSINESS </label>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <label class="flex items-center">
               <input

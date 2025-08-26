@@ -27,8 +27,8 @@ export class FormService {
         qrph: [false],
         cardPayment: [false],
       }),
-      estimatedTransactionNumbers: [''],
-      estimatedAverageAmount: [''],
+      estimatedTransactionNumbers: ['', [Validators.required]],
+      estimatedAverageAmount: ['', [Validators.required]],
     });
   }
 
