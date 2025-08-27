@@ -1,15 +1,15 @@
-import { Component, type OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
-import { type FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { BusinessInfoStepComponent } from './steps/business-info-step.component';
-import { PaymentDetailsStepComponent } from './steps/payment-details-step.component';
-import { ReviewInformationStepComponent } from './steps/review-information-step.component';
-import { SuccessDialogComponent } from '../../shared/components/success-dialog.component';
-import { FormService } from './services/form.service';
-import { ApplicationService } from '../../services/application.service';
+import { Component, type OnInit, signal, inject, ChangeDetectionStrategy } from "@angular/core"
+import { type FormGroup, ReactiveFormsModule } from "@angular/forms"
+import { CommonModule } from "@angular/common"
+import { BusinessInfoStepComponent } from "./steps/business-info-step.component"
+import { PaymentDetailsStepComponent } from "./steps/payment-details-step.component"
+import { ReviewInformationStepComponent } from "./steps/review-information-step.component"
+import { SuccessDialogComponent } from "../../shared/components/success-dialog.component"
+import { FormService } from "./services/form.service"
+import { ApplicationService } from "../../services/application.service"
 
 @Component({
-  selector: 'app-merchant-onboarding',
+  selector: "app-merchant-onboarding",
   standalone: true,
   imports: [
     CommonModule,
@@ -26,10 +26,8 @@ import { ApplicationService } from '../../services/application.service';
       <div class="max-w-4xl mx-auto mb-4 sm:mb-8">
         <div class="text-center bg-white rounded-lg shadow-sm p-3 sm:p-6 border border-gray-200">
           <div class="flex flex-col sm:flex-row items-center justify-center mb-2 sm:mb-4">
-            <div
-              class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center mb-2 sm:mb-0 sm:mr-4"
-            >
-              <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-10 h-10 sm:w-12 sm:h-12" />
+            <div class="w-16 h-16 sm:w-30 sm:h-30 rounded-lg flex items-center justify-center mb-2 sm:mb-0 sm:mr-4">
+              <img src="images/ngsi-name-logo.png" alt="Netpay Logo" class="w-16 h-16 sm:w-30 sm:h-30" />
             </div>
             <div class="text-center sm:text-left">
               <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-netpay-dark-blue">
@@ -47,9 +45,7 @@ import { ApplicationService } from '../../services/application.service';
       <div class="max-w-4xl mx-auto mb-4 sm:mb-6">
         <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <!-- Mobile-first step indicator with responsive layout -->
-          <div
-            class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8"
-          >
+          <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8">
             <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -131,9 +127,7 @@ import { ApplicationService } from '../../services/application.service';
 
           <!-- Navigation Buttons -->
           <!-- Responsive button layout with better mobile spacing -->
-          <div
-            class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t space-y-3 sm:space-y-0"
-          >
+          <div class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t space-y-3 sm:space-y-0">
             @if (currentStep() > 1) {
             <button
               (click)="previousStep()"
@@ -143,7 +137,8 @@ import { ApplicationService } from '../../services/application.service';
             </button>
             } @else {
             <div class="hidden sm:block"></div>
-            } @if (currentStep() < 3) {
+            } 
+            @if (currentStep() < 3) {
             <button
               (click)="nextStep()"
               [disabled]="!isStepValid()"
@@ -175,36 +170,36 @@ import { ApplicationService } from '../../services/application.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MerchantOnboardingComponent implements OnInit {
-  private formService = inject(FormService);
-  private applicationService = inject(ApplicationService);
+  private formService = inject(FormService)
+  private applicationService = inject(ApplicationService)
 
   // State signals
-  readonly isLoading = signal(false);
-  readonly isSubmitting = signal(false);
-  readonly showSuccessDialog = signal(false);
-  readonly merchantId = signal('');
-  readonly currentStep = signal(1);
+  readonly isLoading = signal(false)
+  readonly isSubmitting = signal(false)
+  readonly showSuccessDialog = signal(false)
+  readonly merchantId = signal("")
+  readonly currentStep = signal(1)
 
   // Form group
-  businessInfoForm!: FormGroup;
+  businessInfoForm!: FormGroup
 
   // Method to get submit button text
   getSubmitButtonText(): string {
-    return this.isSubmitting() ? 'Submitting...' : 'Submit Application';
+    return this.isSubmitting() ? "Submitting..." : "Submit Application"
   }
 
   ngOnInit() {
-    this.initializeForm();
-    this.loadSavedData();
+    this.initializeForm()
+    this.loadSavedData()
   }
 
   private initializeForm(): void {
-    this.businessInfoForm = this.formService.createBusinessInfoForm();
+    this.businessInfoForm = this.formService.createBusinessInfoForm()
 
     // Auto-save form changes
     this.businessInfoForm.valueChanges.subscribe(() => {
-      this.saveFormData();
-    });
+      this.saveFormData()
+    })
   }
 
   // Auto-save form data to localStorage
@@ -212,124 +207,124 @@ export class MerchantOnboardingComponent implements OnInit {
     const formData = {
       step: this.currentStep(),
       formValues: this.businessInfoForm.value,
-    };
-    localStorage.setItem('merchant_form_data', JSON.stringify(formData));
+    }
+    localStorage.setItem("merchant_form_data", JSON.stringify(formData))
   }
 
   // Load saved form data from localStorage
   private loadSavedData(): void {
-    const savedData = localStorage.getItem('merchant_form_data');
+    const savedData = localStorage.getItem("merchant_form_data")
     if (savedData) {
       try {
-        const data = JSON.parse(savedData);
+        const data = JSON.parse(savedData)
         if (data.step) {
-          this.currentStep.set(data.step);
+          this.currentStep.set(data.step)
         }
         if (data.formValues) {
-          this.businessInfoForm.patchValue(data.formValues);
+          this.businessInfoForm.patchValue(data.formValues)
         }
       } catch (error) {
-        console.error('Error loading saved form data:', error);
+        console.error("Error loading saved form data:", error)
       }
     }
   }
 
   // Clear saved form data
   private clearSavedData(): void {
-    localStorage.removeItem('merchant_form_data');
+    localStorage.removeItem("merchant_form_data")
   }
 
   // Check if step 2 is complete
   isStep2Complete(): boolean {
     // Check if hasExistingPaymentPortal is selected
-    const hasPaymentPortal = this.businessInfoForm.get('hasExistingPaymentPortal')?.value;
-    if (!hasPaymentPortal || hasPaymentPortal === '') {
-      return false;
+    const hasPaymentPortal = this.businessInfoForm.get("hasExistingPaymentPortal")?.value
+    if (!hasPaymentPortal || hasPaymentPortal === "") {
+      return false
     }
 
     // Check if at least one payment mode is selected
-    const paymentModes = this.businessInfoForm.get('currentModeOfPayment')?.value;
+    const paymentModes = this.businessInfoForm.get("currentModeOfPayment")?.value
     if (!paymentModes) {
-      return false;
+      return false
     }
 
-    const hasPaymentMode = Object.values(paymentModes).some((mode) => mode === true);
+    const hasPaymentMode = Object.values(paymentModes).some((mode) => mode === true)
     if (!hasPaymentMode) {
-      return false;
+      return false
     }
 
     // Check if estimatedTransactionNumbers is selected
-    const transactionNumbers = this.businessInfoForm.get('estimatedTransactionNumbers')?.value;
-    if (!transactionNumbers || transactionNumbers === '') {
-      return false;
+    const transactionNumbers = this.businessInfoForm.get("estimatedTransactionNumbers")?.value
+    if (!transactionNumbers || transactionNumbers === "") {
+      return false
     }
 
     // Check if estimatedAverageAmount is selected
-    const averageAmount = this.businessInfoForm.get('estimatedAverageAmount')?.value;
-    if (!averageAmount || averageAmount === '') {
-      return false;
+    const averageAmount = this.businessInfoForm.get("estimatedAverageAmount")?.value
+    if (!averageAmount || averageAmount === "") {
+      return false
     }
 
-    return true;
+    return true
   }
 
   nextStep(): void {
     if (this.isStepValid() && this.currentStep() < 3) {
-      this.currentStep.set(this.currentStep() + 1);
-      this.saveFormData();
+      this.currentStep.set(this.currentStep() + 1)
+      this.saveFormData()
     }
   }
 
   previousStep(): void {
     if (this.currentStep() > 1) {
-      this.currentStep.set(this.currentStep() - 1);
-      this.saveFormData();
+      this.currentStep.set(this.currentStep() - 1)
+      this.saveFormData()
     }
   }
 
   isStepValid(): boolean {
     if (this.currentStep() === 1) {
       const step1Fields = [
-        'contactPersonName',
-        'contactNumber',
-        'businessName',
-        'businessEmail',
-        'businessAddress',
-        'industryOrBusinessStyle',
-        'typeOfBusiness',
-      ];
-      return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid);
+        "contactPersonName",
+        "contactNumber",
+        "businessName",
+        "businessEmail",
+        "businessAddress",
+        "industryOrBusinessStyle",
+        "typeOfBusiness",
+      ]
+      return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid)
     }
     if (this.currentStep() === 2) {
-      return this.isStep2Complete();
+      return this.isStep2Complete()
     }
-    return true;
+    return true
   }
 
   submitForm(): void {
-    if (!this.businessInfoForm.valid) return;
+    if (!this.businessInfoForm.valid) return
 
-    this.isSubmitting.set(true);
+    this.isSubmitting.set(true)
 
-    const formData = this.buildFormData();
+    const formData = this.buildFormData()
 
     this.applicationService.submitApplication(formData).subscribe({
       next: (application) => {
-        this.isSubmitting.set(false);
-        this.merchantId.set(application.id);
-        this.showSuccessDialog.set(true);
-        this.clearSavedData(); // Clear saved data after successful submission
+        this.isSubmitting.set(false)
+        this.merchantId.set(application.id)
+        this.showSuccessDialog.set(true)
+        this.clearSavedData() // Clear saved data after successful submission
       },
       error: (error) => {
-        console.error('Error submitting application:', error);
-        this.isSubmitting.set(false);
-        alert('Error submitting application. Please try again.');
+        console.error("Error submitting application:", error)
+        this.isSubmitting.set(false)
+        alert("Error submitting application. Please try again.")
       },
-    });
+    })
   }
 
   private buildFormData(): any {
-    const formValue = this.businessInfoForm.value;
+    const formValue = this.businessInfoForm.value
     return {
       contactPersonName: formValue.contactPersonName,
       contactNumber: formValue.contactNumber,
@@ -343,16 +338,16 @@ export class MerchantOnboardingComponent implements OnInit {
       currentModeOfPayment: formValue.currentModeOfPayment,
       estimatedTransactionNumbers: formValue.estimatedTransactionNumbers,
       estimatedAverageAmount: formValue.estimatedAverageAmount,
-    };
+    }
   }
 
   closeSuccessDialog(): void {
-    this.showSuccessDialog.set(false);
-    this.resetForm();
+    this.showSuccessDialog.set(false)
+    this.resetForm()
   }
 
   private resetForm(): void {
-    this.businessInfoForm.reset();
-    this.currentStep.set(1);
+    this.businessInfoForm.reset()
+    this.currentStep.set(1)
   }
 }
