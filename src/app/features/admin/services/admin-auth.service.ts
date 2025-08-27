@@ -1,22 +1,18 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { AdminUser, AdminLoginCredentials, AdminLoginResponse } from '../models/admin.model';
+import { HttpClient } from '@angular/common/http';
+import type { Observable } from 'rxjs';
+import type { AdminUser, AdminLoginCredentials, AdminLoginResponse } from '../models/admin.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminAuthService {
   private router = inject(Router);
+  private http = inject(HttpClient);
 
-  // Mock admin users
-  private readonly mockAdminUsers: AdminUser[] = [
-    {
-      id: 'admin_001',
-      username: 'admin',
-    },
-  ];
+  private apiUrl = environment.apiUrl; // make sure this exists in environment.ts
 
   // State signals
   readonly currentUser = signal<AdminUser | null>(null);
@@ -24,30 +20,22 @@ export class AdminAuthService {
   readonly authToken = signal<string | null>(null);
 
   constructor() {
-    // Check for existing session
     this.checkExistingSession();
   }
 
+  // 🔹 Call backend instead of mock
   login(credentials: AdminLoginCredentials): Observable<AdminLoginResponse> {
-    const user = this.mockAdminUsers.find(
-      (u) => u.username === credentials.username && credentials.password === 'admin123'
-    );
+    return this.http.post<AdminLoginResponse>(`${this.apiUrl}/auth/login`, credentials);
+  }
 
-    if (user) {
-      const token = `mock_token_${Date.now()}`;
-      const response: AdminLoginResponse = {
-        success: true,
-        token,
-        user,
-        message: 'Login successful',
-      };
+  handleLoginSuccess(response: AdminLoginResponse, username: string): void {
+    // Create user object from login response
+    const user: AdminUser = {
+      id: '1', // Backend should provide this
+      username: username,
+    };
 
-      // Store authentication data
-      this.setAuthData(user, token);
-      return of(response).pipe(delay(1000));
-    }
-
-    return throwError(() => new Error('Invalid credentials'));
+    this.setAuthData(user, response.access_token);
   }
 
   logout(): void {
@@ -64,8 +52,7 @@ export class AdminAuthService {
     this.isAuthenticated.set(true);
     this.authToken.set(token);
 
-    // Store in localStorage for persistence
-    localStorage.setItem('admin_user', JSON.stringify(user));
+    localStorage.setItem('user_accounts', JSON.stringify(user));
     localStorage.setItem('admin_token', token);
   }
 
@@ -74,12 +61,12 @@ export class AdminAuthService {
     this.isAuthenticated.set(false);
     this.authToken.set(null);
 
-    localStorage.removeItem('admin_user');
+    localStorage.removeItem('user_accounts');
     localStorage.removeItem('admin_token');
   }
 
   private checkExistingSession(): void {
-    const storedUser = localStorage.getItem('admin_user');
+    const storedUser = localStorage.getItem('user_accounts');
     const storedToken = localStorage.getItem('admin_token');
 
     if (storedUser && storedToken) {
@@ -93,11 +80,4 @@ export class AdminAuthService {
       }
     }
   }
-
-  // TODO: Replace with real API calls when backend is ready
-  /*
-  login(credentials: AdminLoginCredentials): Observable<AdminLoginResponse> {
-    return this.http.post<AdminLoginResponse>(`${this.apiUrl}/admin/login`, credentials);
-  }
-  */
 }
