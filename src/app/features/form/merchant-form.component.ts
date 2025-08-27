@@ -2,7 +2,6 @@ import { Component, type OnInit, signal, inject, ChangeDetectionStrategy } from 
 import { type FormGroup, ReactiveFormsModule } from "@angular/forms"
 import { CommonModule } from "@angular/common"
 import { BusinessInfoStepComponent } from "./steps/business-info-step.component"
-import { PaymentDetailsStepComponent } from "./steps/payment-details-step.component"
 import { ReviewInformationStepComponent } from "./steps/review-information-step.component"
 import { SuccessDialogComponent } from "../../shared/components/success-dialog.component"
 import { FormService } from "./services/form.service"
@@ -15,7 +14,6 @@ import { ApplicationService } from "../../services/application.service"
     CommonModule,
     ReactiveFormsModule,
     BusinessInfoStepComponent,
-    PaymentDetailsStepComponent,
     ReviewInformationStepComponent,
     SuccessDialogComponent,
   ],
@@ -45,7 +43,7 @@ import { ApplicationService } from "../../services/application.service"
       <div class="max-w-4xl mx-auto mb-4 sm:mb-6">
         <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <!-- Mobile-first step indicator with responsive layout -->
-          <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8">
+          <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 md:space-x-16">
             <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -64,7 +62,7 @@ import { ApplicationService } from "../../services/application.service"
                 Business Information
               </span>
             </div>
-            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
+            <div class="hidden sm:block w-16 md:w-32 h-0.5 bg-gray-300"></div>
             <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -79,25 +77,6 @@ import { ApplicationService } from "../../services/application.service"
               <span
                 class="ml-2 text-xs sm:text-sm font-medium"
                 [class]="currentStep() >= 2 ? 'text-netpay-dark-blue' : 'text-gray-500'"
-              >
-                Payment Details
-              </span>
-            </div>
-            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
-            <div class="flex items-center w-full sm:w-auto justify-center">
-              <div
-                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
-                [class]="
-                  currentStep() >= 3
-                    ? 'bg-netpay-primary-blue text-white'
-                    : 'bg-gray-200 text-gray-500'
-                "
-              >
-                3
-              </div>
-              <span
-                class="ml-2 text-xs sm:text-sm font-medium"
-                [class]="currentStep() >= 3 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Review Information
               </span>
@@ -115,18 +94,12 @@ import { ApplicationService } from "../../services/application.service"
           <app-business-info-step [form]="businessInfoForm" />
           }
 
-          <!-- Step 2: Payment Details -->
+          <!-- Step 2: Review Information -->
           @if (currentStep() === 2) {
-          <app-payment-details-step [form]="businessInfoForm" />
-          }
-
-          <!-- Step 3: Review Information -->
-          @if (currentStep() === 3) {
           <app-review-information-step [form]="businessInfoForm" />
           }
 
           <!-- Navigation Buttons -->
-          <!-- Responsive button layout with better mobile spacing -->
           <div class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t space-y-3 sm:space-y-0">
             @if (currentStep() > 1) {
             <button
@@ -138,7 +111,7 @@ import { ApplicationService } from "../../services/application.service"
             } @else {
             <div class="hidden sm:block"></div>
             } 
-            @if (currentStep() < 3) {
+            @if (currentStep() < 2) {
             <button
               (click)="nextStep()"
               [disabled]="!isStepValid()"
@@ -149,7 +122,7 @@ import { ApplicationService } from "../../services/application.service"
             } @else {
             <button
               (click)="submitForm()"
-              [disabled]="isSubmitting() || !businessInfoForm.valid || !isStep2Complete()"
+              [disabled]="isSubmitting() || !businessInfoForm.valid"
               class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               style="color: white;"
             >
@@ -234,42 +207,8 @@ export class MerchantOnboardingComponent implements OnInit {
     localStorage.removeItem("merchant_form_data")
   }
 
-  // Check if step 2 is complete
-  isStep2Complete(): boolean {
-    // Check if hasExistingPaymentPortal is selected
-    const hasPaymentPortal = this.businessInfoForm.get("hasExistingPaymentPortal")?.value
-    if (!hasPaymentPortal || hasPaymentPortal === "") {
-      return false
-    }
-
-    // Check if at least one payment mode is selected
-    const paymentModes = this.businessInfoForm.get("currentModeOfPayment")?.value
-    if (!paymentModes) {
-      return false
-    }
-
-    const hasPaymentMode = Object.values(paymentModes).some((mode) => mode === true)
-    if (!hasPaymentMode) {
-      return false
-    }
-
-    // Check if estimatedTransactionNumbers is selected
-    const transactionNumbers = this.businessInfoForm.get("estimatedTransactionNumbers")?.value
-    if (!transactionNumbers || transactionNumbers === "") {
-      return false
-    }
-
-    // Check if estimatedAverageAmount is selected
-    const averageAmount = this.businessInfoForm.get("estimatedAverageAmount")?.value
-    if (!averageAmount || averageAmount === "") {
-      return false
-    }
-
-    return true
-  }
-
   nextStep(): void {
-    if (this.isStepValid() && this.currentStep() < 3) {
+    if (this.isStepValid() && this.currentStep() < 2) {
       this.currentStep.set(this.currentStep() + 1)
       this.saveFormData()
     }
@@ -295,9 +234,6 @@ export class MerchantOnboardingComponent implements OnInit {
       ]
       return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid)
     }
-    if (this.currentStep() === 2) {
-      return this.isStep2Complete()
-    }
     return true
   }
 
@@ -309,9 +245,9 @@ export class MerchantOnboardingComponent implements OnInit {
     const formData = this.buildFormData()
 
     this.applicationService.submitApplication(formData).subscribe({
-      next: (application) => {
+      next: (response) => {
         this.isSubmitting.set(false)
-        this.merchantId.set(application.id)
+        this.merchantId.set(response.reference_id)
         this.showSuccessDialog.set(true)
         this.clearSavedData() // Clear saved data after successful submission
       },
@@ -334,10 +270,6 @@ export class MerchantOnboardingComponent implements OnInit {
       industryOrBusinessStyle: formValue.industryOrBusinessStyle,
       telephoneNo: formValue.telephoneNo,
       typeOfBusiness: formValue.typeOfBusiness,
-      hasExistingPaymentPortal: formValue.hasExistingPaymentPortal,
-      currentModeOfPayment: formValue.currentModeOfPayment,
-      estimatedTransactionNumbers: formValue.estimatedTransactionNumbers,
-      estimatedAverageAmount: formValue.estimatedAverageAmount,
     }
   }
 
