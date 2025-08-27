@@ -1,9 +1,9 @@
-import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AdminAuthService } from '../services/admin-auth.service';
-import { AdminLoginCredentials } from '../models/admin.model';
+import type { AdminLoginCredentials } from '../models/admin.model';
 
 @Component({
   selector: 'app-admin-login',
@@ -13,8 +13,8 @@ import { AdminLoginCredentials } from '../models/admin.model';
   styleUrls: ['./admin-login.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'block'
-  }
+    class: 'block',
+  },
 })
 export class AdminLoginComponent {
   private fb = inject(FormBuilder);
@@ -31,10 +31,9 @@ export class AdminLoginComponent {
   constructor() {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
     });
 
-    
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/admin/dashboard']);
     }
@@ -50,14 +49,17 @@ export class AdminLoginComponent {
       this.authService.login(credentials).subscribe({
         next: (response) => {
           this.isSubmitting.set(false);
-          if (response.success) {
+          if (response.message === 'Login successful' && response.access_token) {
+            this.authService.handleLoginSuccess(response, credentials.username);
             this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.errorMessage.set('Login failed. Please try again.');
           }
         },
         error: (error) => {
           this.isSubmitting.set(false);
           this.errorMessage.set(error.message || 'Login failed. Please try again.');
-        }
+        },
       });
     }
   }

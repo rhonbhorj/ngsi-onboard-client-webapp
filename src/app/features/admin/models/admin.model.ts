@@ -1,6 +1,7 @@
 export interface AdminUser {
   id: string;
   username: string;
+  created_at?: string;
 }
 
 export interface AdminLoginCredentials {
@@ -9,10 +10,8 @@ export interface AdminLoginCredentials {
 }
 
 export interface AdminLoginResponse {
-  success: boolean;
-  user: AdminUser;
-  token: string;
   message: string;
+  access_token: string;
 }
 
 export interface AdminNotification {
