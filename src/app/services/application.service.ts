@@ -31,6 +31,7 @@ export interface MerchantApplication {
   // System fields
   status: "pending" | "approved" | "rejected" | "under_review"
   submittedAt: string
+  createdAt?: string
   reviewedAt?: string
   reviewedBy?: string
   notes?: string
@@ -142,6 +143,7 @@ export class ApplicationService {
       },
       status: backendData.status as MerchantApplication["status"],
       submittedAt: backendData.submitted_at,
+      createdAt: backendData.created_at,
     }
   }
 
