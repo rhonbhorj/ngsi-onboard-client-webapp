@@ -2,6 +2,7 @@ import { Component, type OnInit, signal, inject, ChangeDetectionStrategy } from 
 import { type FormGroup, ReactiveFormsModule } from "@angular/forms"
 import { CommonModule } from "@angular/common"
 import { BusinessInfoStepComponent } from "./steps/business-info-step.component"
+import { PaymentDetailsStepComponent } from "./steps/payment-details-step.component"
 import { ReviewInformationStepComponent } from "./steps/review-information-step.component"
 import { SuccessDialogComponent } from "../../shared/components/success-dialog.component"
 import { FormService } from "./services/form.service"
@@ -14,6 +15,7 @@ import { ApplicationService } from "../../services/application.service"
     CommonModule,
     ReactiveFormsModule,
     BusinessInfoStepComponent,
+    PaymentDetailsStepComponent,
     ReviewInformationStepComponent,
     SuccessDialogComponent,
   ],
@@ -25,7 +27,7 @@ import { ApplicationService } from "../../services/application.service"
         <div class="text-center bg-white rounded-lg shadow-sm p-3 sm:p-6 border border-gray-200">
           <div class="flex flex-col sm:flex-row items-center justify-center mb-2 sm:mb-4">
             <div class="w-16 h-16 sm:w-30 sm:h-30 rounded-lg flex items-center justify-center mb-2 sm:mb-0 sm:mr-4">
-              <img src="images/ngsi-name-logo.png" alt="Netpay Logo" class="w-16 h-16 sm:w-30 sm:h-30" />
+              <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-16 h-16 sm:w-30 sm:h-30" />
             </div>
             <div class="text-center sm:text-left">
               <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-netpay-dark-blue">
@@ -43,7 +45,7 @@ import { ApplicationService } from "../../services/application.service"
       <div class="max-w-4xl mx-auto mb-4 sm:mb-6">
         <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <!-- Mobile-first step indicator with responsive layout -->
-          <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 md:space-x-16">
+          <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8">
             <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -62,7 +64,7 @@ import { ApplicationService } from "../../services/application.service"
                 Business Information
               </span>
             </div>
-            <div class="hidden sm:block w-16 md:w-32 h-0.5 bg-gray-300"></div>
+            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
             <div class="flex items-center w-full sm:w-auto justify-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
@@ -77,6 +79,25 @@ import { ApplicationService } from "../../services/application.service"
               <span
                 class="ml-2 text-xs sm:text-sm font-medium"
                 [class]="currentStep() >= 2 ? 'text-netpay-dark-blue' : 'text-gray-500'"
+              >
+                Payment Details
+              </span>
+            </div>
+            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
+            <div class="flex items-center w-full sm:w-auto justify-center">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                [class]="
+                  currentStep() >= 3
+                    ? 'bg-netpay-primary-blue text-white'
+                    : 'bg-gray-200 text-gray-500'
+                "
+              >
+                3
+              </div>
+              <span
+                class="ml-2 text-xs sm:text-sm font-medium"
+                [class]="currentStep() >= 3 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Review Information
               </span>
@@ -94,8 +115,13 @@ import { ApplicationService } from "../../services/application.service"
           <app-business-info-step [form]="businessInfoForm" />
           }
 
-          <!-- Step 2: Review Information -->
+          <!-- Step 2: Payment Details -->
           @if (currentStep() === 2) {
+          <app-payment-details-step [form]="businessInfoForm" />
+          }
+
+          <!-- Step 3: Review Information -->
+          @if (currentStep() === 3) {
           <app-review-information-step [form]="businessInfoForm" />
           }
 
@@ -111,7 +137,7 @@ import { ApplicationService } from "../../services/application.service"
             } @else {
             <div class="hidden sm:block"></div>
             } 
-            @if (currentStep() < 2) {
+            @if (currentStep() < 3) {
             <button
               (click)="nextStep()"
               [disabled]="!isStepValid()"
@@ -126,7 +152,7 @@ import { ApplicationService } from "../../services/application.service"
               class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               style="color: white;"
             >
-              Submit Application
+              {{ getSubmitButtonText() }}
             </button>
             }
           </div>
@@ -136,7 +162,7 @@ import { ApplicationService } from "../../services/application.service"
 
       <!-- Success Dialog -->
       @if (showSuccessDialog()) {
-      <app-success-dialog [merchantId]="merchantId()" (close)="closeSuccessDialog()" />
+        <app-success-dialog [referenceNo]="referenceNo()" (close)="closeSuccessDialog()" />
       }
     </div>
   `,
@@ -150,7 +176,7 @@ export class MerchantOnboardingComponent implements OnInit {
   readonly isLoading = signal(false)
   readonly isSubmitting = signal(false)
   readonly showSuccessDialog = signal(false)
-  readonly merchantId = signal("")
+  readonly referenceNo = signal("")
   readonly currentStep = signal(1)
 
   // Form group
@@ -208,7 +234,7 @@ export class MerchantOnboardingComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.isStepValid() && this.currentStep() < 2) {
+    if (this.isStepValid() && this.currentStep() < 3) {
       this.currentStep.set(this.currentStep() + 1)
       this.saveFormData()
     }
@@ -233,6 +259,15 @@ export class MerchantOnboardingComponent implements OnInit {
         "typeOfBusiness",
       ]
       return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid)
+    } else if (this.currentStep() === 2) {
+      // Payment details step validation - at least one payment mode should be selected
+      const paymentModes = this.businessInfoForm.get("currentModeOfPayment")?.value
+      const hasPaymentMode = paymentModes && Object.values(paymentModes).some((mode: any) => mode === true)
+      const hasPaymentPortal = this.businessInfoForm.get("hasExistingPaymentPortal")?.value
+      const hasTransactionNumbers = this.businessInfoForm.get("estimatedTransactionNumbers")?.value
+      const hasAverageAmount = this.businessInfoForm.get("estimatedAverageAmount")?.value
+
+      return !!(hasPaymentPortal && hasPaymentMode && hasTransactionNumbers && hasAverageAmount)
     }
     return true
   }
@@ -247,7 +282,7 @@ export class MerchantOnboardingComponent implements OnInit {
     this.applicationService.submitApplication(formData).subscribe({
       next: (response) => {
         this.isSubmitting.set(false)
-        this.merchantId.set(response.reference_id)
+        this.referenceNo.set(response.reference_id)
         this.showSuccessDialog.set(true)
         this.clearSavedData() // Clear saved data after successful submission
       },
@@ -270,6 +305,10 @@ export class MerchantOnboardingComponent implements OnInit {
       industryOrBusinessStyle: formValue.industryOrBusinessStyle,
       telephoneNo: formValue.telephoneNo,
       typeOfBusiness: formValue.typeOfBusiness,
+      hasExistingPaymentPortal: formValue.hasExistingPaymentPortal,
+      currentModeOfPayment: formValue.currentModeOfPayment,
+      estimatedTransactionNumbers: formValue.estimatedTransactionNumbers,
+      estimatedAverageAmount: formValue.estimatedAverageAmount,
     }
   }
 

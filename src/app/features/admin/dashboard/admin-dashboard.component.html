@@ -73,7 +73,7 @@
       <div class="px-6 py-4 border-b" style="border-color: var(--netpay-blue-gray)">
         <h2 class="text-lg font-medium" style="color: var(--netpay-dark-blue)">Applications</h2>
         <p class="text-sm mt-1" style="color: var(--netpay-medium-blue)">
-          Showing {{ filteredApplications().length }} of {{ allApplications().length }} applications
+          List of all submitted applications by merchants.
         </p>
       </div>
 
@@ -150,11 +150,11 @@
             class="divide-y"
             style="background-color: var(--netpay-white); border-color: var(--netpay-blue-gray)"
           >
-            @for (application of filteredApplications(); track application.id) {
+            @for (application of filteredApplications(); track application.reference) {
             <tr class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
-                  {{ application.reference || application.id }}
+                  {{ application.reference }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -188,12 +188,79 @@
                 class="px-6 py-4 whitespace-nowrap text-sm"
                 style="color: var(--netpay-medium-blue)"
               >
-                {{ application.createdAt | date : 'short' }}
+                {{ application.submittedAt | date : 'short' }}
               </td>
             </tr>
             }
           </tbody>
         </table>
+      </div>
+      } @if (!searchTerm() && totalPages() > 1) {
+      <div class="px-6 py-4 border-t" style="border-color: var(--netpay-blue-gray)">
+        <div class="flex items-center justify-between">
+          <div class="text-sm" style="color: var(--netpay-medium-blue)">
+            Showing {{ allApplications().length }} of {{ totalCount() }} applications (Page
+            {{ currentPage() }} of {{ totalPages() }})
+          </div>
+
+          <div class="flex items-center space-x-1">
+            <button
+              (click)="onFirstPage()"
+              [disabled]="currentPage() === 1"
+              class="pagination-nav-btn"
+              [class.disabled]="currentPage() === 1"
+              title="First page"
+            >
+              &laquo;
+            </button>
+
+            <button
+              (click)="onPreviousPage()"
+              [disabled]="currentPage() === 1"
+              class="pagination-nav-btn"
+              [class.disabled]="currentPage() === 1"
+              title="Previous page"
+            >
+              &lsaquo;
+            </button>
+
+            <span class="pagination-info"> Page {{ currentPage() }} of {{ totalPages() }} </span>
+
+            <button
+              (click)="onNextPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="pagination-nav-btn"
+              [class.disabled]="currentPage() === totalPages()"
+              title="Next page"
+            >
+              &rsaquo;
+            </button>
+
+            <button
+              (click)="onLastPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="pagination-nav-btn"
+              [class.disabled]="currentPage() === totalPages()"
+              title="Last page"
+            >
+              &raquo;
+            </button>
+
+            <div class="flex items-center ml-4">
+              <span class="pagination-goto-label">Go to:</span>
+              <input
+                type="number"
+                [ngModel]="goToPage()"
+                (ngModelChange)="onGoToPageChange($event)"
+                (keyup.enter)="onGoToPage()"
+                class="pagination-goto-input"
+                [min]="1"
+                [max]="totalPages()"
+                placeholder="1"
+              />
+            </div>
+          </div>
+        </div>
       </div>
       }
     </div>

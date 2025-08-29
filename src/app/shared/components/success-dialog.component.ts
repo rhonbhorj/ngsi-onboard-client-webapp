@@ -1,8 +1,8 @@
-import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output } from "@angular/core"
+import { CommonModule } from "@angular/common"
 
 @Component({
-  selector: 'app-success-dialog',
+  selector: "app-success-dialog",
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
         <div class="mt-3 text-center">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
             <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <h3 class="text-lg font-medium text-gray-900 mt-4">Application Submitted Successfully!</h3>
@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
             </p>
             <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
               <p class="text-sm text-blue-800">
-                <span class="font-medium">Reference ID:</span> {{ merchantId() }}
+                <span class="font-medium">Reference ID:</span> {{ referenceNo() }}
               </p>
             </div>
           </div>
@@ -39,6 +39,6 @@ import { CommonModule } from '@angular/common';
   `,
 })
 export class SuccessDialogComponent {
-  readonly merchantId = input.required<string>();
-  readonly close = output<void>();
+  readonly referenceNo = input.required<string>()
+  readonly close = output<void>()
 }

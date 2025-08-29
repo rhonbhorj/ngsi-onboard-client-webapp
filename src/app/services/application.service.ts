@@ -5,7 +5,6 @@ import { environment } from "../../environments/environment"
 import { map } from "rxjs/operators"
 
 export interface MerchantApplication {
-  id: string
   reference?: string
   // Step 1: Business Information
   contactPersonName: string
@@ -39,15 +38,19 @@ export interface MerchantApplication {
 
 interface BackendMerchantApplication {
   id: string
-  reference?: string
-  contact_person_name: string
-  contact_number: string
-  business_name: string
-  business_email: string
-  business_address: string
-  industry_or_business_style: string
-  telephone_no?: string
-  type_of_business: string
+  reference: string
+  contactPersonName: string
+  contactNumber: string
+  businessName: string
+  businessEmail: string
+  businessAddress: string
+  industryOrBusinessStyle: string
+  telephoneNo?: string
+  typeOfBusiness: string
+  hasExistingPaymentPortal?: string
+  currentModeOfPayment?: any
+  estimatedTransactionNumbers?: string
+  estimatedAverageAmount?: string
   status: string
   submitted_at: string
   created_at?: string
@@ -59,6 +62,7 @@ export interface ApiResponse<T> {
   message: string
   data?: T
   reference_id?: string
+  reference?: string
 }
 
 @Injectable({
@@ -72,8 +76,6 @@ export class ApplicationService {
     // Initialize with some mock data
     this.applications.set([
       {
-        id: "app_001",
-        reference: "ngsi-25-00001",
         contactPersonName: "Ritchmond Tajarros",
         contactNumber: "09177589353",
         businessName: "NetGlobal Solutions Inc",
@@ -95,8 +97,6 @@ export class ApplicationService {
         submittedAt: "2025-08-15T10:30:00Z",
       },
       {
-        id: "app_002",
-        reference: "ngsi-25-00002",
         contactPersonName: "Raven David",
         contactNumber: "09123456789",
         businessName: "NetGlobal Solutions Inc",
@@ -124,23 +124,22 @@ export class ApplicationService {
 
   private transformToMerchantApplication(backendData: BackendMerchantApplication): MerchantApplication {
     return {
-      id: backendData.id,
       reference: backendData.reference,
-      contactPersonName: backendData.contact_person_name,
-      contactNumber: backendData.contact_number,
-      businessName: backendData.business_name,
-      businessEmail: backendData.business_email,
-      businessAddress: backendData.business_address,
-      industryOrBusinessStyle: backendData.industry_or_business_style,
-      telephoneNo: backendData.telephone_no,
-      typeOfBusiness: backendData.type_of_business as MerchantApplication["typeOfBusiness"],
-      hasExistingPaymentPortal: "",
-      currentModeOfPayment: {
-        cash: false,
-        eWallets: false,
-        qrph: false,
-        cardPayment: false,
-      },
+      contactPersonName: backendData.contactPersonName,
+      contactNumber: backendData.contactNumber,
+      businessName: backendData.businessName,
+      businessEmail: backendData.businessEmail,
+      businessAddress: backendData.businessAddress,
+      industryOrBusinessStyle: backendData.industryOrBusinessStyle,
+      telephoneNo: backendData.telephoneNo,
+      typeOfBusiness: backendData.typeOfBusiness as MerchantApplication["typeOfBusiness"],
+      hasExistingPaymentPortal: backendData.hasExistingPaymentPortal ?? "",
+      currentModeOfPayment:
+        typeof backendData.currentModeOfPayment === "string"
+          ? JSON.parse(backendData.currentModeOfPayment)
+          : backendData.currentModeOfPayment || { cash: false, eWallets: false, qrph: false, cardPayment: false },
+      estimatedTransactionNumbers: backendData.estimatedTransactionNumbers,
+      estimatedAverageAmount: backendData.estimatedAverageAmount,
       status: backendData.status as MerchantApplication["status"],
       submittedAt: backendData.submitted_at,
       createdAt: backendData.created_at,
@@ -149,16 +148,40 @@ export class ApplicationService {
 
   // Submit new application from form TO BACKEND
   submitApplication(
-    formData: Omit<MerchantApplication, "id" | "status" | "submittedAt">,
+    formData: Omit<MerchantApplication, "status" | "submittedAt">,
   ): Observable<{ application: MerchantApplication; reference_id: string }> {
-    return this.http
-      .post<ApiResponse<BackendMerchantApplication>>(`${environment.apiUrl}/api/merchant-applications`, formData)
-      .pipe(
-        map((response) => ({
-          application: this.transformToMerchantApplication(response.data!),
-          reference_id: response.reference_id!,
-        })),
-      )
+    // 🔑 Ensure correct payload shape
+    const payload = {
+      ...formData,
+      currentModeOfPayment: JSON.stringify(formData.currentModeOfPayment), // backend expects string
+    }
+
+    console.log("📤 Sending payload to backend:", payload)
+
+    return this.http.post<ApiResponse<BackendMerchantApplication>>(`${environment.apiUrl}/company_data`, payload).pipe(
+      map((response) => {
+        console.log("📥 Response from backend:", response)
+
+        const application = response.data
+          ? this.transformToMerchantApplication(response.data)
+          : {
+              ...formData,
+              status: "pending" as MerchantApplication["status"],
+              submittedAt: new Date().toISOString(),
+              currentModeOfPayment: formData.currentModeOfPayment || {
+                cash: false,
+                eWallets: false,
+                qrph: false,
+                cardPayment: false,
+              },
+            }
+
+        return {
+          application,
+          reference_id: response.reference ?? response.reference_id ?? response.data?.reference ?? "",
+        }
+      }),
+    )
   }
 
   // Get all applications from backend

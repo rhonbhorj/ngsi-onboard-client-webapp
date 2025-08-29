@@ -7,30 +7,41 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms"
 export class FormService {
   private fb = inject(FormBuilder)
 
+  // Step 1: Business Information
   createBusinessInfoForm(): FormGroup {
     return this.fb.group({
-      // Step 1: Business Information
+      // Business Information fields
       contactPersonName: ["", [Validators.required, Validators.minLength(2)]],
-      contactNumber: ["", [Validators.required, Validators.pattern(/^09\d{9}$/)]], // Philippine mobile format
+      contactNumber: ["", [Validators.required, Validators.pattern(/^09\d{9}$/)]], // PH mobile format
       businessName: ["", [Validators.required, Validators.minLength(2)]],
       businessEmail: ["", [Validators.required, Validators.email]],
       businessAddress: ["", [Validators.required, Validators.minLength(10)]],
       industryOrBusinessStyle: ["", [Validators.required, Validators.minLength(2)]],
       telephoneNo: [""], // Optional
       typeOfBusiness: ["", [Validators.required]],
+
+      // Payment Details fields
+      hasExistingPaymentPortal: [""],
+      currentModeOfPayment: this.fb.group({
+        cash: [false],
+        eWallets: [false],
+        qrph: [false],
+        cardPayment: [false],
+      }),
+      estimatedTransactionNumbers: [""],
+      estimatedAverageAmount: [""],
     })
   }
 
-  createContactForm(): FormGroup {
-    return this.fb.group({
-      firstName: ["", [Validators.required, Validators.minLength(2)]],
-      lastName: ["", [Validators.required, Validators.minLength(2)]],
-      position: ["", [Validators.required, Validators.minLength(2)]],
-      email: ["", [Validators.required, Validators.email]],
-      phone: ["", [Validators.required, Validators.pattern(/^\+?[\d\s\-$$$$]+$/)]],
-      alternatePhone: ["", [Validators.pattern(/^\+?[\d\s\-$$$$]+$/)]],
-    })
-  }
+  // Step 2: Payment Details
+  // createPaymentDetailsForm(): FormGroup {
+  //   return this.fb.group({
+  //     hasExistingPaymentPortal: ["", [Validators.required]],
+  //     currentModeOfPayment: ["", [Validators.required]],
+  //     estimatedTransactionNumbers: ["", [Validators.required, Validators.min(1)]],
+  //     estimatedAverageAmount: ["", [Validators.required, Validators.min(1)]],
+  //   });
+  // }
 
   markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
