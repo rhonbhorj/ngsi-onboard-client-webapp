@@ -66,6 +66,34 @@
   color: var(--netpay-medium-blue);
 }
 
+/* Export button and dropdown styles */
+.export-button {
+  background-color: var(--netpay-primary-blue);
+  transition: all 0.3s ease;
+}
+
+.export-button:hover {
+  background-color: var(--netpay-accent-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(1, 108, 251, 0.3);
+}
+
+.export-dropdown {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--netpay-blue-gray);
+}
+
+.export-option {
+  transition: background-color 0.2s ease;
+}
+
+.export-option:hover {
+  background-color: var(--netpay-light-gray);
+  color: var(--netpay-dark-blue);
+}
+
 /* Updated pagination styles to match the provided image design */
 /* Pagination navigation button styles */
 .pagination-nav-btn {

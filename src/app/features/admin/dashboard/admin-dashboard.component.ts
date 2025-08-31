@@ -31,6 +31,8 @@ export class AdminDashboardComponent implements OnInit {
   readonly totalCount = signal(0)
   readonly goToPage = signal("")
 
+  readonly showExportDropdown = signal(false)
+
   ngOnInit() {
     this.checkAuth()
     this.route.params.subscribe((params) => {
@@ -185,5 +187,72 @@ export class AdminDashboardComponent implements OnInit {
   logout(): void {
     this.authService.logout()
     this.router.navigate(["/admin/login"])
+  }
+
+  toggleExportDropdown(): void {
+    this.showExportDropdown.set(!this.showExportDropdown())
+  }
+
+  exportToCSV(): void {
+    const data = this.searchTerm() ? this.filteredApplications() : this.allApplications()
+    const csvContent = this.convertToCSV(data)
+    this.downloadFile(csvContent, "merchant-applications.csv", "text/csv")
+    this.showExportDropdown.set(false)
+  }
+
+  exportToExcel(): void {
+    const data = this.searchTerm() ? this.filteredApplications() : this.allApplications()
+    const csvContent = this.convertToCSV(data)
+    this.downloadFile(
+      csvContent,
+      "merchant-applications.xlsx",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    this.showExportDropdown.set(false)
+  }
+
+  private convertToCSV(data: MerchantApplication[]): string {
+    const headers = [
+      "Reference",
+      "Business Name",
+      "Industry/Business Style",
+      "Business Address",
+      "Contact Person",
+      "Contact Number",
+      "Business Email",
+      "Business Type",
+      "Submitted At",
+    ]
+
+    const csvRows = [
+      headers.join(","),
+      ...data.map((app) =>
+        [
+          `"${app.reference || ""}"`,
+          `"${app.businessName}"`,
+          `"${app.industryOrBusinessStyle}"`,
+          `"${app.businessAddress}"`,
+          `"${app.contactPersonName}"`,
+          `"${app.contactNumber}"`,
+          `"${app.businessEmail}"`,
+          `"${app.typeOfBusiness}"`,
+          `"${new Date(app.submittedAt).toLocaleString()}"`,
+        ].join(","),
+      ),
+    ]
+
+    return csvRows.join("\n")
+  }
+
+  private downloadFile(content: string, filename: string, mimeType: string): void {
+    const blob = new Blob([content], { type: mimeType })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   }
 }
