@@ -45,8 +45,46 @@ import { ApplicationService } from "../../services/application.service"
       <div class="max-w-4xl mx-auto mb-4 sm:mb-6">
         <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <!-- Mobile-first step indicator with responsive layout -->
-          <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8">
-            <div class="flex items-center w-full sm:w-auto justify-center">
+          <div class="flex items-center justify-center space-x-2 sm:hidden">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+              [class]="
+                currentStep() >= 1
+                  ? 'bg-netpay-primary-blue text-white'
+                  : 'bg-gray-200 text-gray-500'
+              "
+            >
+              1
+            </div>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+              [class]="
+                currentStep() >= 2
+                  ? 'bg-netpay-primary-blue text-white'
+                  : 'bg-gray-200 text-gray-500'
+              "
+            >
+              2
+            </div>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+              [class]="
+                currentStep() >= 3
+                  ? 'bg-netpay-primary-blue text-white'
+                  : 'bg-gray-200 text-gray-500'
+              "
+            >
+              3
+            </div>
+          </div>
+          <div class="hidden sm:flex flex-row items-center justify-center space-x-4 md:space-x-8">
+            <div class="flex items-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
@@ -58,14 +96,14 @@ import { ApplicationService } from "../../services/application.service"
                 1
               </div>
               <span
-                class="ml-2 text-xs sm:text-sm font-medium"
+                class="ml-2 text-sm font-medium"
                 [class]="currentStep() >= 1 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Business Information
               </span>
             </div>
-            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
-            <div class="flex items-center w-full sm:w-auto justify-center">
+            <div class="w-8 md:w-16 h-0.5 bg-gray-300"></div>
+            <div class="flex items-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
@@ -77,14 +115,14 @@ import { ApplicationService } from "../../services/application.service"
                 2
               </div>
               <span
-                class="ml-2 text-xs sm:text-sm font-medium"
+                class="ml-2 text-sm font-medium"
                 [class]="currentStep() >= 2 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Payment Details
               </span>
             </div>
-            <div class="hidden sm:block w-8 md:w-16 h-0.5 bg-gray-300"></div>
-            <div class="flex items-center w-full sm:w-auto justify-center">
+            <div class="w-8 md:w-16 h-0.5 bg-gray-300"></div>
+            <div class="flex items-center">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
@@ -96,7 +134,7 @@ import { ApplicationService } from "../../services/application.service"
                 3
               </div>
               <span
-                class="ml-2 text-xs sm:text-sm font-medium"
+                class="ml-2 text-sm font-medium"
                 [class]="currentStep() >= 3 ? 'text-netpay-dark-blue' : 'text-gray-500'"
               >
                 Review Information

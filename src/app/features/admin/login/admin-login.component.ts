@@ -49,7 +49,7 @@ export class AdminLoginComponent {
       this.authService.login(credentials).subscribe({
         next: (response) => {
           this.isSubmitting.set(false)
-          if (response.message === "Login successful" && response.access_token) {
+          if (response.message === "Login Succesful" && response.token) {
             this.authService.handleLoginSuccess(response, credentials.username)
             this.router.navigate(["/admin/dashboard"])
           } else {

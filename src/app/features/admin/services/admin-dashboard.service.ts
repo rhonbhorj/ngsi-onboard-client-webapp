@@ -1,9 +1,10 @@
 import { Injectable, signal, inject } from "@angular/core"
-import { HttpClient } from "@angular/common/http"
+import { HttpClient, HttpHeaders } from "@angular/common/http"
 import { type Observable, of, map, catchError } from "rxjs"
 import type { AdminNotification } from "../models/admin.model"
 import type { MerchantApplication } from "../../../services/application.service"
 import { environment } from "../../../../environments/environment"
+import { AdminAuthService } from "./admin-auth.service"
 
 interface AdminDashboardResponse {
   totalPages: number
@@ -32,8 +33,8 @@ interface AdminDashboardResponse {
 })
 export class AdminDashboardService {
   private http = inject(HttpClient)
+  private authService = inject(AdminAuthService)
 
-  // Mock notifications
   readonly notifications = signal<AdminNotification[]>([])
 
   constructor() {
@@ -48,7 +49,13 @@ export class AdminDashboardService {
 
     console.log("[v0] Service making request to:", endpoint)
 
-    return this.http.get<AdminDashboardResponse>(endpoint).pipe(
+    const token = this.authService.authToken()
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    })
+
+    return this.http.get<AdminDashboardResponse>(endpoint, { headers }).pipe(
       map((response) => {
         console.log("[v0] Service received raw response:", response)
         console.log("[v0] Response type:", typeof response)
@@ -59,19 +66,15 @@ export class AdminDashboardService {
         const currentPage = page // Use the requested page as current page
         const companiesPerPage = response.companies?.length || 10
 
-        // If we're on the last page and have fewer items, calculate more accurately
         let totalCount: number
         if (currentPage === response.totalPages && companiesPerPage < 10) {
-          // Last page with partial data: (totalPages - 1) * 10 + current page items
           totalCount = (response.totalPages - 1) * 10 + companiesPerPage
         } else {
-          // Not the last page or last page is full, estimate based on full pages
           totalCount = response.totalPages * 10
         }
 
         console.log("[v0] Calculated totalCount:", totalCount)
 
-        // Transform backend data to frontend interface
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
           contactPersonName: company.contactPersonName,
@@ -119,7 +122,6 @@ export class AdminDashboardService {
   }
 
   updateApplicationStatus(applicationId: string, status: MerchantApplication["status"], notes?: string): void {
-    // Add notification
     this.addNotification({
       id: "notif_" + Date.now(),
       type: "status_change",

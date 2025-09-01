@@ -194,8 +194,8 @@ export class ApplicationService {
   // Get application by status from backend
   getApplicationsByStatus(status: MerchantApplication["status"]): Observable<MerchantApplication[]> {
     return this.http
-      .get<BackendMerchantApplication[]>(`${environment.apiUrl}/api/merchant-applications?status=${status}`)
-      .pipe(map((response) => (response || []).map((app) => this.transformToMerchantApplication(app))))
+      .get<ApiResponse<BackendMerchantApplication[]>>(`${environment.apiUrl}/api/merchant-applications?status=${status}`)
+      .pipe(map((response) => (response.data || []).map((app) => this.transformToMerchantApplication(app))))
   }
 
   // Update application status via backend
@@ -208,5 +208,13 @@ export class ApplicationService {
       status,
       notes,
     })
+  }
+
+  checkContactNumberExists(contactNumber: string): Observable<boolean> {
+    return this.http
+      .get<{ status: string; exists: boolean }>(
+        `${environment.apiUrl}/company_data/check-contact?contactNumber=${contactNumber}`,
+      )
+      .pipe(map((response) => response.exists))
   }
 }
