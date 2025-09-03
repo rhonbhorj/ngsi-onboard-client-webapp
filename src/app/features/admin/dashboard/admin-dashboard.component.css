@@ -225,3 +225,164 @@
     width: 50px;
   }
 }
+
+/* Stat card styles */
+.stat-card {
+  background-color: var(--netpay-white);
+  border: 1px solid var(--netpay-blue-gray);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal overlay styles */
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Modal content styles */
+.modal-content {
+  background-color: var(--netpay-white);
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--netpay-blue-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--netpay-medium-blue);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--netpay-light-gray);
+  color: var(--netpay-dark-blue);
+}
+
+/* Form styles within modals */
+.modal-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--netpay-medium-blue);
+}
+
+.modal-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--netpay-blue-gray);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-form input:focus {
+  outline: none;
+  border-color: var(--netpay-primary-blue);
+  box-shadow: 0 0 0 3px rgba(1, 108, 251, 0.1);
+}
+
+/* Modal action buttons */
+.modal-actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--netpay-blue-gray);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.modal-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--netpay-blue-gray);
+}
+
+.modal-btn-primary {
+  background-color: var(--netpay-primary-blue);
+  color: white;
+  border-color: var(--netpay-primary-blue);
+}
+
+.modal-btn-primary:hover {
+  background-color: var(--netpay-accent-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(1, 108, 251, 0.3);
+}
+
+.modal-btn-secondary {
+  background-color: white;
+  color: var(--netpay-dark-blue);
+}
+
+.modal-btn-secondary:hover {
+  background-color: var(--netpay-light-gray);
+}
+
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Responsive modal adjustments */
+@media (max-width: 640px) {
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-actions {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+  }
+
+  .modal-btn {
+    width: 100%;
+  }
+}

@@ -33,6 +33,15 @@ export class AdminDashboardComponent implements OnInit {
 
   readonly showExportDropdown = signal(false)
 
+  // Modal signals
+  readonly showDetailsModal = signal(false)
+  readonly selectedApplication = signal<MerchantApplication | null>(null)
+  readonly showSettingsModal = signal(false)
+  readonly currentPassword = signal("")
+  readonly newPassword = signal("")
+  readonly confirmPassword = signal("")
+  readonly isChangingPassword = signal(false)
+
   ngOnInit() {
     this.checkAuth()
     this.route.params.subscribe((params) => {
@@ -253,5 +262,55 @@ export class AdminDashboardComponent implements OnInit {
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
+  }
+
+  // Modal methods
+  openDetailsModal(application: MerchantApplication): void {
+    this.selectedApplication.set(application)
+    this.showDetailsModal.set(true)
+  }
+
+  closeDetailsModal(): void {
+    this.showDetailsModal.set(false)
+    this.selectedApplication.set(null)
+  }
+
+  openSettingsModal(): void {
+    this.showSettingsModal.set(true)
+    this.currentPassword.set("")
+    this.newPassword.set("")
+    this.confirmPassword.set("")
+  }
+
+  closeSettingsModal(): void {
+    this.showSettingsModal.set(false)
+    this.currentPassword.set("")
+    this.newPassword.set("")
+    this.confirmPassword.set("")
+  }
+
+  changePassword(): void {
+    if (this.newPassword() !== this.confirmPassword()) {
+      alert("New passwords do not match")
+      return
+    }
+
+    this.isChangingPassword.set(true)
+    this.authService.changePassword(this.currentPassword(), this.newPassword()).subscribe({
+      next: (response) => {
+        this.isChangingPassword.set(false)
+        if (response.success) {
+          alert("Password changed successfully")
+          this.closeSettingsModal()
+        } else {
+          alert(response.message || "Failed to change password")
+        }
+      },
+      error: (error) => {
+        this.isChangingPassword.set(false)
+        console.error("Error changing password:", error)
+        alert("Error changing password")
+      },
+    })
   }
 }
