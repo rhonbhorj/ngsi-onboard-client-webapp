@@ -12,13 +12,20 @@ import { CommonModule } from "@angular/common"
           <!-- Animated checkmark -->
           <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
             <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" 
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" 
                     class="animate-draw"></path>
             </svg>
           </div>
           
           <h3 class="text-xl font-semibold text-gray-900 mb-2">Application Submitted Successfully!</h3>
           
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <div class="text-center">
+              <p class="text-sm font-medium text-blue-700 mb-1">Reference No.:</p>
+              <p class="text-lg font-bold text-blue-900">{{ referenceNo() }}</p>
+            </div>
+          </div>
+
           <div class="w-full space-y-4 mt-4">
             <p class="text-sm text-gray-600 leading-relaxed">
               Thank you for your interest in applying as a merchant for our new payment method via QRPH. Our Sales Team will contact you soon to discuss the Payment Gateway Service in more detail.
@@ -50,10 +57,6 @@ import { CommonModule } from "@angular/common"
               <span class="hidden sm:inline">/</span>
               <span class="font-medium whitespace-nowrap">+63 917 179 3481</span>
             </div>
-            
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <span class="text-sm font-medium text-blue-800">Reference No.: {{ referenceNo() }}</span>
-            </div>
           </div>
           
           <div class="mt-6 w-full">
@@ -68,7 +71,8 @@ import { CommonModule } from "@angular/common"
       </div>
     </div>
   `,
-  styles: [`
+  styles: [
+    `
     :host {
       display: block;
     }
@@ -85,7 +89,8 @@ import { CommonModule } from "@angular/common"
       animation: draw 0.6s ease-in-out forwards;
       animation-delay: 0.2s;
     }
-  `]
+  `,
+  ],
 })
 export class SuccessDialogComponent {
   readonly referenceNo = input.required<string>()

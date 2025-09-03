@@ -8,13 +8,14 @@ export interface MerchantApplication {
   reference?: string
   // Step 1: Business Information
   contactPersonName: string
+  registeredByContactNumber: string // Added registered by contact number field
   contactNumber: string
+  contactPerson: string
   businessName: string
   businessEmail: string
   businessAddress: string
   industryOrBusinessStyle: string
   telephoneNo?: string
-  typeOfBusiness: "Sole Proprietorship" | "Partnership" | "Corporation" | "Others"
 
   // Step 2: Payment & Transaction Details
   hasExistingPaymentPortal: string
@@ -40,13 +41,14 @@ interface BackendMerchantApplication {
   id: string
   reference: string
   contactPersonName: string
+  registeredByContactNumber: string // Added registered by contact number field
   contactNumber: string
+  contactPerson: string
   businessName: string
   businessEmail: string
   businessAddress: string
   industryOrBusinessStyle: string
   telephoneNo?: string
-  typeOfBusiness: string
   hasExistingPaymentPortal?: string
   currentModeOfPayment?: any
   estimatedTransactionNumbers?: string
@@ -77,13 +79,14 @@ export class ApplicationService {
     this.applications.set([
       {
         contactPersonName: "Ritchmond Tajarros",
+        registeredByContactNumber: "09177589353", // Added registered by contact number to mock data
         contactNumber: "09177589353",
+        contactPerson: "John Doe", // Added contactPerson field
         businessName: "NetGlobal Solutions Inc",
         businessEmail: "tajarrosrj@gmail.com",
         businessAddress: "123 Business Street, Metro Manila, Philippines",
         industryOrBusinessStyle: "Technology Solutions",
         telephoneNo: "02-1234-5678",
-        typeOfBusiness: "Corporation",
         hasExistingPaymentPortal: "NO",
         currentModeOfPayment: {
           cash: false,
@@ -98,13 +101,14 @@ export class ApplicationService {
       },
       {
         contactPersonName: "Raven David",
+        registeredByContactNumber: "09123456789", // Added registered by contact number to mock data
         contactNumber: "09123456789",
+        contactPerson: "Jane Smith", // Added contactPerson field
         businessName: "NetGlobal Solutions Inc",
         businessEmail: "ravendavid@gmail.com",
         businessAddress: "456 Tech Avenue, Cebu City, Philippines",
         industryOrBusinessStyle: "Software Development",
         telephoneNo: "032-9876-5432",
-        typeOfBusiness: "Corporation",
         hasExistingPaymentPortal: "YES",
         currentModeOfPayment: {
           cash: true,
@@ -126,13 +130,14 @@ export class ApplicationService {
     return {
       reference: backendData.reference,
       contactPersonName: backendData.contactPersonName,
+      registeredByContactNumber: backendData.registeredByContactNumber, // Added registered by contact number transformation
       contactNumber: backendData.contactNumber,
+      contactPerson: backendData.contactPerson,
       businessName: backendData.businessName,
       businessEmail: backendData.businessEmail,
       businessAddress: backendData.businessAddress,
       industryOrBusinessStyle: backendData.industryOrBusinessStyle,
       telephoneNo: backendData.telephoneNo,
-      typeOfBusiness: backendData.typeOfBusiness as MerchantApplication["typeOfBusiness"],
       hasExistingPaymentPortal: backendData.hasExistingPaymentPortal ?? "",
       currentModeOfPayment:
         typeof backendData.currentModeOfPayment === "string"
@@ -194,7 +199,9 @@ export class ApplicationService {
   // Get application by status from backend
   getApplicationsByStatus(status: MerchantApplication["status"]): Observable<MerchantApplication[]> {
     return this.http
-      .get<ApiResponse<BackendMerchantApplication[]>>(`${environment.apiUrl}/api/merchant-applications?status=${status}`)
+      .get<ApiResponse<BackendMerchantApplication[]>>(
+        `${environment.apiUrl}/api/merchant-applications?status=${status}`,
+      )
       .pipe(map((response) => (response.data || []).map((app) => this.transformToMerchantApplication(app))))
   }
 

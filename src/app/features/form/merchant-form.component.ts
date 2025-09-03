@@ -227,7 +227,9 @@ export class MerchantOnboardingComponent implements OnInit {
 
   ngOnInit() {
     this.initializeForm()
-    this.loadSavedData()
+    setTimeout(() => {
+      this.loadSavedData()
+    }, 0)
   }
 
   private initializeForm(): void {
@@ -259,6 +261,11 @@ export class MerchantOnboardingComponent implements OnInit {
         }
         if (data.formValues) {
           this.businessInfoForm.patchValue(data.formValues)
+          this.businessInfoForm.updateValueAndValidity()
+          // Trigger change detection for child components
+          setTimeout(() => {
+            this.businessInfoForm.markAllAsTouched()
+          }, 100)
         }
       } catch (error) {
         console.error("Error loading saved form data:", error)
@@ -289,14 +296,21 @@ export class MerchantOnboardingComponent implements OnInit {
     if (this.currentStep() === 1) {
       const step1Fields = [
         "contactPersonName",
+        "registeredByContactNumber",
+        "contactPerson",
         "contactNumber",
         "businessName",
         "businessEmail",
         "businessAddress",
         "industryOrBusinessStyle",
-        "typeOfBusiness",
       ]
-      return step1Fields.every((field) => this.businessInfoForm.get(field)?.valid)
+      return step1Fields.every((field) => {
+        const control = this.businessInfoForm.get(field)
+        if (control?.disabled) {
+          return control.value && control.value.trim() !== ""
+        }
+        return control?.valid && !control?.pending
+      })
     } else if (this.currentStep() === 2) {
       // Payment details step validation - at least one payment mode should be selected
       const paymentModes = this.businessInfoForm.get("currentModeOfPayment")?.value
@@ -335,14 +349,15 @@ export class MerchantOnboardingComponent implements OnInit {
   private buildFormData(): any {
     const formValue = this.businessInfoForm.value
     return {
-      contactPersonName: formValue.contactPersonName,
+      registeredBy: formValue.contactPersonName, // This is actually the registered by name from the form
+      registeredByContactNumber: formValue.registeredByContactNumber,
+      contactPersonName: formValue.contactPerson, // This is the actual contact person name
       contactNumber: formValue.contactNumber,
       businessName: formValue.businessName,
       businessEmail: formValue.businessEmail,
       businessAddress: formValue.businessAddress,
       industryOrBusinessStyle: formValue.industryOrBusinessStyle,
       telephoneNo: formValue.telephoneNo,
-      typeOfBusiness: formValue.typeOfBusiness,
       hasExistingPaymentPortal: formValue.hasExistingPaymentPortal,
       currentModeOfPayment: formValue.currentModeOfPayment,
       estimatedTransactionNumbers: formValue.estimatedTransactionNumbers,

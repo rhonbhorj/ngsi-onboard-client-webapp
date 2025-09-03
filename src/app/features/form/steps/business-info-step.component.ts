@@ -1,10 +1,10 @@
-import { Component, input, signal, computed, inject } from '@angular/core';
-import { FormGroup, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { FormFieldComponent } from '../../../shared/components/form-field.component';
+import { Component, input, type OnInit } from "@angular/core"
+import { type FormGroup, ReactiveFormsModule, type FormControl } from "@angular/forms"
+import { CommonModule } from "@angular/common"
+import { FormFieldComponent } from "../../../shared/components/form-field.component"
 
 @Component({
-  selector: 'app-business-info-step',
+  selector: "app-business-info-step",
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
   template: `
@@ -17,9 +17,9 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
           viewBox="0 0 24 24"
         >
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
           ></path>
         </svg>
@@ -27,26 +27,54 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
       </h2>
 
       <form [formGroup]="form()" class="space-y-6">
-        <!-- Contact Person Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <app-form-field
-            label="CONTACT PERSON NAME"
-            fieldId="contactPersonName"
-            [control]="getControl('contactPersonName')"
-            type="text"
-            placeholder="Enter full name of business owner / authorized representative"
-            [required]="true"
-          />
+        <!-- Registered By Section -->
+        <div class="space-y-4">
+          <label class="block text-sm font-medium text-netpay-dark-blue">REGISTERED BY</label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <app-form-field
+              label="REGISTERED BY"
+              fieldId="contactPersonName"
+              [control]="getControl('contactPersonName')"
+              type="text"
+              placeholder="Enter full name of business owner / authorized representative"
+              [required]="true"
+            />
 
-          <app-form-field
-            label="CONTACT NUMBER"
-            [control]="getControl('contactNumber')"
-            fieldId="contactNumber"
-            type="text"
-            placeholder="Enter mobile number"
-            [required]="true"
-          />
-        </div>
+            <!-- Registered By Contact Number with +63 prefix -->
+            <div class="form-field">
+              <label for="registeredByContactNumber" class="block text-sm font-medium text-gray-700 mb-2">
+                REGISTERED BY CONTACT NUMBER <span class="text-red-500">*</span>
+              </label>
+              <div class="flex">
+                <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-lg">
+                  +63
+                </span>
+                <input
+                  type="text"
+                  id="registeredByContactNumber"
+                  [formControl]="getControl('registeredByContactNumber')"
+                  placeholder="9XXXXXXXXX"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-r-lg focus:border-transparent"
+                  [class.border-red-500]="isFieldInvalid('registeredByContactNumber')"
+                />
+              </div>
+              @if (getControl('registeredByContactNumber').pending) {
+              <div class="text-blue-500 text-sm mt-1">
+                Checking contact number...
+              </div>
+              } @else {
+                @if (isFieldInvalid('registeredByContactNumber')) {
+                <div class="error-message text-red-500 text-sm mt-1">
+                  @if (getControl('registeredByContactNumber').errors?.['contactNumberExists']) {
+                    This contact number is already registered.
+                  } @else {
+                    Please enter a valid mobile number (9XXXXXXXXX)
+                  }
+                </div>
+                }
+              }
+            </div>
+          </div>
 
         <!-- Business Details Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -102,56 +130,113 @@ import { FormFieldComponent } from '../../../shared/components/form-field.compon
           />
         </div>
 
-        <!-- Type of Business Section -->
+        <!-- Contact Person Section -->
         <div class="space-y-4">
-          <label class="block text-sm font-medium text-netpay-dark-blue"> TYPE OF BUSINESS </label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <label class="block text-sm font-medium text-netpay-dark-blue">CONTACT PERSON</label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <app-form-field
+              label="CONTACT PERSON"
+              fieldId="contactPerson"
+              [control]="getControl('contactPerson')"
+              type="text"
+              placeholder="Enter contact person name"
+              [required]="true"
+            />
+
+            <!-- Contact Number with +63 prefix -->
+            <div class="form-field">
+              <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-2">
+                CONTACT NUMBER <span class="text-red-500">*</span>
+              </label>
+              <div class="flex">
+                <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-lg">
+                  +63
+                </span>
+                <input
+                  type="text"
+                  id="contactNumber"
+                  [formControl]="getControl('contactNumber')"
+                  placeholder="9XXXXXXXXX"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-r-lg focus:border-transparent"
+                  [class.border-red-500]="isFieldInvalid('contactNumber')"
+                />
+              </div>
+              @if (getControl('contactNumber').pending) {
+              <div class="text-blue-500 text-sm mt-1">
+                Checking contact number...
+              </div>
+              } @else {
+                @if (isFieldInvalid('contactNumber')) {
+                <div class="error-message text-red-500 text-sm mt-1">
+                  @if (getControl('contactNumber').errors?.['contactNumberExists']) {
+                    This contact number is already registered.
+                  } @else {
+                    Please enter a valid mobile number (9XXXXXXXXX)
+                  }
+                </div>
+                }
+              }
+            </div>
+          </div>
+
+          <!-- Added checkbox for "same with registered by" -->
+          <div class="mt-4">
             <label class="flex items-center">
               <input
-                type="radio"
-                formControlName="typeOfBusiness"
-                value="Sole Proprietorship"
+                type="checkbox"
+                [formControl]="getControl('sameAsRegisteredBy')"
                 class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                (change)="onSameAsRegisteredByChange($event)"
               />
-              <span class="text-sm">Sole Proprietorship</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                formControlName="typeOfBusiness"
-                value="Partnership"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
-              />
-              <span class="text-sm">Partnership</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                formControlName="typeOfBusiness"
-                value="Corporation"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
-              />
-              <span class="text-sm">Corporation</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                formControlName="typeOfBusiness"
-                value="Others"
-                class="mr-2 text-netpay-primary-blue focus:ring-netpay-primary-blue"
-              />
-              <span class="text-sm">Others</span>
+              <span class="text-sm text-gray-700">Same with registered by</span>
             </label>
           </div>
         </div>
-      </form>
     </div>
   `,
 })
-export class BusinessInfoStepComponent {
-  readonly form = input.required<FormGroup>();
+export class BusinessInfoStepComponent implements OnInit {
+  readonly form = input.required<FormGroup>()
+
+  ngOnInit(): void {
+    // Check if the checkbox was previously checked and restore the field states
+    const sameAsRegisteredByControl = this.getControl("sameAsRegisteredBy")
+    if (sameAsRegisteredByControl?.value) {
+      // If checkbox is checked, apply the same logic as onSameAsRegisteredByChange
+      this.applySameAsRegisteredByLogic(true)
+    }
+  }
 
   getControl(fieldName: string): FormControl {
-    return this.form().get(fieldName) as FormControl;
+    return this.form().get(fieldName) as FormControl
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const control = this.getControl(fieldName)
+    return !!(control?.errors && control?.touched)
+  }
+
+  onSameAsRegisteredByChange(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked
+    this.applySameAsRegisteredByLogic(isChecked)
+  }
+
+  private applySameAsRegisteredByLogic(isChecked: boolean): void {
+    const registeredByName = this.getControl("contactPersonName").value
+    const registeredByContactNumber = this.getControl("registeredByContactNumber").value
+
+    if (isChecked && registeredByName && registeredByContactNumber) {
+      this.getControl("contactPerson").setValue(registeredByName)
+      this.getControl("contactNumber").setValue(registeredByContactNumber)
+      this.getControl("contactPerson").disable()
+      this.getControl("contactNumber").disable()
+    } else {
+      this.getControl("contactPerson").enable()
+      this.getControl("contactNumber").enable()
+      if (isChecked) {
+        this.getControl("contactPerson").setValue("")
+        this.getControl("contactNumber").setValue("")
+      }
+    }
   }
 }

@@ -12,6 +12,7 @@ interface AdminDashboardResponse {
     id: string
     contactPersonName: string
     contactNumber: string
+    contactPerson: string
     businessName: string
     businessEmail: string
     businessAddress: string
@@ -78,18 +79,25 @@ export class AdminDashboardService {
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
           contactPersonName: company.contactPersonName,
+          registeredByContactNumber: company.contactNumber, // Assuming it's the same as contactNumber
           contactNumber: company.contactNumber,
+          contactPerson: company.contactPerson,
           businessName: company.businessName,
           businessEmail: company.businessEmail,
           businessAddress: company.businessAddress,
           industryOrBusinessStyle: company.industryOrBusinessStyle,
           telephoneNo: company.telephoneNo,
-          typeOfBusiness: company.typeOfBusiness as "Corporation" | "Sole Proprietorship" | "Partnership" | "Others",
           hasExistingPaymentPortal: company.hasExistingPaymentPortal,
-          currentModeOfPayment: JSON.parse(company.currentModeOfPayment),
+          currentModeOfPayment: (() => {
+            try {
+              return JSON.parse(company.currentModeOfPayment);
+            } catch {
+              return { cash: false, eWallets: false, qrph: false, cardPayment: false };
+            }
+          })(),
           estimatedTransactionNumbers: company.estimatedTransactionNumbers,
           estimatedAverageAmount: company.estimatedAverageAmount,
-          status: company.status as "pending" | "approved" | "rejected",
+          status: company.status as MerchantApplication["status"],
           submittedAt: company.submittedAt,
         }))
 

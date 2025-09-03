@@ -24,27 +24,40 @@ import { CommonModule } from "@angular/common"
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-3">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person Name</label>
+              <!-- Changed label from "Contact Person Name" to "Registered By" -->
+              <label class="block text-sm font-medium text-gray-700 mb-1">Registered By</label>
               <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('contactPersonName')?.value || 'N/A' }}</p>
+            </div>
+            
+            <!-- Added registered by contact number field display -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Registered By Contact Number</label>
+              <p class="text-gray-900 bg-white p-2 rounded border">+63{{ form.get('registeredByContactNumber')?.value || 'N/A' }}</p>
+            </div>
+            
+            <div>
+              <!-- Added new Contact Person field display -->
+              <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+              <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('contactPerson')?.value || 'N/A' }}</p>
             </div>
             
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-              <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('contactNumber')?.value || 'N/A' }}</p>
+              <p class="text-gray-900 bg-white p-2 rounded border">+63{{ form.get('contactNumber')?.value || 'N/A' }}</p>
             </div>
             
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Telephone Number</label>
               <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('telephoneNo')?.value || 'N/A' }}</p>
             </div>
-            
+          </div>
+          
+          <div class="space-y-3">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
               <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('businessName')?.value || 'N/A' }}</p>
             </div>
-          </div>
-          
-          <div class="space-y-3">
+            
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Business Email</label>
               <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('businessEmail')?.value || 'N/A' }}</p>
@@ -58,11 +71,6 @@ import { CommonModule } from "@angular/common"
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Industry/Business Style</label>
               <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('industryOrBusinessStyle')?.value || 'N/A' }}</p>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Type of Business</label>
-              <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('typeOfBusiness')?.value || 'N/A' }}</p>
             </div>
           </div>
         </div>

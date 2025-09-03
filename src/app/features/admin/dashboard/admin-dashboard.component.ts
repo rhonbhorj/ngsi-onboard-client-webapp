@@ -235,7 +235,6 @@ export class AdminDashboardComponent implements OnInit {
           `"${app.contactPersonName}"`,
           `"${app.contactNumber}"`,
           `"${app.businessEmail}"`,
-          `"${app.typeOfBusiness}"`,
           `"${new Date(app.submittedAt).toLocaleString()}"`,
         ].join(","),
       ),
