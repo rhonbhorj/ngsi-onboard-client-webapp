@@ -8,20 +8,38 @@ export const adminRoutes: Routes = [
     title: "Admin Login",
   },
   {
-    path: "dashboard/:page",
-    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
-    title: "Admin Dashboard",
-    canActivate: [adminAuthGuard],
-  },
-  {
     path: "dashboard",
     loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
     title: "Admin Dashboard",
     canActivate: [adminAuthGuard],
   },
   {
+    path: "dashboard/:page",
+    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
+    title: "Admin Dashboard",
+    canActivate: [adminAuthGuard],
+  },
+  {
+    path: "applications",
+    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
+    title: "Admin Applications",
+    canActivate: [adminAuthGuard],
+  },
+  {
+    path: "applications/:tab",
+    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
+    title: "Admin Applications",
+    canActivate: [adminAuthGuard],
+  },
+  {
+    path: "settings",
+    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
+    title: "Admin Settings",
+    canActivate: [adminAuthGuard],
+  },
+  {
     path: "",
-    redirectTo: "login",
+    redirectTo: "dashboard",
     pathMatch: "full",
   },
 ]

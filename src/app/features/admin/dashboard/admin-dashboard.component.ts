@@ -33,6 +33,10 @@ export class AdminDashboardComponent implements OnInit {
 
   readonly showExportDropdown = signal(false)
 
+  // Navigation state
+  readonly activeSection = signal<"dashboard" | "applications" | "settings">("dashboard")
+  readonly activeTab = signal<"all" | "pending" | "approved" | "rejected">("all")
+
   // Modal signals
   readonly showDetailsModal = signal(false)
   readonly selectedApplication = signal<MerchantApplication | null>(null)
@@ -44,9 +48,30 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.checkAuth()
-    this.route.params.subscribe((params) => {
-      const page = params["page"] ? Number.parseInt(params["page"], 10) : 1
-      this.loadDashboardData(page)
+
+    this.route.url.subscribe((segments) => {
+      const path = segments[0]?.path || "dashboard"
+
+      if (path === "dashboard") {
+        this.activeSection.set("dashboard")
+        // Handle pagination for dashboard
+        this.route.params.subscribe((params) => {
+          const page = params["page"] ? Number.parseInt(params["page"], 10) : 1
+          this.loadDashboardData(page)
+        })
+      } else if (path === "applications") {
+        this.activeSection.set("applications")
+        // Handle tab parameter for applications
+        this.route.params.subscribe((params) => {
+          const tab = (params["tab"] as "all" | "pending" | "approved" | "rejected") || "all"
+          this.activeTab.set(tab)
+          this.loadDashboardData(1) // Load data for applications
+          this.filterApplications()
+        })
+      } else if (path === "settings") {
+        this.activeSection.set("settings")
+        this.loadDashboardData(1) // Load data for settings (needed for stats)
+      }
     })
   }
 
@@ -69,6 +94,11 @@ export class AdminDashboardComponent implements OnInit {
         this.totalPages.set(response.totalPages)
         this.totalCount.set(response.totalCount)
         this.isLoading.set(false)
+
+        // Apply filters if on applications section
+        if (this.activeSection() === "applications") {
+          this.filterApplications()
+        }
       },
       error: (error) => {
         console.error("[v0] Error loading applications:", error)
@@ -81,7 +111,13 @@ export class AdminDashboardComponent implements OnInit {
     console.log("[v0] onPageChange called with page:", page, "current totalPages:", this.totalPages())
     if (page >= 1 && page <= this.totalPages()) {
       console.log("[v0] Page change valid, navigating to page:", page)
-      this.router.navigate(["/admin/dashboard", page])
+
+      if (this.activeSection() === "dashboard") {
+        this.router.navigate(["/admin/dashboard", page])
+      } else {
+        this.loadDashboardData(page)
+      }
+
       // Clear search when changing pages
       this.searchTerm.set("")
     } else {
@@ -173,24 +209,28 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private filterApplications(): void {
-    const searchTerm = this.searchTerm().toLowerCase().trim()
+    let applications = this.allApplications()
 
-    if (!searchTerm) {
-      this.filteredApplications.set(this.allApplications())
-      return
+    // Filter by tab first
+    if (this.activeTab() !== "all") {
+      applications = applications.filter((app) => app.status === this.activeTab())
     }
 
-    const filtered = this.allApplications().filter(
-      (application) =>
-        (application.reference || "").toLowerCase().includes(searchTerm) ||
-        application.contactPersonName.toLowerCase().includes(searchTerm) ||
-        application.businessName.toLowerCase().includes(searchTerm) ||
-        application.businessEmail.toLowerCase().includes(searchTerm) ||
-        application.contactNumber.toLowerCase().includes(searchTerm) ||
-        application.industryOrBusinessStyle.toLowerCase().includes(searchTerm),
-    )
+    // Then filter by search term
+    const searchTerm = this.searchTerm().toLowerCase().trim()
+    if (searchTerm) {
+      applications = applications.filter(
+        (application) =>
+          (application.reference || "").toLowerCase().includes(searchTerm) ||
+          application.contactPersonName.toLowerCase().includes(searchTerm) ||
+          application.businessName.toLowerCase().includes(searchTerm) ||
+          application.businessEmail.toLowerCase().includes(searchTerm) ||
+          application.contactNumber.toLowerCase().includes(searchTerm) ||
+          application.industryOrBusinessStyle.toLowerCase().includes(searchTerm),
+      )
+    }
 
-    this.filteredApplications.set(filtered)
+    this.filteredApplications.set(applications)
   }
 
   logout(): void {
@@ -312,5 +352,82 @@ export class AdminDashboardComponent implements OnInit {
         alert("Error changing password")
       },
     })
+  }
+
+  // Navigation methods
+  setActiveSection(section: "dashboard" | "applications" | "settings"): void {
+    switch (section) {
+      case "dashboard":
+        this.router.navigate(["/admin/dashboard"])
+        break
+      case "applications":
+        this.router.navigate(["/admin/applications"])
+        break
+      case "settings":
+        this.router.navigate(["/admin/settings"])
+        break
+    }
+  }
+
+  setActiveTab(tab: "all" | "pending" | "approved" | "rejected"): void {
+    this.router.navigate(["/admin/applications", tab])
+  }
+
+  getSectionTitle(): string {
+    switch (this.activeSection()) {
+      case "dashboard":
+        return "Dashboard"
+      case "applications":
+        return "Applications"
+      case "settings":
+        return "Settings"
+      default:
+        return "Admin Dashboard"
+    }
+  }
+
+  getSectionDescription(): string {
+    switch (this.activeSection()) {
+      case "dashboard":
+        return "Overview of application statistics and recent submissions"
+      case "applications":
+        return "Manage and review all merchant applications"
+      case "settings":
+        return "Configure your admin account settings"
+      default:
+        return ""
+    }
+  }
+
+  getTabDescription(): string {
+    const filteredCount = this.filteredApplications().length
+    switch (this.activeTab()) {
+      case "all":
+        return `All submitted applications (${filteredCount} total)`
+      case "pending":
+        return `Applications awaiting review (${filteredCount} pending)`
+      case "approved":
+        return `Approved applications (${filteredCount} approved)`
+      case "rejected":
+        return `Rejected applications (${filteredCount} rejected)`
+      default:
+        return ""
+    }
+  }
+
+  getPendingCount(): number {
+    return this.allApplications().filter((app) => app.status === "pending" || !app.status).length
+  }
+
+  getApprovedCount(): number {
+    return this.allApplications().filter((app) => app.status === "approved").length
+  }
+
+  getRejectedCount(): number {
+    return this.allApplications().filter((app) => app.status === "rejected").length
+  }
+
+  getRecentApplications(): MerchantApplication[] {
+    return this.allApplications().slice(0, 5)
   }
 }
