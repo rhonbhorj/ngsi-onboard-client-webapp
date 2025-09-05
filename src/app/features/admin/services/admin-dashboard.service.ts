@@ -11,6 +11,8 @@ interface AdminDashboardResponse {
   companies: {
     id: string
     contactPersonName: string
+    registeredBy: string
+    registeredByContactNumber: string
     contactNumber: string
     contactPerson: string
     businessName: string
@@ -27,6 +29,26 @@ interface AdminDashboardResponse {
     status: string
     submittedAt: string
   }[]
+}
+
+interface SearchCompany {
+  referenceNo: string
+  contactPersonName: string
+  registeredBy: string
+  registeredByContactNumber: string
+  contactNumber: string
+  contactPerson?: string
+  businessName: string
+  businessEmail: string
+  businessAddress: string
+  industryOrBusinessStyle: string
+  telephoneNo?: string
+  hasExistingPaymentPortal: string
+  currentModeOfPayment: string
+  estimatedTransactionNumbers: string
+  estimatedAverageAmount: string
+  status: string
+  submittedAt: string
 }
 
 @Injectable({
@@ -79,25 +101,27 @@ export class AdminDashboardService {
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
           contactPersonName: company.contactPersonName,
-          registeredByContactNumber: company.contactNumber, // Assuming it's the same as contactNumber
+          registeredBy: company.registeredBy,
+          registeredByContactNumber: company.registeredByContactNumber,
           contactNumber: company.contactNumber,
-          contactPerson: company.contactPerson,
+          contactPerson: company.contactPerson || company.contactPersonName,
           businessName: company.businessName,
           businessEmail: company.businessEmail,
           businessAddress: company.businessAddress,
           industryOrBusinessStyle: company.industryOrBusinessStyle,
           telephoneNo: company.telephoneNo,
+          typeOfBusiness: company.typeOfBusiness as "Corporation" | "Sole Proprietorship" | "Partnership" | "Others",
           hasExistingPaymentPortal: company.hasExistingPaymentPortal,
           currentModeOfPayment: (() => {
             try {
-              return JSON.parse(company.currentModeOfPayment);
+              return JSON.parse(company.currentModeOfPayment)
             } catch {
-              return { cash: false, eWallets: false, qrph: false, cardPayment: false };
+              return { cash: false, eWallets: false, qrph: false, cardPayment: false }
             }
           })(),
           estimatedTransactionNumbers: company.estimatedTransactionNumbers,
           estimatedAverageAmount: company.estimatedAverageAmount,
-          status: company.status as MerchantApplication["status"],
+          status: company.status as "pending" | "approved" | "rejected",
           submittedAt: company.submittedAt,
         }))
 
@@ -125,20 +149,110 @@ export class AdminDashboardService {
     )
   }
 
+  searchApplications(searchTerm: string): Observable<{ applications: MerchantApplication[]; totalCount: number }> {
+    const endpoint = `${environment.apiUrl}/admin/dashboard/find-company/${encodeURIComponent(searchTerm)}`
+
+    console.log("[v0] Service making search request to:", endpoint)
+
+    const token = this.authService.authToken()
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    })
+
+    return this.http.get<SearchCompany[]>(endpoint, { headers }).pipe(
+      map((companies) => {
+        console.log("[v0] Search results received:", companies)
+
+        const applications = companies.map((company) => ({
+          reference: company.referenceNo,
+          contactPersonName: company.contactPersonName,
+          registeredBy: company.registeredBy,
+          registeredByContactNumber: company.registeredByContactNumber,
+          contactNumber: company.contactNumber,
+          contactPerson: company.contactPerson || company.contactPersonName,
+          businessName: company.businessName,
+          businessEmail: company.businessEmail,
+          businessAddress: company.businessAddress,
+          industryOrBusinessStyle: company.industryOrBusinessStyle,
+          telephoneNo: company.telephoneNo,
+          hasExistingPaymentPortal: company.hasExistingPaymentPortal,
+          currentModeOfPayment: (() => {
+            try {
+              return JSON.parse(company.currentModeOfPayment)
+            } catch {
+              return { cash: false, eWallets: false, qrph: false, cardPayment: false }
+            }
+          })(),
+          estimatedTransactionNumbers: company.estimatedTransactionNumbers,
+          estimatedAverageAmount: company.estimatedAverageAmount,
+          status: company.status as "pending" | "approved" | "rejected" | "under_review",
+          submittedAt: company.submittedAt,
+        }))
+
+        return {
+          applications,
+          totalCount: applications.length,
+        }
+      }),
+      catchError((error) => {
+        console.error("[v0] HTTP Error in search:", error)
+        return of({
+          applications: [],
+          totalCount: 0,
+        })
+      }),
+    )
+  }
+
   getNotifications(): Observable<AdminNotification[]> {
     return of(this.notifications())
   }
 
-  updateApplicationStatus(applicationId: string, status: MerchantApplication["status"], notes?: string): void {
-    this.addNotification({
-      id: "notif_" + Date.now(),
-      type: "status_change",
-      title: "Application Status Updated",
-      message: `Application ${applicationId} status changed to ${status}`,
-      timestamp: new Date().toISOString(),
-      read: false,
-      actionUrl: `/admin/applications/${applicationId}`,
+  updateApplicationStatus(
+    referenceNo: string,
+    status: "approved" | "rejected",
+  ): Observable<{ success: boolean; message?: string }> {
+    const endpoint = `${environment.apiUrl}/admin/dashboard/update-status`
+
+    const token = this.authService.authToken()
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     })
+
+    const body = {
+      referenceNo,
+      status,
+    }
+
+    console.log("[v0] Updating application status:", { referenceNo, status })
+
+    return this.http.post<{ success: boolean; message?: string }>(endpoint, body, { headers }).pipe(
+      map((response) => {
+        console.log("[v0] Status update response:", response)
+
+        // Add notification for status change
+        this.addNotification({
+          id: "notif_" + Date.now(),
+          type: "status_change",
+          title: "Application Status Updated",
+          message: `Application ${referenceNo} status changed to ${status}`,
+          timestamp: new Date().toISOString(),
+          read: false,
+          actionUrl: `/admin/applications/${referenceNo}`,
+        })
+
+        return response
+      }),
+      catchError((error) => {
+        console.error("[v0] Error updating application status:", error)
+        return of({
+          success: false,
+          message: error.error?.message || "Failed to update application status",
+        })
+      }),
+    )
   }
 
   private loadNotifications(): void {

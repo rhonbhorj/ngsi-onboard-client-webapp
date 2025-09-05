@@ -302,7 +302,6 @@ export class MerchantOnboardingComponent implements OnInit {
         "businessName",
         "businessEmail",
         "businessAddress",
-        "industryOrBusinessStyle",
       ]
       return step1Fields.every((field) => {
         const control = this.businessInfoForm.get(field)
@@ -347,16 +346,15 @@ export class MerchantOnboardingComponent implements OnInit {
   }
 
   private buildFormData(): any {
-    const formValue = this.businessInfoForm.value
+    const formValue = this.businessInfoForm.getRawValue()
     return {
-      registeredBy: formValue.contactPersonName, // This is actually the registered by name from the form
+      registeredBy: formValue.contactPersonName,
       registeredByContactNumber: formValue.registeredByContactNumber,
-      contactPersonName: formValue.contactPerson, // This is the actual contact person name
+      contactPersonName: formValue.contactPerson,
       contactNumber: formValue.contactNumber,
       businessName: formValue.businessName,
       businessEmail: formValue.businessEmail,
       businessAddress: formValue.businessAddress,
-      industryOrBusinessStyle: formValue.industryOrBusinessStyle,
       telephoneNo: formValue.telephoneNo,
       hasExistingPaymentPortal: formValue.hasExistingPaymentPortal,
       currentModeOfPayment: formValue.currentModeOfPayment,

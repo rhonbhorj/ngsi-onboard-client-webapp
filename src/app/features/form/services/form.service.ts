@@ -43,7 +43,6 @@ export class FormService {
       businessName: ["", [Validators.required, Validators.minLength(2)]],
       businessEmail: ["", [Validators.required, Validators.email]],
       businessAddress: ["", [Validators.required, Validators.minLength(10)]],
-      industryOrBusinessStyle: ["", [Validators.required, Validators.minLength(2)]],
       telephoneNo: [""], // Optional
 
       // Payment Details fields

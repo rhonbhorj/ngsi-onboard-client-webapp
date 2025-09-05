@@ -12,6 +12,7 @@
   margin-left: 230px;
   padding-left: 2rem;
   padding-right: 2rem;
+  /* Removed sticky positioning to make header scroll with content */
 }
 
 .admin-main {
@@ -283,7 +284,6 @@
 
 .sidebar-logout-btn:hover {
   background-color: var(--netpay-blue-gray);
-  color: #dc2626;
 }
 
 /* Application Tabs */
@@ -477,6 +477,17 @@
   transform: none !important;
 }
 
+/* Modal details grid styles */
+.modal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.modal-details-full-width {
+  grid-column: 1 / -1;
+}
+
 /* Responsive modal adjustments */
 @media (max-width: 640px) {
   .modal-content {
@@ -496,5 +507,11 @@
 
   .modal-btn {
     width: 100%;
+  }
+
+  /* Stack columns on mobile for better readability */
+  .modal-details-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }

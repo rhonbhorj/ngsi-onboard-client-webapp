@@ -8,13 +8,13 @@ export interface MerchantApplication {
   reference?: string
   // Step 1: Business Information
   contactPersonName: string
+  registeredBy: string // Added registeredBy property to match backend schema
   registeredByContactNumber: string // Added registered by contact number field
   contactNumber: string
   contactPerson: string
   businessName: string
   businessEmail: string
   businessAddress: string
-  industryOrBusinessStyle: string
   telephoneNo?: string
 
   // Step 2: Payment & Transaction Details
@@ -41,13 +41,13 @@ interface BackendMerchantApplication {
   id: string
   reference: string
   contactPersonName: string
+  registeredBy: string // Added registeredBy property to backend interface
   registeredByContactNumber: string // Added registered by contact number field
   contactNumber: string
   contactPerson: string
   businessName: string
   businessEmail: string
   businessAddress: string
-  industryOrBusinessStyle: string
   telephoneNo?: string
   hasExistingPaymentPortal?: string
   currentModeOfPayment?: any
@@ -79,13 +79,13 @@ export class ApplicationService {
     this.applications.set([
       {
         contactPersonName: "Ritchmond Tajarros",
+        registeredBy: "Tayo pa", // Added registeredBy to mock data
         registeredByContactNumber: "09177589353", // Added registered by contact number to mock data
         contactNumber: "09177589353",
         contactPerson: "John Doe", // Added contactPerson field
         businessName: "NetGlobal Solutions Inc",
         businessEmail: "tajarrosrj@gmail.com",
         businessAddress: "123 Business Street, Metro Manila, Philippines",
-        industryOrBusinessStyle: "Technology Solutions",
         telephoneNo: "02-1234-5678",
         hasExistingPaymentPortal: "NO",
         currentModeOfPayment: {
@@ -101,13 +101,13 @@ export class ApplicationService {
       },
       {
         contactPersonName: "Raven David",
+        registeredBy: "Admin User", // Added registeredBy to mock data
         registeredByContactNumber: "09123456789", // Added registered by contact number to mock data
         contactNumber: "09123456789",
         contactPerson: "Jane Smith", // Added contactPerson field
         businessName: "NetGlobal Solutions Inc",
         businessEmail: "ravendavid@gmail.com",
         businessAddress: "456 Tech Avenue, Cebu City, Philippines",
-        industryOrBusinessStyle: "Software Development",
         telephoneNo: "032-9876-5432",
         hasExistingPaymentPortal: "YES",
         currentModeOfPayment: {
@@ -130,13 +130,13 @@ export class ApplicationService {
     return {
       reference: backendData.reference,
       contactPersonName: backendData.contactPersonName,
+      registeredBy: backendData.registeredBy, // Added registeredBy transformation
       registeredByContactNumber: backendData.registeredByContactNumber, // Added registered by contact number transformation
       contactNumber: backendData.contactNumber,
       contactPerson: backendData.contactPerson,
       businessName: backendData.businessName,
       businessEmail: backendData.businessEmail,
       businessAddress: backendData.businessAddress,
-      industryOrBusinessStyle: backendData.industryOrBusinessStyle,
       telephoneNo: backendData.telephoneNo,
       hasExistingPaymentPortal: backendData.hasExistingPaymentPortal ?? "",
       currentModeOfPayment:

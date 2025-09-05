@@ -67,11 +67,6 @@ import { CommonModule } from "@angular/common"
               <label class="block text-sm font-medium text-gray-700 mb-1">Business Address</label>
               <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('businessAddress')?.value || 'N/A' }}</p>
             </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Industry/Business Style</label>
-              <p class="text-gray-900 bg-white p-2 rounded border">{{ form.get('industryOrBusinessStyle')?.value || 'N/A' }}</p>
-            </div>
           </div>
         </div>
       </div>

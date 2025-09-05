@@ -29,7 +29,7 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
       <form [formGroup]="form()" class="space-y-6">
         <!-- Registered By Section -->
         <div class="space-y-4">
-          <label class="block text-sm font-medium text-netpay-dark-blue">REGISTERED BY</label>
+          <label class="block text-sm font-medium text-netpay-dark-blue"></label>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <app-form-field
               label="REGISTERED BY"
@@ -79,7 +79,7 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
         <!-- Business Details Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <app-form-field
-            label="BUSINESS / COMPANY NAME"
+            label="BUSINESS NAME"
             fieldId="businessName"
             [control]="getControl('businessName')"
             type="text"
@@ -109,17 +109,8 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
           />
         </div>
 
-        <!-- Industry and Telephone Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <app-form-field
-            label="INDUSTRY / BUSINESS CATEGORY"
-            fieldId="industryOrBusinessStyle"
-            [control]="getControl('industryOrBusinessStyle')"
-            type="text"
-            placeholder="Enter industry type (e.g., Retail, Food & Beverage, Tech, etc.)"
-            [required]="true"
-          />
-
+        <!-- Telephone Section -->
+        <div class="grid grid-cols-1 gap-4 md:gap-6">
           <app-form-field
             label="TELEPHONE NUMBER (OPTIONAL)"
             fieldId="telephoneNo"
@@ -132,7 +123,7 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
 
         <!-- Contact Person Section -->
         <div class="space-y-4">
-          <label class="block text-sm font-medium text-netpay-dark-blue">CONTACT PERSON</label>
+          <label class="block text-sm font-medium text-netpay-dark-blue"></label>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <app-form-field
               label="CONTACT PERSON"
@@ -199,8 +190,24 @@ export class BusinessInfoStepComponent implements OnInit {
   readonly form = input.required<FormGroup>()
 
   ngOnInit(): void {
-    // Check if the checkbox was previously checked and restore the field states
+    const contactPersonNameControl = this.getControl("contactPersonName")
+    const registeredByContactNumberControl = this.getControl("registeredByContactNumber")
     const sameAsRegisteredByControl = this.getControl("sameAsRegisteredBy")
+
+    // Listen for changes in registered by fields
+    contactPersonNameControl.valueChanges.subscribe(() => {
+      if (sameAsRegisteredByControl.value) {
+        this.applySameAsRegisteredByLogic(true)
+      }
+    })
+
+    registeredByContactNumberControl.valueChanges.subscribe(() => {
+      if (sameAsRegisteredByControl.value) {
+        this.applySameAsRegisteredByLogic(true)
+      }
+    })
+
+    // Check if the checkbox was previously checked and restore the field states
     if (sameAsRegisteredByControl?.value) {
       // If checkbox is checked, apply the same logic as onSameAsRegisteredByChange
       this.applySameAsRegisteredByLogic(true)
@@ -225,18 +232,18 @@ export class BusinessInfoStepComponent implements OnInit {
     const registeredByName = this.getControl("contactPersonName").value
     const registeredByContactNumber = this.getControl("registeredByContactNumber").value
 
-    if (isChecked && registeredByName && registeredByContactNumber) {
-      this.getControl("contactPerson").setValue(registeredByName)
-      this.getControl("contactNumber").setValue(registeredByContactNumber)
+    if (isChecked) {
       this.getControl("contactPerson").disable()
       this.getControl("contactNumber").disable()
+
+      // Only copy values if both source fields have values
+      if (registeredByName && registeredByContactNumber) {
+        this.getControl("contactPerson").setValue(registeredByName)
+        this.getControl("contactNumber").setValue(registeredByContactNumber)
+      }
     } else {
       this.getControl("contactPerson").enable()
       this.getControl("contactNumber").enable()
-      if (isChecked) {
-        this.getControl("contactPerson").setValue("")
-        this.getControl("contactNumber").setValue("")
-      }
     }
   }
 }
