@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from "@angular/core"
 import { HttpClient, HttpHeaders } from "@angular/common/http"
-import { type Observable, of, map, catchError } from "rxjs"
+import { type Observable, of, map, catchError, forkJoin, switchMap } from "rxjs"
 import type { AdminNotification } from "../models/admin.model"
 import type { MerchantApplication } from "../../../services/application.service"
 import { environment } from "../../../../environments/environment"
@@ -8,6 +8,7 @@ import { AdminAuthService } from "./admin-auth.service"
 
 interface AdminDashboardResponse {
   totalPages: number
+  total: number
   companies: {
     id: string
     contactPersonName: string
@@ -87,16 +88,10 @@ export class AdminDashboardService {
         console.log("[v0] Companies count:", response.companies?.length || 0)
 
         const currentPage = page // Use the requested page as current page
-        const companiesPerPage = response.companies?.length || 10
 
-        let totalCount: number
-        if (currentPage === response.totalPages && companiesPerPage < 10) {
-          totalCount = (response.totalPages - 1) * 10 + companiesPerPage
-        } else {
-          totalCount = response.totalPages * 10
-        }
+        const totalCount = response.total || response.totalPages * 10
 
-        console.log("[v0] Calculated totalCount:", totalCount)
+        console.log("[v0] Using backend total:", totalCount)
 
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
@@ -121,7 +116,7 @@ export class AdminDashboardService {
           })(),
           estimatedTransactionNumbers: company.estimatedTransactionNumbers,
           estimatedAverageAmount: company.estimatedAverageAmount,
-          status: company.status as "pending" | "approved" | "rejected",
+          status: company.status as MerchantApplication["status"],
           submittedAt: company.submittedAt,
         }))
 
@@ -186,7 +181,7 @@ export class AdminDashboardService {
           })(),
           estimatedTransactionNumbers: company.estimatedTransactionNumbers,
           estimatedAverageAmount: company.estimatedAverageAmount,
-          status: company.status as "pending" | "approved" | "rejected" | "under_review",
+          status: company.status as MerchantApplication["status"],
           submittedAt: company.submittedAt,
         }))
 
@@ -211,45 +206,114 @@ export class AdminDashboardService {
 
   updateApplicationStatus(
     referenceNo: string,
-    status: "approved" | "rejected",
+    status: "called", // Updated to only accept "called" status
   ): Observable<{ success: boolean; message?: string }> {
-    const endpoint = `${environment.apiUrl}/admin/dashboard/update-status`
+    console.log("[v0] Updating application status locally:", { referenceNo, status })
+
+    this.addNotification({
+      id: "notif_" + Date.now(),
+      type: "status_change",
+      title: "Application Status Updated",
+      message: `Application ${referenceNo} marked as ${status}`,
+      timestamp: new Date().toISOString(),
+      read: false,
+      actionUrl: `/admin/applications/${referenceNo}`,
+    })
+
+    return of({
+      success: true,
+      message: `Application ${referenceNo} marked as ${status}`,
+    })
+  }
+
+  getAllApplicationsForExport(): Observable<MerchantApplication[]> {
+    console.log("[v0] Getting all applications by fetching all pages")
+
+    // First get page 1 to know total pages
+    return this.getRecentApplications(1).pipe(
+      switchMap((firstPageResponse) => {
+        const totalPages = firstPageResponse.totalPages
+        console.log("[v0] Total pages to fetch:", totalPages)
+
+        if (totalPages <= 1) {
+          // Only one page, return the applications
+          return of(firstPageResponse.applications)
+        }
+
+        // Create array of page numbers to fetch (excluding page 1 since we already have it)
+        const pageNumbers = Array.from({ length: totalPages - 1 }, (_, i) => i + 2)
+
+        // Fetch all remaining pages
+        const pageRequests = pageNumbers.map((pageNum) => this.getRecentApplications(pageNum))
+
+        // Combine all requests
+        return forkJoin(pageRequests).pipe(
+          map((allPageResponses) => {
+            // Combine first page with all other pages
+            const allApplications = [
+              ...firstPageResponse.applications,
+              ...allPageResponses.flatMap((response) => response.applications),
+            ]
+
+            console.log("[v0] Combined all pages, total applications:", allApplications.length)
+            return allApplications
+          }),
+        )
+      }),
+      catchError((error) => {
+        console.error("[v0] HTTP Error in getAllApplicationsForExport:", error)
+        return of([])
+      }),
+    )
+  }
+
+  downloadExcelReport(): Observable<Blob> {
+    const endpoint = `${environment.apiUrl}/admin/dashboard/download`
+
+    console.log("[v0] Service making download request to:", endpoint)
 
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     })
 
-    const body = {
-      referenceNo,
-      status,
-    }
+    return this.http
+      .get(endpoint, {
+        headers,
+        responseType: "blob",
+      })
+      .pipe(
+        catchError((error) => {
+          console.error("[v0] HTTP Error in download:", error)
+          throw error
+        }),
+      )
+  }
 
-    console.log("[v0] Updating application status:", { referenceNo, status })
+  getDatabaseTotals(): Observable<{ pending: number; called: number; total: number }> {
+    console.log("[v0] Calculating totals from existing data instead of API call")
 
-    return this.http.post<{ success: boolean; message?: string }>(endpoint, body, { headers }).pipe(
+    return this.getRecentApplications(1).pipe(
       map((response) => {
-        console.log("[v0] Status update response:", response)
+        const applications = response.applications
+        const pending = applications.filter((app) => app.status === "pending").length
+        const called = applications.filter((app) => app.status === "called").length
+        const total = applications.length
 
-        // Add notification for status change
-        this.addNotification({
-          id: "notif_" + Date.now(),
-          type: "status_change",
-          title: "Application Status Updated",
-          message: `Application ${referenceNo} status changed to ${status}`,
-          timestamp: new Date().toISOString(),
-          read: false,
-          actionUrl: `/admin/applications/${referenceNo}`,
-        })
+        console.log("[v0] Calculated totals:", { pending, called, total })
 
-        return response
+        return {
+          pending,
+          called,
+          total,
+        }
       }),
       catchError((error) => {
-        console.error("[v0] Error updating application status:", error)
+        console.error("[v0] Error calculating totals:", error)
         return of({
-          success: false,
-          message: error.error?.message || "Failed to update application status",
+          pending: 0,
+          called: 0,
+          total: 0,
         })
       }),
     )

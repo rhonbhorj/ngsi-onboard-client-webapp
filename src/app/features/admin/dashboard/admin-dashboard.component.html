@@ -1,408 +1,278 @@
-<div class="admin-dashboard min-h-screen flex" style="background-color: var(--netpay-light-gray)">
-  <!-- Sidebar -->
-  <aside
-    class="sidebar w-64 min-h-screen"
-    style="background-color: var(--netpay-white); border-right: 1px solid var(--netpay-blue-gray)"
+<div
+  class="admin-dashboard min-h-screen flex flex-col"
+  style="background-color: var(--netpay-light-gray)"
+>
+  <!-- Top Navigation Bar -->
+  <nav
+    class="top-nav w-full shadow-sm border-b"
+    style="background-color: var(--netpay-white); border-color: var(--netpay-blue-gray)"
   >
-    <div class="sidebar-header p-6 border-b" style="border-color: var(--netpay-blue-gray)">
-      <div class="flex items-center">
-        <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-8 h-8 mr-3" />
-        <h1 class="text-lg font-semibold" style="color: var(--netpay-dark-blue)">Admin Panel</h1>
+    <div class="px-4 sm:px-6 py-4">
+      <div class="flex justify-between items-center">
+        <!-- Left side: Logo and Title -->
+        <div class="flex items-center">
+          <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-8 h-8 mr-3" />
+          <h1 class="text-lg font-semibold" style="color: var(--netpay-dark-blue)">
+            Merchant Onboarding
+          </h1>
+        </div>
+
+        <!-- Right side: Admin Dropdown -->
+        <div class="relative">
+          <button
+            (click)="toggleAdminDropdown()"
+            class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-50"
+            style="color: var(--netpay-dark-blue)"
+          >
+            <span class="mr-2">NetGlobal</span>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              ></path>
+            </svg>
+            <svg
+              class="w-4 h-4 transition-transform duration-200"
+              [class.rotate-180]="showAdminDropdown()"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+
+          <!-- Admin Dropdown Menu -->
+          @if (showAdminDropdown()) {
+          <div
+            class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+          >
+            <div class="py-1">
+              <button
+                (click)="setActiveSection('settings'); toggleAdminDropdown()"
+                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  ></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  ></path>
+                </svg>
+                Settings
+              </button>
+              <button
+                (click)="logout(); toggleAdminDropdown()"
+                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  ></path>
+                </svg>
+                Logout
+              </button>
+            </div>
+          </div>
+          }
+        </div>
       </div>
     </div>
-
-    <nav class="sidebar-nav p-4">
-      <ul class="space-y-2">
-        <li>
-          <button
-            (click)="setActiveSection('dashboard')"
-            [class.active]="activeSection() === 'dashboard'"
-            class="sidebar-nav-item w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-              ></path>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"
-              ></path>
-            </svg>
-            Dashboard
-          </button>
-        </li>
-        <!-- Removed Applications navigation item -->
-        <li>
-          <button
-            (click)="setActiveSection('settings')"
-            [class.active]="activeSection() === 'settings'"
-            class="sidebar-nav-item w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200"
-          >
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-              ></path>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              ></path>
-            </svg>
-            Settings
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Sign Out Button -->
-    <div
-      class="sidebar-footer absolute bottom-0 left-0 right-0 p-4 border-t"
-      style="border-color: var(--netpay-blue-gray)"
-    >
-      <button
-        (click)="logout()"
-        class="sidebar-logout-btn w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-200"
-        style="color: var(--netpay-medium-blue)"
-      >
-        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-          ></path>
-        </svg>
-        Sign Out
-      </button>
-    </div>
-  </aside>
+  </nav>
 
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col">
-    <!-- Header -->
-    <header
-      class="admin-header shadow-sm border-b"
-      style="background-color: var(--netpay-white); border-color: var(--netpay-blue-gray)"
-    >
-      <div class="px-6 py-4">
-        <div class="flex justify-between items-center">
-          <div>
-            <h1 class="text-xl font-semibold" style="color: var(--netpay-dark-blue)">
-              {{ getSectionTitle() }}
-            </h1>
-            <p class="text-sm mt-1" style="color: var(--netpay-medium-blue)">
-              {{ getSectionDescription() }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </header>
-
     <!-- Dashboard Section -->
     @if (activeSection() === 'dashboard') {
-    <main class="admin-main flex-1 px-6 py-8">
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div
-          class="stat-card bg-white rounded-lg shadow p-6 border"
-          style="border-color: var(--netpay-blue-gray)"
-        >
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-8 w-8"
-                style="color: var(--netpay-primary-blue)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                ></path>
-              </svg>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium truncate" style="color: var(--netpay-medium-blue)">
-                  Total Applications
-                </dt>
-                <dd class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
-                  {{ getTotalApplicationsCount() }}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="stat-card bg-white rounded-lg shadow p-6 border"
-          style="border-color: var(--netpay-blue-gray)"
-        >
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-8 w-8"
-                style="color: var(--netpay-teal)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium truncate" style="color: var(--netpay-medium-blue)">
-                  Pending
-                </dt>
-                <dd class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
-                  {{ getPendingCount() }}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="stat-card bg-white rounded-lg shadow p-6 border"
-          style="border-color: var(--netpay-blue-gray)"
-        >
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-8 w-8"
-                style="color: #10b981"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium truncate" style="color: var(--netpay-medium-blue)">
-                  Approved
-                </dt>
-                <dd class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
-                  {{ getApprovedCount() }}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="stat-card bg-white rounded-lg shadow p-6 border"
-          style="border-color: var(--netpay-blue-gray)"
-        >
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-8 w-8"
-                style="color: #ef4444"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium truncate" style="color: var(--netpay-medium-blue)">
-                  Rejected
-                </dt>
-                <dd class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
-                  {{ getRejectedCount() }}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Search Bar -->
-      <div class="mb-6">
-        <div class="max-w-md">
-          <label
-            for="search"
-            class="block text-sm font-medium mb-2"
-            style="color: var(--netpay-dark-blue)"
-            >Search Applications</label
-          >
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg
-                class="h-5 w-5"
-                style="color: var(--netpay-medium-blue)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                ></path>
-              </svg>
-            </div>
-            <input
-              type="text"
-              id="search"
-              name="search"
-              [ngModel]="searchTerm()"
-              (ngModelChange)="onSearchChange($event)"
-              class="block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-offset-2 transition-all duration-200 sm:text-sm"
-              style="border-color: var(--netpay-blue-gray)"
-              placeholder="Search by reference number, name, company..."
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Applications Table with Tabs -->
-      <div class="admin-card rounded-lg shadow" style="background-color: var(--netpay-white)">
-        <!-- Tabs -->
-        <div class="border-b" style="border-color: var(--netpay-blue-gray)">
-          <nav class="flex space-x-8 px-6">
-            <button
-              (click)="setActiveTab('all')"
-              [class.active]="activeTab() === 'all'"
-              class="application-tab py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-            >
-              All Applications
-            </button>
-            <button
-              (click)="setActiveTab('pending')"
-              [class.active]="activeTab() === 'pending'"
-              class="application-tab py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-            >
-              Pending
-            </button>
-            <button
-              (click)="setActiveTab('approved')"
-              [class.active]="activeTab() === 'approved'"
-              class="application-tab py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-            >
-              Approved
-            </button>
-            <button
-              (click)="setActiveTab('rejected')"
-              [class.active]="activeTab() === 'rejected'"
-              class="application-tab py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-            >
-              Rejected
-            </button>
-          </nav>
-        </div>
-
-        <div
-          class="px-6 py-4 border-b flex justify-between items-center"
-          style="border-color: var(--netpay-blue-gray)"
-        >
+    <!-- Added proper page margins and enhanced layout structure -->
+    <main class="admin-main flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
+      <!-- Wrapped Applications section in white container card like Window Managers example -->
+      <div
+        class="bg-white rounded-lg shadow-sm border"
+        style="border-color: var(--netpay-blue-gray)"
+      >
+        <!-- Applications header inside white container -->
+        <div class="px-6 py-6 border-b" style="border-color: var(--netpay-blue-gray)">
           <div>
-            <h2 class="text-lg font-medium" style="color: var(--netpay-dark-blue)">Applications</h2>
+            <h2 class="text-2xl font-semibold" style="color: var(--netpay-dark-blue)">
+              Applications
+            </h2>
             <p class="text-sm mt-1" style="color: var(--netpay-medium-blue)">
-              {{ getTabDescription() }}
+              All merchant applications in the system
             </p>
           </div>
+        </div>
 
-          <div class="relative">
-            <button
-              (click)="toggleExportDropdown()"
-              class="export-button flex items-center px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-              style="background-color: var(--netpay-primary-blue)"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                ></path>
-              </svg>
-              Export
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </button>
-
-            @if (showExportDropdown()) {
-            <div
-              class="export-dropdown absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
-            >
-              <div class="py-1">
+        <!-- Moved search and export controls to be aligned with tabs on same line -->
+        <div class="px-6 pt-4">
+          <!-- Filter tabs with search and export controls on same line -->
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+            <!-- Left side: Tabs -->
+            <div class="border-b" style="border-color: var(--netpay-blue-gray)">
+              <nav class="flex space-x-8 overflow-x-auto" aria-label="Tabs">
                 <button
-                  (click)="exportToCSV()"
-                  class="export-option flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  (click)="setActiveTab('pending')"
+                  [class.active]="activeTab() === 'pending'"
+                  class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
+                  [class.border-blue-500]="activeTab() === 'pending'"
+                  [class.text-blue-600]="activeTab() === 'pending'"
+                  [class.border-transparent]="activeTab() !== 'pending'"
+                  [class.text-gray-500]="activeTab() !== 'pending'"
+                  style="color: var(--netpay-medium-blue)"
                 >
-                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  Pending ({{ totalPendingCount() }})
+                </button>
+                <button
+                  (click)="setActiveTab('called')"
+                  [class.active]="activeTab() === 'called'"
+                  class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
+                  [class.border-blue-500]="activeTab() === 'called'"
+                  [class.text-blue-600]="activeTab() === 'called'"
+                  [class.border-transparent]="activeTab() !== 'called'"
+                  [class.text-gray-500]="activeTab() !== 'called'"
+                  style="color: var(--netpay-medium-blue)"
+                >
+                  Called ({{ totalCalledCount() }})
+                </button>
+              </nav>
+            </div>
+
+            <!-- Right side: Search and Export controls aligned with tabs -->
+            <div class="flex flex-col sm:flex-row gap-3 lg:items-center">
+              <!-- Search Input -->
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5"
+                    style="color: var(--netpay-medium-blue)"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     ></path>
                   </svg>
-                  Export as CSV
-                </button>
+                </div>
+                <input
+                  type="text"
+                  id="search"
+                  name="search"
+                  [ngModel]="searchTerm()"
+                  (ngModelChange)="onSearchChange($event)"
+                  class="block w-full sm:w-80 pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 sm:text-sm"
+                  style="border-color: var(--netpay-blue-gray)"
+                  placeholder="Search by reference number, name, company..."
+                />
+              </div>
+
+              <!-- Export Button -->
+              <div class="relative">
                 <button
-                  (click)="exportToExcel()"
-                  class="export-option flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  (click)="toggleExportDropdown()"
+                  class="inline-flex items-center px-4 py-3 text-sm font-medium text-white rounded-lg shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap"
+                  style="background-color: var(--netpay-primary-blue)"
                 >
-                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     ></path>
                   </svg>
-                  Export as Excel
+                  Export
+                  <svg
+                    class="w-4 h-4 ml-2 transition-transform duration-200"
+                    [class.rotate-180]="showExportDropdown()"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    ></path>
+                  </svg>
                 </button>
+
+                <!-- Export Dropdown Menu -->
+                @if (showExportDropdown()) {
+                <div
+                  class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                >
+                  <div class="py-1">
+                    <button
+                      (click)="exportToCSV()"
+                      class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12h6m-6 4h6m3 4h3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
+                      </svg>
+                      Export as CSV
+                    </button>
+                    <button
+                      (click)="exportToExcel()"
+                      class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
+                      </svg>
+                      Export as Excel
+                    </button>
+                  </div>
+                </div>
+                }
               </div>
             </div>
-            }
           </div>
         </div>
 
-        <!-- Applications Table -->
+        <!-- Enhanced responsive table with better mobile handling -->
         @if (isLoading()) {
-        <div class="p-6 text-center">
+        <div class="p-8 text-center">
           <div
             class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm"
             style="color: var(--netpay-medium-blue)"
@@ -431,7 +301,88 @@
           </div>
         </div>
         } @else {
-        <div class="overflow-x-auto">
+        <!-- Mobile Card View (hidden on desktop) -->
+        <div class="block lg:hidden">
+          @for (application of filteredApplications(); track application.reference) {
+          <div
+            class="border-b p-4 hover:bg-gray-50 transition-colors duration-200"
+            style="border-color: var(--netpay-blue-gray)"
+          >
+            <div class="space-y-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
+                    {{ application.reference }}
+                  </div>
+                  <div class="text-sm font-medium mt-1" style="color: var(--netpay-dark-blue)">
+                    {{ application.businessName }}
+                  </div>
+                  <div class="text-xs mt-1" style="color: var(--netpay-medium-blue)">
+                    {{ application.businessAddress }}
+                  </div>
+                </div>
+                <span
+                  class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                  [ngClass]="{
+                    'bg-yellow-100 text-yellow-800': application.status === 'pending',
+                    'bg-green-100 text-green-800': application.status === 'called'
+                  }"
+                >
+                  {{ application.status | titlecase }}
+                </span>
+              </div>
+              <div class="flex justify-between items-center">
+                <div class="text-xs" style="color: var(--netpay-medium-blue)">
+                  {{ application.submittedAt | date : 'short' }}
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button
+                    (click)="openDetailsModal(application)"
+                    class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                    title="View Details"
+                    style="color: var(--netpay-primary-blue)"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path>
+                    </svg>
+                  </button>
+                  @if (application.status === 'pending') {
+                  <button
+                    (click)="markAsCalled(application)"
+                    class="p-2 rounded-full hover:bg-green-50 transition-colors duration-200"
+                    title="Mark as Called"
+                    style="color: #10b981"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      ></path>
+                    </svg>
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Desktop Table View (hidden on mobile) -->
+        <div class="hidden lg:block overflow-x-auto">
           <table
             class="admin-table min-w-full divide-y"
             style="border-color: var(--netpay-blue-gray)"
@@ -439,31 +390,31 @@
             <thead style="background-color: var(--netpay-light-gray)">
               <tr>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
                   style="color: var(--netpay-medium-blue)"
                 >
                   REFERENCE NO
                 </th>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
                   style="color: var(--netpay-medium-blue)"
                 >
                   BUSINESS
                 </th>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
                   style="color: var(--netpay-medium-blue)"
                 >
                   STATUS
                 </th>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
                   style="color: var(--netpay-medium-blue)"
                 >
                   DATE SUBMITTED
                 </th>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
                   style="color: var(--netpay-medium-blue)"
                 >
                   ACTIONS
@@ -475,13 +426,13 @@
               style="background-color: var(--netpay-white); border-color: var(--netpay-blue-gray)"
             >
               @for (application of filteredApplications(); track application.reference) {
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 transition-colors duration-200">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
                     {{ application.reference }}
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
                     {{ application.businessName }}
                   </div>
@@ -491,11 +442,10 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
-                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                    class="inline-flex px-3 py-1 text-xs font-semibold rounded-full"
                     [ngClass]="{
                       'bg-yellow-100 text-yellow-800': application.status === 'pending',
-                      'bg-green-100 text-green-800': application.status === 'approved',
-                      'bg-red-100 text-red-800': application.status === 'rejected'
+                      'bg-green-100 text-green-800': application.status === 'called'
                     }"
                   >
                     {{ application.status | titlecase }}
@@ -508,11 +458,10 @@
                   {{ application.submittedAt | date : 'short' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <div class="flex items-center space-x-2">
-                    <!-- View Details Icon -->
+                  <div class="flex items-center space-x-3">
                     <button
                       (click)="openDetailsModal(application)"
-                      class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                      class="p-2 rounded-full hover:bg-blue-50 transition-colors duration-200"
                       title="View Details"
                       style="color: var(--netpay-primary-blue)"
                     >
@@ -531,13 +480,11 @@
                         ></path>
                       </svg>
                     </button>
-
-                    <!-- Approve Icon (only show for pending applications) -->
                     @if (application.status === 'pending') {
                     <button
-                      (click)="approveApplication(application)"
+                      (click)="markAsCalled(application)"
                       class="p-2 rounded-full hover:bg-green-50 transition-colors duration-200"
-                      title="Approve Application"
+                      title="Mark as Called"
                       style="color: #10b981"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -545,24 +492,7 @@
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                    </button>
-
-                    <!-- Reject Icon (only show for pending applications) -->
-                    <button
-                      (click)="rejectApplication(application)"
-                      class="p-2 rounded-full hover:bg-red-50 transition-colors duration-200"
-                      title="Reject Application"
-                      style="color: #ef4444"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                         ></path>
                       </svg>
                     </button>
@@ -578,14 +508,12 @@
         <!-- Pagination Controls -->
         @if (totalPages() > 1) {
         <div
-          class="px-6 py-4 border-t flex items-center justify-between"
+          class="px-6 py-4 border-t flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0"
           style="border-color: var(--netpay-blue-gray)"
         >
           <div class="flex items-center">
             <p class="text-sm" style="color: var(--netpay-medium-blue)">
-              Showing page {{ currentPage() }} of {{ totalPages() }} ({{
-                getTotalApplicationsCount()
-              }}
+              Showing page {{ currentPage() }} of {{ totalPages() }} ({{ totalApplicationsCount() }}
               total applications)
             </p>
           </div>
@@ -626,26 +554,6 @@
                 ></path>
               </svg>
             </button>
-
-            <!-- Page Numbers -->
-            @for (pageNum of getPageNumbers(); track pageNum) { @if (pageNum === -1) {
-            <span class="px-3 py-2 text-sm" style="color: var(--netpay-medium-blue)">...</span>
-            } @else {
-            <button
-              (click)="onPageChange(pageNum)"
-              [class.active]="pageNum === currentPage()"
-              class="px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200"
-              [style.border-color]="
-                pageNum === currentPage() ? 'var(--netpay-primary-blue)' : 'var(--netpay-blue-gray)'
-              "
-              [style.background-color]="
-                pageNum === currentPage() ? 'var(--netpay-primary-blue)' : 'transparent'
-              "
-              [style.color]="pageNum === currentPage() ? 'white' : 'var(--netpay-medium-blue)'"
-            >
-              {{ pageNum }}
-            </button>
-            } }
 
             <!-- Next Page Button -->
             <button
@@ -710,14 +618,12 @@
         } }
       </div>
     </main>
-    }
-
-    <!-- Settings Section -->
-    @if (activeSection() === 'settings') {
-    <main class="admin-main flex-1 px-6 py-8">
+    } @else if (activeSection() === 'settings') {
+    <!-- Added proper margins to settings section -->
+    <main class="admin-main flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
       <div class="max-w-2xl">
         <div class="admin-card rounded-lg shadow" style="background-color: var(--netpay-white)">
-          <div class="px-6 py-4 border-b" style="border-color: var(--netpay-blue-gray)">
+          <div class="px-4 sm:px-6 py-4 border-b" style="border-color: var(--netpay-blue-gray)">
             <h2 class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
               Account Settings
             </h2>
@@ -824,25 +730,30 @@
     }
   </div>
 
-  <!-- Details Modal -->
+  <!-- Enhanced modal with better responsive design and improved layout -->
   @if (showDetailsModal()) {
   <div
-    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center"
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
     id="details-modal"
     (click)="closeDetailsModal()"
   >
     <div
-      class="relative p-6 border w-11/12 md:w-4/5 lg:w-3/5 shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto"
+      class="relative bg-white border shadow-xl rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
       (click)="$event.stopPropagation()"
     >
-      <!-- Added click event to prevent modal close when clicking inside modal content -->
-      <div class="mt-2">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-medium" style="color: var(--netpay-dark-blue)">
+      <div
+        class="sticky top-0 bg-white border-b px-6 py-4 rounded-t-xl"
+        style="border-color: var(--netpay-blue-gray)"
+      >
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-semibold" style="color: var(--netpay-dark-blue)">
             Application Details
           </h3>
-          <button (click)="closeDetailsModal()" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button
+            (click)="closeDetailsModal()"
+            class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -852,114 +763,119 @@
             </svg>
           </button>
         </div>
+      </div>
 
-        @if (selectedApplication()) {
-        <!-- New two-column layout with vertical information flow -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      @if (selectedApplication()) {
+      <div class="p-6">
+        <!-- Enhanced responsive grid layout for better mobile experience -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- First Column: Business Information -->
-          <div class="space-y-4">
-            <h4
-              class="text-lg font-semibold mb-4 pb-2 border-b"
-              style="color: var(--netpay-dark-blue)"
-            >
-              Business Information
-            </h4>
-
-            <div class="space-y-3">
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Business Name:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.businessName }}
-                </span>
-              </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Business Address:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.businessAddress }}
-                </span>
-              </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Business Email:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.businessEmail }}
-                </span>
-              </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Telephone Number:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.telephoneNo }}
-                </span>
+          <div class="space-y-6">
+            <div>
+              <h4
+                class="text-lg font-semibold mb-4 pb-2 border-b"
+                style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
+              >
+                Business Information
+              </h4>
+              <div class="space-y-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Business Name</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.businessName }}
+                  </span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Business Address</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.businessAddress }}
+                  </span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Business Email</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.businessEmail }}
+                  </span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Telephone Number</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.telephoneNo }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Second Column: Registered Person -->
-          <div class="space-y-4">
-            <h4
-              class="text-lg font-semibold mb-4 pb-2 border-b"
-              style="color: var(--netpay-dark-blue)"
-            >
-              Registered Person
-            </h4>
-
-            <div class="space-y-3">
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Registered By:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.registeredBy }}
-                </span>
-              </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Registered Contact Number:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.registeredByContactNumber }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Added Contact Person section to show actual business contact person -->
-            <h4
-              class="text-lg font-semibold mb-4 pb-2 border-b mt-6"
-              style="color: var(--netpay-dark-blue)"
-            >
-              Contact Person
-            </h4>
-
-            <div class="space-y-3">
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Contact Person Name:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{
-                    selectedApplication()?.contactPerson || selectedApplication()?.contactPersonName
-                  }}
-                </span>
-              </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Contact Number:</span
-                >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
-                  {{ selectedApplication()?.contactNumber }}
-                </span>
+          <!-- Second Column: Contact Information -->
+          <div class="space-y-6">
+            <div>
+              <h4
+                class="text-lg font-semibold mb-4 pb-2 border-b"
+                style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
+              >
+                Contact Information
+              </h4>
+              <div class="space-y-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Registered By</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.registeredBy }}
+                  </span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Registered Contact Number</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.registeredByContactNumber }}
+                  </span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Contact Person Name</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{
+                      selectedApplication()?.contactPerson ||
+                        selectedApplication()?.contactPersonName
+                    }}
+                  </span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <span
+                    class="text-sm font-medium block mb-1"
+                    style="color: var(--netpay-medium-blue)"
+                    >Contact Number</span
+                  >
+                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                    {{ selectedApplication()?.contactNumber }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -971,43 +887,48 @@
           <div>
             <h4
               class="text-lg font-semibold mb-4 pb-2 border-b"
-              style="color: var(--netpay-dark-blue)"
+              style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
             >
               Payment Information
             </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Has Existing Payment Portal:</span
+            <div class="space-y-4">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Has Existing Payment Portal</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{ selectedApplication()?.hasExistingPaymentPortal ? 'Yes' : 'No' }}
                 </span>
               </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Current Mode of Payment:</span
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Current Mode of Payment</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{ getFormattedPaymentMethods(selectedApplication()?.currentModeOfPayment) }}
                 </span>
               </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Estimated Transaction Numbers:</span
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Estimated Transaction Numbers</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{ selectedApplication()?.estimatedTransactionNumbers }}
                 </span>
               </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Estimated Average Amount:</span
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Estimated Average Amount</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{
                     selectedApplication()?.estimatedAverageAmount
                       | currency : 'PHP' : 'symbol' : '1.2-2'
@@ -1021,42 +942,46 @@
           <div>
             <h4
               class="text-lg font-semibold mb-4 pb-2 border-b"
-              style="color: var(--netpay-dark-blue)"
+              style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
             >
               Application Details
             </h4>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Reference No:</span
+            <div class="space-y-4">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Reference No</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{ selectedApplication()?.reference }}
                 </span>
               </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Status:</span
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Status</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{ selectedApplication()?.status | titlecase }}
                 </span>
               </div>
-
-              <div>
-                <span class="text-sm font-medium" style="color: var(--netpay-medium-blue)"
-                  >Date Submitted:</span
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <span
+                  class="text-sm font-medium block mb-1"
+                  style="color: var(--netpay-medium-blue)"
+                  >Date Submitted</span
                 >
-                <span class="ml-2 text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" style="color: var(--netpay-dark-blue)">
                   {{ selectedApplication()?.submittedAt | date : 'medium' }}
                 </span>
               </div>
             </div>
           </div>
         </div>
-        }
       </div>
+      }
     </div>
   </div>
   }

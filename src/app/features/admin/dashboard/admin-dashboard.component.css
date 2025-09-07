@@ -9,7 +9,8 @@
 .admin-header {
   background-color: var(--netpay-white);
   border-color: var(--netpay-blue-gray);
-  margin-left: 230px;
+  /* Removed excessive left margin to utilize full width */
+  margin-left: 0;
   padding-left: 2rem;
   padding-right: 2rem;
   /* Removed sticky positioning to make header scroll with content */
@@ -18,8 +19,9 @@
 .admin-main {
   background-color: var(--netpay-light-gray);
   flex: 1;
-  margin-left: 256px;
-  width: calc(100% - 256px);
+  /* Removed excessive left margin and width constraint to use full available space */
+  margin-left: 0;
+  width: 100%;
   /* Added proper padding to create spacing from edges */
   padding-left: 1.5rem;
   padding-right: 1.5rem;

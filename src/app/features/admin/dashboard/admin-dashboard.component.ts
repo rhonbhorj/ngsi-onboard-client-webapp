@@ -35,11 +35,15 @@ export class AdminDashboardComponent implements OnInit {
   readonly goToPage = signal("")
 
   readonly showExportDropdown = signal(false)
+  readonly showAdminDropdown = signal(false) // Added dropdown state for admin menu
+
+  readonly totalPendingCount = signal(0)
+  readonly totalCalledCount = signal(0)
+  readonly totalApplicationsCount = signal(0)
 
   // Navigation state
   readonly activeSection = signal<"dashboard" | "settings">("dashboard")
-
-  readonly activeTab = signal<"all" | "pending" | "approved" | "rejected">("all")
+  readonly activeTab = signal<"pending" | "called">("pending")
 
   // Modal signals
   readonly showDetailsModal = signal(false)
@@ -84,7 +88,7 @@ export class AdminDashboardComponent implements OnInit {
       next: (response) => {
         console.log("[v0] Dashboard data loaded:", response)
         this.allApplications.set(response.applications)
-        this.filteredApplications.set(response.applications)
+        this.filterApplications()
         if (!this.isSearchMode()) {
           this.originalApplications.set(response.applications)
           this.originalTotalCount.set(response.totalCount)
@@ -92,6 +96,10 @@ export class AdminDashboardComponent implements OnInit {
         this.currentPage.set(response.currentPage)
         this.totalPages.set(response.totalPages)
         this.totalCount.set(response.totalCount)
+
+        // Calculate totals from loaded data instead
+        this.calculateTotalsFromData()
+
         this.isLoading.set(false)
       },
       error: (error) => {
@@ -99,6 +107,51 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading.set(false)
       },
     })
+  }
+
+  private calculateTotalsFromData(): void {
+    this.dashboardService.getAllApplicationsForExport().subscribe({
+      next: (allApplications) => {
+        const pendingCount = allApplications.filter((app) => app.status === "pending").length
+        const calledCount = allApplications.filter((app) => app.status === "called").length
+
+        this.totalPendingCount.set(pendingCount)
+        this.totalCalledCount.set(calledCount)
+        this.totalApplicationsCount.set(allApplications.length)
+
+        console.log(
+          "[v0] Calculated totals from ALL data - Pending:",
+          pendingCount,
+          "Called:",
+          calledCount,
+          "Total:",
+          allApplications.length,
+        )
+      },
+      error: (error) => {
+        console.error("[v0] Error getting all applications for totals:", error)
+        const currentApps = this.allApplications()
+        const currentPendingCount = currentApps.filter((app) => app.status === "pending").length
+        const currentCalledCount = currentApps.filter((app) => app.status === "called").length
+
+        this.totalPendingCount.set(currentPendingCount)
+        this.totalCalledCount.set(currentCalledCount)
+        this.totalApplicationsCount.set(this.totalCount())
+
+        console.log(
+          "[v0] Fallback totals from current page - Pending:",
+          currentPendingCount,
+          "Called:",
+          currentCalledCount,
+          "Total:",
+          this.totalCount(),
+        )
+      },
+    })
+  }
+
+  private loadDatabaseTotals(): void {
+    // Now using calculateTotalsFromData() instead
   }
 
   onPageChange(page: number): void {
@@ -162,44 +215,6 @@ export class AdminDashboardComponent implements OnInit {
     this.goToPage.set(value)
   }
 
-  getPageNumbers(): number[] {
-    const totalPages = this.totalPages()
-    const currentPage = this.currentPage()
-    const pages: number[] = []
-
-    if (totalPages <= 7) {
-      // Show all pages if 7 or fewer
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i)
-      }
-    } else {
-      // Show first page, current page area, and last page
-      if (currentPage <= 4) {
-        for (let i = 1; i <= 5; i++) {
-          pages.push(i)
-        }
-        pages.push(-1) // Ellipsis
-        pages.push(totalPages)
-      } else if (currentPage >= totalPages - 3) {
-        pages.push(1)
-        pages.push(-1) // Ellipsis
-        for (let i = totalPages - 4; i <= totalPages; i++) {
-          pages.push(i)
-        }
-      } else {
-        pages.push(1)
-        pages.push(-1) // Ellipsis
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i)
-        }
-        pages.push(-1) // Ellipsis
-        pages.push(totalPages)
-      }
-    }
-
-    return pages
-  }
-
   onSearchChange(searchValue: string): void {
     this.searchTerm.set(searchValue)
 
@@ -223,28 +238,17 @@ export class AdminDashboardComponent implements OnInit {
       next: (response) => {
         console.log("[v0] Global search results:", response)
         this.allApplications.set(response.applications)
-        this.filteredApplications.set(response.applications)
+        this.filterApplications()
         this.currentPage.set(1)
         this.totalPages.set(1)
         this.totalCount.set(response.totalCount)
         this.isLoading.set(false)
-        this.filterApplications()
       },
       error: (error) => {
         console.error("[v0] Error in global search:", error)
         this.isLoading.set(false)
       },
     })
-  }
-
-  private filterApplications(): void {
-    let applications = this.allApplications()
-
-    if (this.activeTab() !== "all") {
-      applications = applications.filter((app) => app.status === this.activeTab())
-    }
-
-    this.filteredApplications.set(applications)
   }
 
   logout(): void {
@@ -257,21 +261,41 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    const data = this.searchTerm() ? this.filteredApplications() : this.allApplications()
-    const csvContent = this.convertToCSV(data)
-    this.downloadFile(csvContent, "merchant-applications.csv", "text/csv")
-    this.showExportDropdown.set(false)
+    this.isLoading.set(true)
+    this.dashboardService.getAllApplicationsForExport().subscribe({
+      next: (allData) => {
+        const csvContent = this.convertToCSV(allData)
+        this.downloadFile(csvContent, "merchant-applications.csv", "text/csv")
+        this.showExportDropdown.set(false)
+        this.isLoading.set(false)
+      },
+      error: (error) => {
+        console.error("[v0] Error exporting CSV:", error)
+        this.isLoading.set(false)
+      },
+    })
   }
 
   exportToExcel(): void {
-    const data = this.searchTerm() ? this.filteredApplications() : this.allApplications()
-    const csvContent = this.convertToCSV(data)
-    this.downloadFile(
-      csvContent,
-      "merchant-applications.xlsx",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-    this.showExportDropdown.set(false)
+    this.isLoading.set(true)
+    this.dashboardService.downloadExcelReport().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url
+        link.download = "company_list_report.xlsx"
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        this.showExportDropdown.set(false)
+        this.isLoading.set(false)
+      },
+      error: (error) => {
+        console.error("[v0] Error exporting Excel:", error)
+        this.isLoading.set(false)
+      },
+    })
   }
 
   private convertToCSV(data: MerchantApplication[]): string {
@@ -420,96 +444,50 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  getPendingCount(): number {
-    return this.originalApplications().filter((app) => app.status === "pending").length
+  // Application approval and rejection methods
+  markAsCalled(application: MerchantApplication): void {
+    if (!application.reference) {
+      alert("Application reference is missing")
+      return
+    }
+
+    if (confirm(`Are you sure you want to mark application ${application.reference} as called?`)) {
+      this.dashboardService.updateApplicationStatus(application.reference, "called").subscribe({
+        next: (response) => {
+          if (response.success) {
+            const updatedApplications = this.allApplications().map((app) =>
+              app.reference === application.reference ? { ...app, status: "called" as const } : app,
+            )
+            this.allApplications.set(updatedApplications)
+            this.filterApplications()
+            alert("Application marked as called successfully")
+            // Reload database totals after status update
+            this.calculateTotalsFromData()
+          } else {
+            alert(response.message || "Failed to mark application as called")
+          }
+        },
+        error: (error) => {
+          console.error("Error marking application as called:", error)
+          alert("Error marking application as called")
+        },
+      })
+    }
   }
 
-  getApprovedCount(): number {
-    return this.originalApplications().filter((app) => app.status === "approved").length
-  }
-
-  getRejectedCount(): number {
-    return this.originalApplications().filter((app) => app.status === "rejected").length
-  }
-
-  getTotalApplicationsCount(): number {
-    return this.originalApplications().length
-  }
-
-  setActiveTab(tab: "all" | "pending" | "approved" | "rejected"): void {
+  // Tab filtering methods
+  setActiveTab(tab: "pending" | "called"): void {
     this.activeTab.set(tab)
     this.filterApplications()
   }
 
-  getTabDescription(): string {
-    switch (this.activeTab()) {
-      case "all":
-        return "All merchant applications in the system"
-      case "pending":
-        return "Applications awaiting review and approval"
-      case "approved":
-        return "Applications that have been approved"
-      case "rejected":
-        return "Applications that have been rejected"
-      default:
-        return ""
-    }
+  private filterApplications(): void {
+    const activeTab = this.activeTab()
+    const filtered = this.allApplications().filter((app) => app.status === activeTab)
+    this.filteredApplications.set(filtered)
   }
 
-  // Application approval and rejection methods
-  approveApplication(application: MerchantApplication): void {
-    if (!application.reference) {
-      alert("Application reference is missing")
-      return
-    }
-
-    if (confirm(`Are you sure you want to approve application ${application.reference}?`)) {
-      this.dashboardService.updateApplicationStatus(application.reference, "approved").subscribe({
-        next: (response) => {
-          if (response.success) {
-            const updatedApplications = this.allApplications().map((app) =>
-              app.reference === application.reference ? { ...app, status: "approved" as const } : app,
-            )
-            this.allApplications.set(updatedApplications)
-            this.filterApplications()
-            alert("Application approved successfully")
-          } else {
-            alert(response.message || "Failed to approve application")
-          }
-        },
-        error: (error) => {
-          console.error("Error approving application:", error)
-          alert("Error approving application")
-        },
-      })
-    }
-  }
-
-  rejectApplication(application: MerchantApplication): void {
-    if (!application.reference) {
-      alert("Application reference is missing")
-      return
-    }
-
-    if (confirm(`Are you sure you want to reject application ${application.reference}?`)) {
-      this.dashboardService.updateApplicationStatus(application.reference, "rejected").subscribe({
-        next: (response) => {
-          if (response.success) {
-            const updatedApplications = this.allApplications().map((app) =>
-              app.reference === application.reference ? { ...app, status: "rejected" as const } : app,
-            )
-            this.allApplications.set(updatedApplications)
-            this.filterApplications()
-            alert("Application rejected successfully")
-          } else {
-            alert(response.message || "Failed to reject application")
-          }
-        },
-        error: (error) => {
-          console.error("Error rejecting application:", error)
-          alert("Error rejecting application")
-        },
-      })
-    }
+  toggleAdminDropdown(): void {
+    this.showAdminDropdown.set(!this.showAdminDropdown())
   }
 }

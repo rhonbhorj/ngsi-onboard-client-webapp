@@ -29,7 +29,7 @@ export interface MerchantApplication {
   estimatedAverageAmount?: string
 
   // System fields
-  status: "pending" | "approved" | "rejected" | "under_review"
+  status: "pending" | "approved" | "rejected" | "called" | "under_review"
   submittedAt: string
   createdAt?: string
   reviewedAt?: string
@@ -118,7 +118,7 @@ export class ApplicationService {
         },
         estimatedTransactionNumbers: "ABOVE 100",
         estimatedAverageAmount: "ABOVE 50,000",
-        status: "approved",
+        status: "called",
         submittedAt: "2025-08-21T14:20:00Z",
         reviewedAt: "2025-08-21T09:15:00Z",
         reviewedBy: "admin_001",
@@ -208,7 +208,7 @@ export class ApplicationService {
   // Update application status via backend
   updateApplicationStatus(
     applicationId: string,
-    status: MerchantApplication["status"],
+    status: "pending" | "called",
     notes?: string,
   ): Observable<MerchantApplication> {
     return this.http.patch<MerchantApplication>(`${environment.apiUrl}/api/merchant-applications/${applicationId}`, {
