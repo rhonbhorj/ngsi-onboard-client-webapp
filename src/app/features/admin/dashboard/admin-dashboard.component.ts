@@ -222,6 +222,15 @@ export class AdminDashboardComponent implements OnInit {
       this.performGlobalSearch(searchValue.trim())
     } else {
       this.isSearchMode.set(false)
+
+      // Restore original pagination state immediately to prevent pagination from disappearing
+      if (this.originalTotalCount() > 0) {
+        const itemsPerPage = 10 // Assuming 10 items per page based on the service
+        const calculatedTotalPages = Math.ceil(this.originalTotalCount() / itemsPerPage)
+        this.totalPages.set(calculatedTotalPages)
+        this.totalCount.set(this.originalTotalCount())
+      }
+
       if (this.activeSection() === "dashboard") {
         this.router.navigate(["/admin/dashboard", 1])
       } else {
@@ -358,6 +367,28 @@ export class AdminDashboardComponent implements OnInit {
     if (paymentMethods.cardPayment) enabledMethods.push("Card Payment")
 
     return enabledMethods.length > 0 ? enabledMethods.join(", ") : "None selected"
+  }
+
+  getEstimatedAmount(amount?: string): number {
+    if (!amount) return 0
+
+    // Handle special cases like "ABOVE 50,000" or "ABOVE 100"
+    if (amount.toUpperCase().includes("ABOVE")) {
+      const match = amount.match(/[\d,]+/)
+      if (match) {
+        return Number.parseFloat(match[0].replace(/,/g, "")) || 0
+      }
+      return 0
+    }
+
+    // Handle ranges like "10,001 – 50,000" - take the first number
+    if (amount.includes("–") || amount.includes("-")) {
+      const firstNumber = amount.split(/[–-]/)[0].trim()
+      return Number.parseFloat(firstNumber.replace(/,/g, "")) || 0
+    }
+
+    // Handle regular numbers with commas
+    return Number.parseFloat(amount.replace(/,/g, "")) || 0
   }
 
   // Modal methods
