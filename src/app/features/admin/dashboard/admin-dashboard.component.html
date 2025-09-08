@@ -56,7 +56,7 @@
           >
             <div class="py-1">
               <button
-                (click)="setActiveSection('settings'); toggleAdminDropdown()"
+                (click)="navigateToSettings(); toggleAdminDropdown()"
                 class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
               >
                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,11 +99,7 @@
 
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col">
-    <!-- Dashboard Section -->
-    @if (activeSection() === 'dashboard') {
-    <!-- Added proper page margins and enhanced layout structure -->
     <main class="admin-main flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
-      <!-- Wrapped Applications section in white container card like Window Managers example -->
       <div
         class="bg-white rounded-lg shadow-sm border"
         style="border-color: var(--netpay-blue-gray)"
@@ -120,9 +116,8 @@
           </div>
         </div>
 
-        <!-- Moved search and export controls to be aligned with tabs on same line -->
         <div class="px-6 pt-4">
-          <!-- Filter tabs with search and export controls on same line -->
+          <!-- Filter tabs with export controls on same line -->
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
             <!-- Left side: Tabs -->
             <div class="border-b" style="border-color: var(--netpay-blue-gray)">
@@ -154,38 +149,8 @@
               </nav>
             </div>
 
-            <!-- Right side: Search and Export controls aligned with tabs -->
+            <!-- Right side: Export controls aligned with tabs -->
             <div class="flex flex-col sm:flex-row gap-3 lg:items-center">
-              <!-- Search Input -->
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg
-                    class="h-5 w-5"
-                    style="color: var(--netpay-medium-blue)"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    ></path>
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  id="search"
-                  name="search"
-                  [ngModel]="searchTerm()"
-                  (ngModelChange)="onSearchChange($event)"
-                  class="block w-full sm:w-80 pl-10 pr-3 py-3 border rounded-lg shadow-sm focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 sm:text-sm"
-                  style="border-color: var(--netpay-blue-gray)"
-                  placeholder="Search by reference number, name, company..."
-                />
-              </div>
-
               <!-- Export Button -->
               <div class="relative">
                 <button
@@ -463,200 +428,22 @@
           </table>
         </div>
 
-        <!-- Pagination Controls -->
-        @if (totalPages() > 1) {
-        <div
-          class="px-6 py-4 border-t flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0"
-          style="border-color: var(--netpay-blue-gray)"
+        <!-- Replaced old pagination with new reusable component -->
+        <app-pagination
+          [currentPage]="currentPage()"
+          [totalCount]="totalCount()"
+          [itemsPerPage]="paginationConfig.itemsPerPage || 10"
+          [config]="paginationConfig"
+          (pageChange)="onPageChange($event)"
+          (firstPage)="onFirstPage()"
+          (lastPage)="onLastPage()"
+          (previousPage)="onPreviousPage()"
+          (nextPage)="onNextPage()"
         >
-          <!-- Updated left side to show simple total count like the reference image -->
-          <div class="flex items-center">
-            <p class="text-sm" style="color: var(--netpay-medium-blue)">
-              Total applications in the system: {{ totalApplicationsCount() }}
-            </p>
-          </div>
-
-          <!-- Restructured right side navigation to match reference design with Page X of Y in center -->
-          <div class="flex items-center space-x-2">
-            <!-- First Page Button -->
-            <button
-              (click)="onFirstPage()"
-              [disabled]="currentPage() === 1"
-              class="px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style="border-color: var(--netpay-blue-gray); color: var(--netpay-medium-blue)"
-              title="First Page"
-            >
-              <<
-            </button>
-
-            <!-- Previous Page Button -->
-            <button
-              (click)="onPreviousPage()"
-              [disabled]="currentPage() === 1"
-              class="px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style="border-color: var(--netpay-blue-gray); color: var(--netpay-medium-blue)"
-              title="Previous Page"
-            >
-              <
-            </button>
-
-            <!-- Page Info -->
-            <span class="px-4 py-2 text-sm font-medium" style="color: var(--netpay-medium-blue)">
-              Page {{ currentPage() }} of {{ totalPages() }}
-            </span>
-
-            <!-- Next Page Button -->
-            <button
-              (click)="onNextPage()"
-              [disabled]="currentPage() === totalPages()"
-              class="px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style="border-color: var(--netpay-blue-gray); color: var(--netpay-medium-blue)"
-              title="Next Page"
-            >
-              >
-            </button>
-
-            <!-- Last Page Button -->
-            <button
-              (click)="onLastPage()"
-              [disabled]="currentPage() === totalPages()"
-              class="px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style="border-color: var(--netpay-blue-gray); color: var(--netpay-medium-blue)"
-              title="Last Page"
-            >
-              >>
-            </button>
-
-            <!-- Go to Page Input -->
-            <div class="flex items-center ml-4">
-              <span class="text-sm mr-2" style="color: var(--netpay-medium-blue)">Go to:</span>
-              <input
-                type="number"
-                [ngModel]="goToPage()"
-                (ngModelChange)="onGoToPageChange($event)"
-                (keyup.enter)="onGoToPage()"
-                min="1"
-                [max]="totalPages()"
-                class="w-16 px-2 py-1 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-offset-1"
-                style="border-color: var(--netpay-blue-gray)"
-                placeholder="1"
-              />
-            </div>
-          </div>
-        </div>
-        } }
+        </app-pagination>
+        }
       </div>
     </main>
-    } @else if (activeSection() === 'settings') {
-    <!-- Added proper margins to settings section -->
-    <main class="admin-main flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
-      <div class="max-w-2xl">
-        <div class="admin-card rounded-lg shadow" style="background-color: var(--netpay-white)">
-          <div class="px-4 sm:px-6 py-4 border-b" style="border-color: var(--netpay-blue-gray)">
-            <h2 class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
-              Account Settings
-            </h2>
-            <p class="text-sm mt-1" style="color: var(--netpay-medium-blue)">
-              Manage your admin account preferences
-            </p>
-          </div>
-
-          <div class="p-6">
-            <form (ngSubmit)="changePassword()" class="space-y-6">
-              <div>
-                <h3 class="text-md font-medium mb-4" style="color: var(--netpay-dark-blue)">
-                  Change Password
-                </h3>
-
-                <div class="space-y-4">
-                  <div>
-                    <label
-                      for="currentPassword"
-                      class="block text-sm font-medium"
-                      style="color: var(--netpay-medium-blue)"
-                      >Current Password</label
-                    >
-                    <input
-                      type="password"
-                      id="currentPassword"
-                      [(ngModel)]="currentPassword"
-                      name="currentPassword"
-                      required
-                      class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-2 sm:text-sm"
-                      style="border-color: var(--netpay-blue-gray)"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      for="newPassword"
-                      class="block text-sm font-medium"
-                      style="color: var(--netpay-medium-blue)"
-                      >New Password</label
-                    >
-                    <input
-                      type="password"
-                      id="newPassword"
-                      [(ngModel)]="newPassword"
-                      name="newPassword"
-                      required
-                      class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-2 sm:text-sm"
-                      style="border-color: var(--netpay-blue-gray)"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      for="confirmPassword"
-                      class="block text-sm font-medium"
-                      style="color: var(--netpay-medium-blue)"
-                      >Confirm New Password</label
-                    >
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      [(ngModel)]="confirmPassword"
-                      name="confirmPassword"
-                      required
-                      class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-2 sm:text-sm"
-                      style="border-color: var(--netpay-blue-gray)"
-                    />
-                  </div>
-                </div>
-
-                <div class="mt-6">
-                  <button
-                    type="submit"
-                    [disabled]="isChangingPassword()"
-                    class="px-6 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200"
-                    style="background-color: var(--netpay-primary-blue)"
-                  >
-                    @if (isChangingPassword()) {
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Changing Password... } @else { Change Password }
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </main>
-    }
   </div>
 
   <!-- Enhanced modal with better responsive design and improved layout -->

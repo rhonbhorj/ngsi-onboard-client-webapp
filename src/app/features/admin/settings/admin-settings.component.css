@@ -1,0 +1,22 @@
+
+.admin-card {
+  border: 1px solid var(--netpay-blue-gray);
+}
+
+.top-nav {
+  backdrop-filter: blur(10px);
+}
+
+/* Form styling */
+input:focus {
+  border-color: var(--netpay-primary-blue);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .admin-main {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}

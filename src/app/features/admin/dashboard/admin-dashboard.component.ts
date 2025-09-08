@@ -1,15 +1,16 @@
-import { Component, signal, inject, type OnInit, ChangeDetectionStrategy, type WritableSignal } from "@angular/core"
+import { Component, signal, inject, type OnInit, ChangeDetectionStrategy } from "@angular/core"
 import { Router, ActivatedRoute } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { AdminAuthService } from "../services/admin-auth.service"
 import { AdminDashboardService } from "../services/admin-dashboard.service"
 import type { MerchantApplication } from "../../../services/application.service"
+import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: "./admin-dashboard.component.html",
   styleUrls: ["./admin-dashboard.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,19 +24,15 @@ export class AdminDashboardComponent implements OnInit {
   // Dashboard data
   readonly allApplications = signal<MerchantApplication[]>([])
   readonly filteredApplications = signal<MerchantApplication[]>([])
-  readonly originalApplications = signal<MerchantApplication[]>([])
-  readonly originalTotalCount = signal(0)
   readonly isLoading = signal(false)
-  readonly searchTerm: WritableSignal<string> = signal("")
-  readonly isSearchMode = signal(false)
 
   readonly currentPage = signal(1)
   readonly totalPages = signal(0)
-  readonly totalCount = signal(0)
+  readonly totalCount = signal<number>(0)
   readonly goToPage = signal("")
 
   readonly showExportDropdown = signal(false)
-  readonly showAdminDropdown = signal(false) // Added dropdown state for admin menu
+  readonly showAdminDropdown = signal(false)
 
   readonly totalPendingCount = signal(0)
   readonly totalCalledCount = signal(0)
@@ -54,6 +51,13 @@ export class AdminDashboardComponent implements OnInit {
   readonly confirmPassword = signal("")
   readonly isChangingPassword = signal(false)
 
+  readonly paginationConfig: PaginationConfig = {
+    showItemsInfo: true,
+    showGoToPage: true,
+    itemsPerPage: 10,
+    itemName: "applications",
+  }
+
   ngOnInit() {
     this.checkAuth()
 
@@ -62,14 +66,13 @@ export class AdminDashboardComponent implements OnInit {
 
       if (path === "dashboard") {
         this.activeSection.set("dashboard")
-        // Handle pagination for dashboard
         this.route.params.subscribe((params) => {
           const page = params["page"] ? Number.parseInt(params["page"], 10) : 1
           this.loadDashboardData(page)
         })
       } else if (path === "settings") {
         this.activeSection.set("settings")
-        this.loadDashboardData(1) // Load data for settings (needed for stats)
+        this.loadDashboardData(1)
       }
     })
   }
@@ -89,17 +92,11 @@ export class AdminDashboardComponent implements OnInit {
         console.log("[v0] Dashboard data loaded:", response)
         this.allApplications.set(response.applications)
         this.filterApplications()
-        if (!this.isSearchMode()) {
-          this.originalApplications.set(response.applications)
-          this.originalTotalCount.set(response.totalCount)
-        }
         this.currentPage.set(response.currentPage)
         this.totalPages.set(response.totalPages)
         this.totalCount.set(response.totalCount)
 
-        // Calculate totals from loaded data instead
         this.calculateTotalsFromData()
-
         this.isLoading.set(false)
       },
       error: (error) => {
@@ -150,17 +147,8 @@ export class AdminDashboardComponent implements OnInit {
     })
   }
 
-  private loadDatabaseTotals(): void {
-    // Now using calculateTotalsFromData() instead
-  }
-
   onPageChange(page: number): void {
     console.log("[v0] onPageChange called with page:", page, "current totalPages:", this.totalPages())
-
-    if (this.isSearchMode()) {
-      console.log("[v0] Page change blocked - in search mode")
-      return
-    }
 
     if (page >= 1 && page <= this.totalPages()) {
       console.log("[v0] Page change valid, navigating to page:", page)
@@ -182,7 +170,8 @@ export class AdminDashboardComponent implements OnInit {
 
   onLastPage(): void {
     console.log("[v0] onLastPage clicked, totalPages:", this.totalPages())
-    this.onPageChange(this.totalPages())
+    const lastPage = this.totalPages() || 1
+    this.onPageChange(lastPage)
   }
 
   onPreviousPage(): void {
@@ -202,12 +191,13 @@ export class AdminDashboardComponent implements OnInit {
   onGoToPage(): void {
     const page = Number.parseInt(this.goToPage())
     console.log("[v0] onGoToPage called with:", this.goToPage(), "parsed as:", page)
-    if (!isNaN(page) && page >= 1 && page <= this.totalPages()) {
+    const maxPages = this.totalPages() || 1
+    if (!isNaN(page) && page >= 1 && page <= maxPages) {
       console.log("[v0] Go to page valid, changing to page:", page)
       this.onPageChange(page)
       this.goToPage.set("")
     } else {
-      console.log("[v0] Go to page invalid - page:", page, "totalPages:", this.totalPages())
+      console.log("[v0] Go to page invalid - page:", page, "totalPages:", maxPages)
     }
   }
 
@@ -215,58 +205,9 @@ export class AdminDashboardComponent implements OnInit {
     this.goToPage.set(value)
   }
 
-  onSearchChange(searchValue: string): void {
-    this.searchTerm.set(searchValue)
-
-    if (searchValue.trim()) {
-      this.performGlobalSearch(searchValue.trim())
-    } else {
-      this.isSearchMode.set(false)
-
-      // Restore original pagination state immediately to prevent pagination from disappearing
-      if (this.originalTotalCount() > 0) {
-        const itemsPerPage = 10 // Assuming 10 items per page based on the service
-        const calculatedTotalPages = Math.ceil(this.originalTotalCount() / itemsPerPage)
-        this.totalPages.set(calculatedTotalPages)
-        this.totalCount.set(this.originalTotalCount())
-      }
-
-      if (this.activeSection() === "dashboard") {
-        this.router.navigate(["/admin/dashboard", 1])
-      } else {
-        this.loadDashboardData(1)
-      }
-    }
-  }
-
-  private performGlobalSearch(searchTerm: string): void {
-    this.isLoading.set(true)
-    this.isSearchMode.set(true)
-
-    this.dashboardService.searchApplications(searchTerm).subscribe({
-      next: (response) => {
-        console.log("[v0] Global search results:", response)
-        this.allApplications.set(response.applications)
-        this.filterApplications()
-        this.currentPage.set(1)
-        this.totalPages.set(1)
-        this.totalCount.set(response.totalCount)
-        this.isLoading.set(false)
-      },
-      error: (error) => {
-        console.error("[v0] Error in global search:", error)
-        this.isLoading.set(false)
-      },
-    })
-  }
-
   logout(): void {
     this.authService.logout()
     this.router.navigate(["/admin/login"])
-  }
-
-  toggleExportDropdown(): void {
-    this.showExportDropdown.set(!this.showExportDropdown())
   }
 
   exportToCSV(): void {
@@ -372,7 +313,6 @@ export class AdminDashboardComponent implements OnInit {
   getEstimatedAmount(amount?: string): number {
     if (!amount) return 0
 
-    // Handle special cases like "ABOVE 50,000" or "ABOVE 100"
     if (amount.toUpperCase().includes("ABOVE")) {
       const match = amount.match(/[\d,]+/)
       if (match) {
@@ -381,17 +321,14 @@ export class AdminDashboardComponent implements OnInit {
       return 0
     }
 
-    // Handle ranges like "10,001 – 50,000" - take the first number
     if (amount.includes("–") || amount.includes("-")) {
       const firstNumber = amount.split(/[–-]/)[0].trim()
       return Number.parseFloat(firstNumber.replace(/,/g, "")) || 0
     }
 
-    // Handle regular numbers with commas
     return Number.parseFloat(amount.replace(/,/g, "")) || 0
   }
 
-  // Modal methods
   openDetailsModal(application: MerchantApplication): void {
     this.selectedApplication.set(application)
     this.showDetailsModal.set(true)
@@ -402,80 +339,6 @@ export class AdminDashboardComponent implements OnInit {
     this.selectedApplication.set(null)
   }
 
-  openSettingsModal(): void {
-    this.showSettingsModal.set(true)
-    this.currentPassword.set("")
-    this.newPassword.set("")
-    this.confirmPassword.set("")
-  }
-
-  closeSettingsModal(): void {
-    this.showSettingsModal.set(false)
-    this.currentPassword.set("")
-    this.newPassword.set("")
-    this.confirmPassword.set("")
-  }
-
-  changePassword(): void {
-    if (this.newPassword() !== this.confirmPassword()) {
-      alert("New passwords do not match")
-      return
-    }
-
-    this.isChangingPassword.set(true)
-    this.authService.changePassword(this.currentPassword(), this.newPassword()).subscribe({
-      next: (response) => {
-        this.isChangingPassword.set(false)
-        if (response.success) {
-          alert("Password changed successfully")
-          this.closeSettingsModal()
-        } else {
-          alert(response.message || "Failed to change password")
-        }
-      },
-      error: (error) => {
-        this.isChangingPassword.set(false)
-        console.error("Error changing password:", error)
-        alert("Error changing password")
-      },
-    })
-  }
-
-  // Navigation methods
-  setActiveSection(section: "dashboard" | "settings"): void {
-    switch (section) {
-      case "dashboard":
-        this.router.navigate(["/admin/dashboard"])
-        break
-      case "settings":
-        this.router.navigate(["/admin/settings"])
-        break
-    }
-  }
-
-  getSectionTitle(): string {
-    switch (this.activeSection()) {
-      case "dashboard":
-        return "Dashboard"
-      case "settings":
-        return "Settings"
-      default:
-        return "Admin Dashboard"
-    }
-  }
-
-  getSectionDescription(): string {
-    switch (this.activeSection()) {
-      case "dashboard":
-        return "Overview and management of all merchant applications"
-      case "settings":
-        return "Configure your admin account settings"
-      default:
-        return ""
-    }
-  }
-
-  // Application approval and rejection methods
   markAsCalled(application: MerchantApplication): void {
     if (!application.reference) {
       alert("Application reference is missing")
@@ -492,7 +355,6 @@ export class AdminDashboardComponent implements OnInit {
             this.allApplications.set(updatedApplications)
             this.filterApplications()
             alert("Application marked as called successfully")
-            // Reload database totals after status update
             this.calculateTotalsFromData()
           } else {
             alert(response.message || "Failed to mark application as called")
@@ -506,7 +368,6 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  // Tab filtering methods
   setActiveTab(tab: "pending" | "called"): void {
     this.activeTab.set(tab)
     this.filterApplications()
@@ -520,5 +381,9 @@ export class AdminDashboardComponent implements OnInit {
 
   toggleAdminDropdown(): void {
     this.showAdminDropdown.set(!this.showAdminDropdown())
+  }
+
+  navigateToSettings(): void {
+    this.router.navigate(["/admin/settings"])
   }
 }

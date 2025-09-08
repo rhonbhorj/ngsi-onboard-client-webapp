@@ -33,7 +33,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: "settings",
-    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
+    loadComponent: () => import("./settings/admin-settings.component").then((m) => m.AdminSettingsComponent),
     title: "Admin Settings",
     canActivate: [adminAuthGuard],
   },
