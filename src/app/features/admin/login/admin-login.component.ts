@@ -10,7 +10,6 @@ import type { AdminLoginCredentials } from "../models/admin.model"
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./admin-login.component.html",
-  styleUrls: ["./admin-login.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: "block",

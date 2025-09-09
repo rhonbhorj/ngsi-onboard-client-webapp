@@ -7,7 +7,6 @@ import { AdminAuthService } from "../../../features/admin/services/admin-auth.se
   standalone: true,
   imports: [CommonModule],
   templateUrl: "./admin-header.component.html",
-  styleUrl: "./admin-header.component.css",
 })
 export class AdminHeaderComponent {
   private router = inject(Router)

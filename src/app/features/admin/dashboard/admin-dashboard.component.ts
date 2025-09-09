@@ -13,7 +13,6 @@ import { AdminHeaderComponent } from "../../../shared/components/admin-header/ad
   standalone: true,
   imports: [CommonModule, FormsModule, PaginationComponent, AdminHeaderComponent],
   templateUrl: "./admin-dashboard.component.html",
-  styleUrls: ["./admin-dashboard.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboardComponent implements OnInit {

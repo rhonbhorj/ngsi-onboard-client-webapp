@@ -1,19 +1,18 @@
 <div
-  class="admin-settings min-h-screen flex flex-col"
-  style="background-color: var(--netpay-light-gray)"
+  class="min-h-screen flex flex-col bg-netpay-light-gray"
 >
   <!-- Replaced inline header with shared component -->
   <app-admin-header></app-admin-header>
 
   <!-- Main Content Area -->
-  <main class="admin-main flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
+  <main class="bg-netpay-light-gray flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
     <div class="max-w-2xl">
-      <div class="admin-card rounded-lg shadow" style="background-color: var(--netpay-white)">
-        <div class="px-4 sm:px-6 py-4 border-b" style="border-color: var(--netpay-blue-gray)">
-          <h2 class="text-lg font-medium" style="color: var(--netpay-dark-blue)">
+      <div class="bg-white border border-netpay-blue-gray rounded-lg shadow-sm">
+        <div class="px-4 sm:px-6 py-4 border-b border-netpay-blue-gray">
+          <h2 class="text-lg font-medium text-netpay-dark-blue">
             Account Settings
           </h2>
-          <p class="text-sm mt-1" style="color: var(--netpay-medium-blue)">
+          <p class="text-sm mt-1 text-netpay-medium-blue">
             Manage your admin account preferences
           </p>
         </div>
@@ -21,7 +20,7 @@
         <div class="p-6">
           <form (ngSubmit)="changePassword()" class="space-y-6">
             <div>
-              <h3 class="text-md font-medium mb-4" style="color: var(--netpay-dark-blue)">
+              <h3 class="text-md font-medium mb-4 text-netpay-dark-blue">
                 Change Password
               </h3>
 
@@ -30,7 +29,7 @@
                   <label
                     for="currentPassword"
                     class="block text-sm font-medium"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Current Password</label
                   >
                   <input
@@ -39,8 +38,7 @@
                     [(ngModel)]="currentPassword"
                     name="currentPassword"
                     required
-                    class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-2 sm:text-sm"
-                    style="border-color: var(--netpay-blue-gray)"
+                    class="mt-1 block w-full px-3 py-2 border border-netpay-blue-gray rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-netpay-primary-blue focus:border-netpay-primary-blue sm:text-sm"
                   />
                 </div>
 
@@ -48,7 +46,7 @@
                   <label
                     for="newPassword"
                     class="block text-sm font-medium"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >New Password</label
                   >
                   <input
@@ -57,8 +55,7 @@
                     [(ngModel)]="newPassword"
                     name="newPassword"
                     required
-                    class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-2 sm:text-sm"
-                    style="border-color: var(--netpay-blue-gray)"
+                    class="mt-1 block w-full px-3 py-2 border border-netpay-blue-gray rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-netpay-primary-blue focus:border-netpay-primary-blue sm:text-sm"
                   />
                 </div>
 
@@ -66,7 +63,7 @@
                   <label
                     for="confirmPassword"
                     class="block text-sm font-medium"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Confirm New Password</label
                   >
                   <input
@@ -75,8 +72,7 @@
                     [(ngModel)]="confirmPassword"
                     name="confirmPassword"
                     required
-                    class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-2 sm:text-sm"
-                    style="border-color: var(--netpay-blue-gray)"
+                    class="mt-1 block w-full px-3 py-2 border border-netpay-blue-gray rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-netpay-primary-blue focus:border-netpay-primary-blue sm:text-sm"
                   />
                 </div>
               </div>
@@ -85,8 +81,7 @@
                 <button
                   type="submit"
                   [disabled]="isChangingPassword()"
-                  class="px-6 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200"
-                  style="background-color: var(--netpay-primary-blue)"
+                  class="px-6 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200 bg-netpay-primary-blue hover:bg-netpay-accent-blue hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   @if (isChangingPassword()) {
                   <svg class="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">

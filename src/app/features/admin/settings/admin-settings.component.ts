@@ -10,7 +10,6 @@ import { AdminHeaderComponent } from "../../../shared/components/admin-header/ad
   standalone: true,
   imports: [CommonModule, FormsModule, AdminHeaderComponent],
   templateUrl: "./admin-settings.component.html",
-  styleUrls: ["./admin-settings.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminSettingsComponent {

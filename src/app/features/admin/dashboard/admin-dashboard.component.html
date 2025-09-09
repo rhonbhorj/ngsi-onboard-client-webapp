@@ -1,24 +1,18 @@
-<div
-  class="admin-dashboard min-h-screen flex flex-col"
-  style="background-color: var(--netpay-light-gray)"
->
+<div class="bg-netpay-light-gray min-h-screen flex flex-col">
   <!-- Using shared header component -->
   <app-admin-header></app-admin-header>
 
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col">
-    <main class="admin-main flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
-      <div
-        class="bg-white rounded-lg shadow-sm border"
-        style="border-color: var(--netpay-blue-gray)"
-      >
+    <main class="bg-netpay-light-gray flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
+      <div class="bg-white rounded-lg shadow-sm border border-netpay-blue-gray">
         <!-- Applications header inside white container -->
-        <div class="px-6 py-6 border-b" style="border-color: var(--netpay-blue-gray)">
+        <div class="px-6 py-6 border-b border-netpay-blue-gray">
           <div>
-            <h2 class="text-2xl font-semibold" style="color: var(--netpay-dark-blue)">
+            <h2 class="text-2xl font-semibold text-netpay-dark-blue">
               Applications
             </h2>
-            <p class="text-sm mt-1" style="color: var(--netpay-medium-blue)">
+            <p class="text-sm mt-1 text-netpay-medium-blue">
               All merchant applications in the system
             </p>
           </div>
@@ -38,8 +32,7 @@
                 [value]="searchQuery()"
                 (input)="onSearchChange($any($event.target).value)"
                 placeholder="Search by reference number, business name, contact person, email, or address..."
-                class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                style="border-color: var(--netpay-blue-gray); color: var(--netpay-dark-blue)"
+                class="block w-full pl-10 pr-10 py-3 border border-netpay-blue-gray rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-netpay-primary-blue focus:border-netpay-primary-blue text-sm text-netpay-dark-blue"
               />
               @if (searchQuery()) {
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -57,7 +50,7 @@
             </div>
             @if (searchQuery()) {
             <p class="mt-2 text-sm text-gray-600">
-              Searching for: "<span class="font-medium" style="color: var(--netpay-dark-blue)">{{ searchQuery() }}</span>"
+              Searching for: "<span class="font-medium text-netpay-dark-blue">{{ searchQuery() }}</span>"
             </p>
             }
           </div>
@@ -65,29 +58,27 @@
           <!-- Filter tabs with export controls on same line -->
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
             <!-- Left side: Tabs -->
-            <div class="border-b" style="border-color: var(--netpay-blue-gray)">
+            <div class="border-b border-netpay-blue-gray">
               <nav class="flex space-x-8 overflow-x-auto" aria-label="Tabs">
                 <button
                   (click)="setActiveTab('pending')"
                   [class.active]="activeTab() === 'pending'"
-                  class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
-                  [class.border-blue-500]="activeTab() === 'pending'"
-                  [class.text-blue-600]="activeTab() === 'pending'"
+                  class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
+                  [class.border-netpay-primary-blue]="activeTab() === 'pending'"
+                  [class.text-netpay-primary-blue]="activeTab() === 'pending'"
                   [class.border-transparent]="activeTab() !== 'pending'"
-                  [class.text-gray-500]="activeTab() !== 'pending'"
-                  style="color: var(--netpay-medium-blue)"
+                  [class.text-netpay-medium-blue]="activeTab() !== 'pending'"
                 >
                   Pending ({{ totalPendingCount() }})
                 </button>
                 <button
                   (click)="setActiveTab('called')"
                   [class.active]="activeTab() === 'called'"
-                  class="tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
-                  [class.border-blue-500]="activeTab() === 'called'"
-                  [class.text-blue-600]="activeTab() === 'called'"
+                  class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
+                  [class.border-netpay-primary-blue]="activeTab() === 'called'"
+                  [class.text-netpay-primary-blue]="activeTab() === 'called'"
                   [class.border-transparent]="activeTab() !== 'called'"
-                  [class.text-gray-500]="activeTab() !== 'called'"
-                  style="color: var(--netpay-medium-blue)"
+                  [class.text-netpay-medium-blue]="activeTab() !== 'called'"
                 >
                   Mark as Called ({{ totalCalledCount() }})
                 </button>
@@ -100,8 +91,7 @@
               <div class="relative">
                 <button
                   (click)="exportToExcel()"
-                  class="inline-flex items-center px-4 py-3 text-sm font-medium text-white rounded-lg shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap"
-                  style="background-color: #003c6e"
+                  class="inline-flex items-center px-4 py-3 text-sm font-medium text-white rounded-lg shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap bg-netpay-medium-blue hover:bg-netpay-accent-blue"
                 >
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -122,12 +112,10 @@
         @if (isLoading()) {
         <div class="p-8 text-center">
           <div
-            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm"
-            style="color: var(--netpay-medium-blue)"
+            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-netpay-medium-blue"
           >
             <svg
-              class="animate-spin -ml-1 mr-3 h-5 w-5"
-              style="color: var(--netpay-medium-blue)"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-netpay-medium-blue"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -154,18 +142,18 @@
           @for (application of filteredApplications(); track application.reference) {
           <div
             class="border-b p-4 hover:bg-gray-50 transition-colors duration-200"
-            style="border-color: var(--netpay-blue-gray)"
+            class="border-netpay-blue-gray"
           >
             <div class="space-y-3">
               <div class="flex justify-between items-start">
                 <div>
-                  <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
+                  <div class="text-sm font-medium" class="text-netpay-dark-blue">
                     {{ application.reference }}
                   </div>
-                  <div class="text-sm font-medium mt-1" style="color: var(--netpay-dark-blue)">
+                  <div class="text-sm font-medium mt-1" class="text-netpay-dark-blue">
                     {{ application.businessName }}
                   </div>
-                  <div class="text-xs mt-1" style="color: var(--netpay-medium-blue)">
+                  <div class="text-xs mt-1" class="text-netpay-medium-blue">
                     {{ application.businessAddress }}
                   </div>
                 </div>
@@ -180,17 +168,13 @@
                 </span>
               </div>
               <div class="flex justify-between items-center">
-                <div class="text-xs" style="color: var(--netpay-medium-blue)">
+                <div class="text-xs" class="text-netpay-medium-blue">
                   {{ application.submittedAt | date : 'short' }}
                 </div>
                 <div class="flex items-center space-x-2">
                   <button
                     (click)="openDetailsModal(application)"
-                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors duration-200 hover:bg-blue-50"
-                    style="
-                      color: var(--netpay-primary-blue);
-                      border-color: var(--netpay-primary-blue);
-                    "
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-netpay-primary-blue text-netpay-primary-blue transition-colors duration-200 hover:bg-blue-50"
                     title="View Details"
                   >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,8 +196,7 @@
                   @if (application.status === 'pending') {
                   <button
                     (click)="markAsCalled(application)"
-                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors duration-200 hover:bg-green-50"
-                    style="color: #10b981; border-color: #10b981"
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-green-500 text-green-500 transition-colors duration-200 hover:bg-green-50"
                     title="Mark as Called"
                   >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,38 +221,37 @@
         <!-- Desktop Table View (hidden on mobile) -->
         <div class="hidden lg:block overflow-x-auto">
           <table
-            class="admin-table min-w-full divide-y"
-            style="border-color: var(--netpay-blue-gray)"
+            class="min-w-full divide-y divide-netpay-blue-gray border-netpay-blue-gray"
           >
-            <thead style="background-color: var(--netpay-light-gray)">
+            <thead class="bg-netpay-light-gray">
               <tr>
                 <th
                   class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                 >
                   REFERENCE NO
                 </th>
                 <th
                   class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                 >
                   BUSINESS
                 </th>
                 <th
                   class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                 >
                   STATUS
                 </th>
                 <th
                   class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                 >
                   DATE SUBMITTED
                 </th>
                 <th
                   class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                 >
                   ACTIONS
                 </th>
@@ -282,15 +264,15 @@
               @for (application of filteredApplications(); track application.reference) {
               <tr class="hover:bg-gray-50 transition-colors duration-200">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
+                  <div class="text-sm font-medium" class="text-netpay-dark-blue">
                     {{ application.reference }}
                   </div>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-sm font-medium" style="color: var(--netpay-dark-blue)">
+                  <div class="text-sm font-medium" class="text-netpay-dark-blue">
                     {{ application.businessName }}
                   </div>
-                  <div class="text-sm" style="color: var(--netpay-medium-blue)">
+                  <div class="text-sm" class="text-netpay-medium-blue">
                     {{ application.businessAddress }}
                   </div>
                 </td>
@@ -307,7 +289,7 @@
                 </td>
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                 >
                   {{ application.submittedAt | date : 'short' }}
                 </td>
@@ -347,7 +329,7 @@
                     <button
                       (click)="markAsCalled(application)"
                       class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors duration-200 hover:bg-green-50"
-                      style="color: #10b981; border-color: #10b981"
+                      class="text-green-500 border-green-500"
                       title="Mark as Called"
                     >
                       <svg
@@ -404,10 +386,10 @@
     >
       <div
         class="sticky top-0 bg-white border-b px-6 py-4 rounded-t-xl"
-        style="border-color: var(--netpay-blue-gray)"
+        class="border-netpay-blue-gray"
       >
         <div class="flex items-center justify-between">
-          <h3 class="text-xl font-semibold" style="color: var(--netpay-dark-blue)">
+          <h3 class="text-xl font-semibold" class="text-netpay-dark-blue">
             Application Details
           </h3>
           <button
@@ -443,40 +425,40 @@
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Business Name</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.businessName }}
                   </span>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Business Address</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.businessAddress }}
                   </span>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Business Email</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.businessEmail }}
                   </span>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Telephone Number</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.telephoneNo }}
                   </span>
                 </div>
@@ -497,30 +479,30 @@
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Registered By</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.registeredBy }}
                   </span>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Registered Contact Number</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.registeredByContactNumber }}
                   </span>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Contact Person Name</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{
                       selectedApplication()?.contactPerson ||
                         selectedApplication()?.contactPersonName
@@ -530,10 +512,10 @@
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <span
                     class="text-sm font-medium block mb-1"
-                    style="color: var(--netpay-medium-blue)"
+                    class="text-netpay-medium-blue"
                     >Contact Number</span
                   >
-                  <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                  <span class="text-sm" class="text-netpay-dark-blue">
                     {{ selectedApplication()?.contactNumber }}
                   </span>
                 </div>
@@ -556,40 +538,40 @@
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Has Existing Payment Portal</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{ selectedApplication()?.hasExistingPaymentPortal ? 'Yes' : 'No' }}
                 </span>
               </div>
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Current Mode of Payment</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{ getFormattedPaymentMethods(selectedApplication()?.currentModeOfPayment) }}
                 </span>
               </div>
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Estimated Transaction Numbers</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{ selectedApplication()?.estimatedTransactionNumbers }}
                 </span>
               </div>
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Estimated Average Amount</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{
                     getEstimatedAmount(selectedApplication()?.estimatedAverageAmount)
                       | currency : 'PHP' : 'symbol' : '1.2-2'
@@ -611,30 +593,30 @@
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Reference No</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{ selectedApplication()?.reference }}
                 </span>
               </div>
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Status</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{ selectedApplication()?.status | titlecase }}
                 </span>
               </div>
               <div class="bg-gray-50 p-4 rounded-lg">
                 <span
                   class="text-sm font-medium block mb-1"
-                  style="color: var(--netpay-medium-blue)"
+                  class="text-netpay-medium-blue"
                   >Date Submitted</span
                 >
-                <span class="text-sm" style="color: var(--netpay-dark-blue)">
+                <span class="text-sm" class="text-netpay-dark-blue">
                   {{ selectedApplication()?.submittedAt | date : 'medium' }}
                 </span>
               </div>

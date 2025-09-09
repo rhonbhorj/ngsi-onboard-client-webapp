@@ -5,7 +5,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        white: '#FFFFFF',
+        // Your custom NetPay color palette
+        'netpay': {
+          'white': '#FFFFFF',
+          'dark-blue': '#05113B',
+          'primary-blue': '#016CFB',
+          'teal': '#2BC4AD',
+          'light-gray': '#F2F2F2',
+          'blue-gray': '#DAE3F3',
+          'medium-blue': '#013D8D',
+          'accent-blue': '#014DB3',
+        },
+        // Keep standard colors for compatibility
         'navy-900': '#05113B',
         'blue-600': '#016CFB',
         'teal-400': '#2BC4AD',
@@ -13,14 +24,6 @@ module.exports = {
         'blue-100': '#DAE3F3',
         'blue-900': '#013D8D',
         'blue-800': '#014DB3',
-        'netpay-white': '#FFFFFF',
-        'netpay-dark-blue': '#05113B',
-        'netpay-primary-blue': '#016CFB',
-        'netpay-teal': '#2BC4AD',
-        'netpay-light-gray': '#F2F2F2',
-        'netpay-blue-gray': '#DAE3F3',
-        'netpay-medium-blue': '#013D8D',
-        'netpay-accent-blue': '#014DB3',
       },
     },
   },
