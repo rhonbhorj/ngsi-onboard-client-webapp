@@ -1,7 +1,7 @@
 import { Component, signal, inject } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { Router } from "@angular/router"
-
+import { AdminAuthService } from "../../../features/admin/services/admin-auth.service"
 @Component({
   selector: "app-admin-header",
   standalone: true,
@@ -11,6 +11,7 @@ import { Router } from "@angular/router"
 })
 export class AdminHeaderComponent {
   private router = inject(Router)
+  private authService = inject(AdminAuthService)
 
   showAdminDropdown = signal(false)
 
@@ -29,8 +30,7 @@ export class AdminHeaderComponent {
   }
 
   logout() {
-    localStorage.removeItem("adminToken")
-    this.router.navigate(["/admin/login"])
+    this.authService.logout()
     this.showAdminDropdown.set(false)
   }
 }

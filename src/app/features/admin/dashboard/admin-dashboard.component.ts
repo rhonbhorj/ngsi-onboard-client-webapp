@@ -418,7 +418,6 @@ export class AdminDashboardComponent implements OnInit {
 
   logout(): void {
     this.authService.logout()
-    this.router.navigate(['/admin/login'])
   }
 
   onSearchChange(query: string): void {
