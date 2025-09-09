@@ -200,6 +200,33 @@ export class AdminDashboardService {
     )
   }
 
+  searchApplicationsWithPagination(
+    searchTerm: string,
+    page = 1,
+  ): Observable<{ applications: MerchantApplication[]; totalPages: number; currentPage: number; totalCount: number }> {
+    // For now, we'll implement client-side pagination for search results
+    // In a real application, you'd want server-side pagination for search
+    return this.searchApplications(searchTerm).pipe(
+      map((searchResponse) => {
+        const itemsPerPage = 10
+        const totalCount = searchResponse.totalCount
+        const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+        // Calculate pagination for search results
+        const startIndex = (page - 1) * itemsPerPage
+        const endIndex = startIndex + itemsPerPage
+        const paginatedApplications = searchResponse.applications.slice(startIndex, endIndex)
+
+        return {
+          applications: paginatedApplications,
+          totalPages,
+          currentPage: page,
+          totalCount,
+        }
+      }),
+    )
+  }
+
   getNotifications(): Observable<AdminNotification[]> {
     return of(this.notifications())
   }

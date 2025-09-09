@@ -3,11 +3,12 @@ import { Router } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { AdminAuthService } from "../services/admin-auth.service"
+import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
 
 @Component({
   selector: "app-admin-settings",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AdminHeaderComponent],
   templateUrl: "./admin-settings.component.html",
   styleUrls: ["./admin-settings.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,7 +22,6 @@ export class AdminSettingsComponent {
   readonly newPassword = signal("")
   readonly confirmPassword = signal("")
   readonly isChangingPassword = signal(false)
-  readonly showAdminDropdown = signal(false)
 
   changePassword(): void {
     if (this.newPassword() !== this.confirmPassword()) {
@@ -52,18 +52,5 @@ export class AdminSettingsComponent {
     this.currentPassword.set("")
     this.newPassword.set("")
     this.confirmPassword.set("")
-  }
-
-  logout(): void {
-    this.authService.logout()
-    this.router.navigate(["/admin/login"])
-  }
-
-  navigateToDashboard(): void {
-    this.router.navigate(["/admin/dashboard"])
-  }
-
-  toggleAdminDropdown(): void {
-    this.showAdminDropdown.set(!this.showAdminDropdown())
   }
 }

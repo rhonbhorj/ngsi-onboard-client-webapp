@@ -90,11 +90,6 @@ body {
   stroke: var(--netpay-primary-blue);
 }
 
-/* Custom utility classes */
-.netpay-gradient {
-  background: linear-gradient(135deg, var(--netpay-primary-blue), var(--netpay-teal));
-}
-
 .form-section {
   @apply bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6;
 }

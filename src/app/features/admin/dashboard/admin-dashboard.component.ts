@@ -6,11 +6,12 @@ import { AdminAuthService } from "../services/admin-auth.service"
 import { AdminDashboardService } from "../services/admin-dashboard.service"
 import type { MerchantApplication } from "../../../services/application.service"
 import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
+import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent, AdminHeaderComponent],
   templateUrl: "./admin-dashboard.component.html",
   styleUrls: ["./admin-dashboard.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,10 +30,12 @@ export class AdminDashboardComponent implements OnInit {
   readonly currentPage = signal(1)
   readonly totalPages = signal(0)
   readonly totalCount = signal<number>(0)
+  readonly originalTotalCount = signal<number>(0)
   readonly goToPage = signal("")
 
   readonly showExportDropdown = signal(false)
   readonly showAdminDropdown = signal(false)
+  readonly searchQuery = signal("")
 
   readonly totalPendingCount = signal(0)
   readonly totalCalledCount = signal(0)
@@ -91,10 +94,11 @@ export class AdminDashboardComponent implements OnInit {
       next: (response) => {
         console.log("[v0] Dashboard data loaded:", response)
         this.allApplications.set(response.applications)
-        this.filterApplications()
         this.currentPage.set(response.currentPage)
         this.totalPages.set(response.totalPages)
         this.totalCount.set(response.totalCount)
+        this.originalTotalCount.set(response.totalCount)
+        this.filterApplications()
 
         this.calculateTotalsFromData()
         this.isLoading.set(false)
@@ -203,11 +207,6 @@ export class AdminDashboardComponent implements OnInit {
 
   onGoToPageChange(value: string): void {
     this.goToPage.set(value)
-  }
-
-  logout(): void {
-    this.authService.logout()
-    this.router.navigate(["/admin/login"])
   }
 
   exportToCSV(): void {
@@ -375,7 +374,37 @@ export class AdminDashboardComponent implements OnInit {
 
   private filterApplications(): void {
     const activeTab = this.activeTab()
-    const filtered = this.allApplications().filter((app) => app.status === activeTab)
+    const searchQuery = this.searchQuery().toLowerCase().trim()
+    
+    let filtered = this.allApplications().filter((app) => app.status === activeTab)
+    
+    // Apply search filter if there's a search query
+    if (searchQuery) {
+      filtered = filtered.filter((app) => {
+        const reference = app.reference?.toLowerCase() || ""
+        const businessName = app.businessName?.toLowerCase() || ""
+        const contactPerson = app.contactPersonName?.toLowerCase() || ""
+        const contactNumber = app.contactNumber?.toLowerCase() || ""
+        const businessEmail = app.businessEmail?.toLowerCase() || ""
+        const businessAddress = app.businessAddress?.toLowerCase() || ""
+        
+        return (
+          reference.includes(searchQuery) ||
+          businessName.includes(searchQuery) ||
+          contactPerson.includes(searchQuery) ||
+          contactNumber.includes(searchQuery) ||
+          businessEmail.includes(searchQuery) ||
+          businessAddress.includes(searchQuery)
+        )
+      })
+      
+      // When searching, use filtered count for pagination
+      this.totalCount.set(filtered.length)
+    } else {
+      // When not searching, restore original total count
+      this.totalCount.set(this.originalTotalCount())
+    }
+    
     this.filteredApplications.set(filtered)
   }
 
@@ -384,6 +413,21 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   navigateToSettings(): void {
-    this.router.navigate(["/admin/settings"])
+    this.router.navigate(['/admin/settings'])
+  }
+
+  logout(): void {
+    this.authService.logout()
+    this.router.navigate(['/admin/login'])
+  }
+
+  onSearchChange(query: string): void {
+    this.searchQuery.set(query)
+    this.filterApplications()
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set("")
+    this.filterApplications()
   }
 }

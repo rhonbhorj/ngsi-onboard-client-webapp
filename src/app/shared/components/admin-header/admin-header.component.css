@@ -1,0 +1,10 @@
+/* Admin Header Styles */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
