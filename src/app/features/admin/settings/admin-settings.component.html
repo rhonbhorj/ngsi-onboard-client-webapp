@@ -1,18 +1,17 @@
-<div
-  class="min-h-screen flex flex-col bg-netpay-light-gray"
->
-  <!-- Replaced inline header with shared component -->
-  <app-admin-header></app-admin-header>
+<div class="bg-light-gray min-h-screen">
+  <!-- Navbar -->
+  <app-admin-navbar></app-admin-navbar>
 
   <!-- Main Content Area -->
-  <main class="bg-netpay-light-gray flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
-    <div class="max-w-2xl">
+  <div class="flex-1">
+    <main class="bg-light-gray flex-1 p-6">
+    <div class="max-w-4xl mx-auto">
       <div class="bg-white border border-netpay-blue-gray rounded-lg shadow-sm">
         <div class="px-4 sm:px-6 py-4 border-b border-netpay-blue-gray">
-          <h2 class="text-lg font-medium text-netpay-dark-blue">
+          <h2 class="text-lg font-medium text-dark-text">
             Account Settings
           </h2>
-          <p class="text-sm mt-1 text-netpay-medium-blue">
+          <p class="text-sm mt-1 text-dark-text">
             Manage your admin account preferences
           </p>
         </div>
@@ -20,7 +19,7 @@
         <div class="p-6">
           <form (ngSubmit)="changePassword()" class="space-y-6">
             <div>
-              <h3 class="text-md font-medium mb-4 text-netpay-dark-blue">
+              <h3 class="text-md font-medium mb-4 text-dark-text">
                 Change Password
               </h3>
 
@@ -29,7 +28,7 @@
                   <label
                     for="currentPassword"
                     class="block text-sm font-medium"
-                    class="text-netpay-medium-blue"
+                    class="text-dark-text"
                     >Current Password</label
                   >
                   <input
@@ -46,7 +45,7 @@
                   <label
                     for="newPassword"
                     class="block text-sm font-medium"
-                    class="text-netpay-medium-blue"
+                    class="text-dark-text"
                     >New Password</label
                   >
                   <input
@@ -63,7 +62,7 @@
                   <label
                     for="confirmPassword"
                     class="block text-sm font-medium"
-                    class="text-netpay-medium-blue"
+                    class="text-dark-text"
                     >Confirm New Password</label
                   >
                   <input
@@ -81,7 +80,7 @@
                 <button
                   type="submit"
                   [disabled]="isChangingPassword()"
-                  class="px-6 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200 bg-netpay-primary-blue hover:bg-netpay-accent-blue hover:-translate-y-0.5 hover:shadow-lg"
+                  class="px-6 py-2 text-sm font-medium text-white-text rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200 bg-admin-button-bg hover:bg-admin-button-hover-bg hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   @if (isChangingPassword()) {
                   <svg class="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">

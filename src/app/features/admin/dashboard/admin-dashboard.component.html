@@ -1,124 +1,138 @@
-<div class="bg-netpay-light-gray min-h-screen flex flex-col">
-  <!-- Using shared header component -->
-  <app-admin-header></app-admin-header>
+<div class="bg-light-gray min-h-screen">
+  <!-- Navbar -->
+  <app-admin-navbar></app-admin-navbar>
 
   <!-- Main Content Area -->
-  <div class="flex-1 flex flex-col">
-    <main class="bg-netpay-light-gray flex-1 mx-4 sm:mx-6 lg:mx-8 xl:mx-12 py-6">
-      <div class="bg-white rounded-lg shadow-sm border border-netpay-blue-gray">
-        <!-- Applications header inside white container -->
-        <div class="px-6 py-6 border-b border-netpay-blue-gray">
-          <div>
-            <h2 class="text-2xl font-semibold text-netpay-dark-blue">
-              Applications
-            </h2>
-            <p class="text-sm mt-1 text-netpay-medium-blue">
-              All merchant applications in the system
-            </p>
+  <div class="flex-1">
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+      <!-- Single White Container -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <!-- Header Section -->
+        <div class="px-6 py-6 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-dark-text">Applications</h1>
+              <p class="text-gray-600 mt-1">Manage and review all merchant applications</p>
+            </div>
+            <!-- Export Button -->
+            <button
+              (click)="exportToExcel()"
+              [disabled]="isExporting()"
+              class="inline-flex items-center px-4 py-2 bg-admin-button-bg text-white-text rounded-lg hover:bg-admin-button-hover-bg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg
+                *ngIf="!isExporting()"
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+              <svg
+                *ngIf="isExporting()"
+                class="w-4 h-4 mr-2 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              {{ isExporting() ? 'Exporting...' : 'Export Excel' }}
+            </button>
           </div>
         </div>
 
-        <div class="px-6 pt-4">
-          <!-- Search Bar -->
-          <div class="mb-6">
-            <div class="relative max-w-md">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
-              <input
-                type="text"
-                [value]="searchQuery()"
-                (input)="onSearchChange($any($event.target).value)"
-                placeholder="Search by reference number, business name, contact person, email, or address..."
-                class="block w-full pl-10 pr-10 py-3 border border-netpay-blue-gray rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-netpay-primary-blue focus:border-netpay-primary-blue text-sm text-netpay-dark-blue"
-              />
-              @if (searchQuery()) {
-              <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <button
-                  (click)="clearSearch()"
-                  class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors duration-200"
-                  title="Clear search"
-                >
-                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              </div>
-              }
-            </div>
-            @if (searchQuery()) {
-            <p class="mt-2 text-sm text-gray-600">
-              Searching for: "<span class="font-medium text-netpay-dark-blue">{{ searchQuery() }}</span>"
-            </p>
-            }
-          </div>
-
-          <!-- Filter tabs with export controls on same line -->
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-            <!-- Left side: Tabs -->
-            <div class="border-b border-netpay-blue-gray">
-              <nav class="flex space-x-8 overflow-x-auto" aria-label="Tabs">
-                <button
-                  (click)="setActiveTab('pending')"
-                  [class.active]="activeTab() === 'pending'"
-                  class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
-                  [class.border-netpay-primary-blue]="activeTab() === 'pending'"
-                  [class.text-netpay-primary-blue]="activeTab() === 'pending'"
-                  [class.border-transparent]="activeTab() !== 'pending'"
-                  [class.text-netpay-medium-blue]="activeTab() !== 'pending'"
-                >
-                  Pending ({{ totalPendingCount() }})
-                </button>
-                <button
-                  (click)="setActiveTab('called')"
-                  [class.active]="activeTab() === 'called'"
-                  class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap"
-                  [class.border-netpay-primary-blue]="activeTab() === 'called'"
-                  [class.text-netpay-primary-blue]="activeTab() === 'called'"
-                  [class.border-transparent]="activeTab() !== 'called'"
-                  [class.text-netpay-medium-blue]="activeTab() !== 'called'"
-                >
-                  Mark as Called ({{ totalCalledCount() }})
-                </button>
-              </nav>
-            </div>
-
-            <!-- Right side: Export controls aligned with tabs -->
-            <div class="flex flex-col sm:flex-row gap-3 lg:items-center">
-              <!-- Export Button -->
+        <!-- Search and Tabs Section -->
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <!-- Search Input -->
+            <div class="flex-1 max-w-md">
               <div class="relative">
-                <button
-                  (click)="exportToExcel()"
-                  class="inline-flex items-center px-4 py-3 text-sm font-medium text-white rounded-lg shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap bg-netpay-medium-blue hover:bg-netpay-accent-blue"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     ></path>
                   </svg>
-                  Export As Excel
-                </button>
+                </div>
+                <input
+                  type="text"
+                  [value]="searchQuery()"
+                  (input)="onSearchChange($any($event.target).value)"
+                  placeholder="Search by reference number, name, or email..."
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-admin-button-bg focus:border-transparent transition-colors duration-200"
+                />
+                @if (searchQuery()) {
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <button
+                    (click)="clearSearch()"
+                    class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors duration-200"
+                    title="Clear search"
+                  >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+                }
               </div>
+            </div>
+
+            <!-- Status Tabs -->
+            <div class="flex gap-2">
+              <button (click)="setStatusFilter('pending')" [class]="getTabClasses('pending')">
+                Pending
+                <span class="ml-2 bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">
+                  {{ getPendingCount() }}
+                </span>
+              </button>
+              <button (click)="setStatusFilter('approved')" [class]="getTabClasses('approved')">
+                Approved
+                <span class="ml-2 bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">
+                  {{ getApprovedCount() }}
+                </span>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Enhanced responsive table with better mobile handling -->
+        <!-- Applications Table -->
         @if (isLoading()) {
-        <div class="p-8 text-center">
-          <div
-            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-netpay-medium-blue"
-          >
-            <svg
-              class="animate-spin -ml-1 mr-3 h-5 w-5 text-netpay-medium-blue"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
+        <!-- Loading State -->
+        <div class="flex items-center justify-center py-12">
+          <div class="flex items-center space-x-3">
+            <svg class="animate-spin h-6 w-6 text-admin-button-bg" fill="none" viewBox="0 0 24 24">
               <circle
                 class="opacity-25"
                 cx="12"
@@ -133,183 +147,108 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            Loading applications...
+            <span class="text-gray-600">Loading applications...</span>
           </div>
+        </div>
+        } @else if (filteredApplications().length === 0) {
+        <!-- Empty State -->
+        <div class="text-center py-12">
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No applications found</h3>
+          <p class="mt-1 text-sm text-gray-500">
+            @if (searchQuery()) { Try adjusting your search criteria. } @else { No applications
+            match the current filter. }
+          </p>
         </div>
         } @else {
-        <!-- Mobile Card View (hidden on desktop) -->
-        <div class="block lg:hidden">
-          @for (application of filteredApplications(); track application.reference) {
-          <div
-            class="border-b p-4 hover:bg-gray-50 transition-colors duration-200"
-            class="border-netpay-blue-gray"
-          >
-            <div class="space-y-3">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div class="text-sm font-medium" class="text-netpay-dark-blue">
-                    {{ application.reference }}
-                  </div>
-                  <div class="text-sm font-medium mt-1" class="text-netpay-dark-blue">
-                    {{ application.businessName }}
-                  </div>
-                  <div class="text-xs mt-1" class="text-netpay-medium-blue">
-                    {{ application.businessAddress }}
-                  </div>
-                </div>
-                <span
-                  class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                  [ngClass]="{
-                    'bg-yellow-100 text-yellow-800': application.status === 'pending',
-                    'bg-green-100 text-green-800': application.status === 'called'
-                  }"
-                >
-                  {{ application.status | titlecase }}
-                </span>
-              </div>
-              <div class="flex justify-between items-center">
-                <div class="text-xs" class="text-netpay-medium-blue">
-                  {{ application.submittedAt | date : 'short' }}
-                </div>
-                <div class="flex items-center space-x-2">
-                  <button
-                    (click)="openDetailsModal(application)"
-                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-netpay-primary-blue text-netpay-primary-blue transition-colors duration-200 hover:bg-blue-50"
-                    title="View Details"
-                  >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      ></path>
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      ></path>
-                    </svg>
-                    View
-                  </button>
-                  @if (application.status === 'pending') {
-                  <button
-                    (click)="markAsCalled(application)"
-                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-green-500 text-green-500 transition-colors duration-200 hover:bg-green-50"
-                    title="Mark as Called"
-                  >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
-                      ></path>
-                    </svg>
-                    Mark as Called
-                  </button>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-          }
-        </div>
-        }
-
-        <!-- Desktop Table View (hidden on mobile) -->
-        <div class="hidden lg:block overflow-x-auto">
-          <table
-            class="min-w-full divide-y divide-netpay-blue-gray border-netpay-blue-gray"
-          >
-            <thead class="bg-netpay-light-gray">
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
               <tr>
                 <th
-                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  class="text-netpay-medium-blue"
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  REFERENCE NO
+                  Reference
                 </th>
                 <th
-                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  class="text-netpay-medium-blue"
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  BUSINESS
+                  Business Info
                 </th>
                 <th
-                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  class="text-netpay-medium-blue"
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  STATUS
+                  Contact
                 </th>
                 <th
-                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  class="text-netpay-medium-blue"
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  DATE SUBMITTED
+                  Status
                 </th>
                 <th
-                  class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider"
-                  class="text-netpay-medium-blue"
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  ACTIONS
+                  Date Applied
+                </th>
+                <th
+                  class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
                 </th>
               </tr>
             </thead>
-            <tbody
-              class="divide-y"
-              style="background-color: var(--netpay-white); border-color: var(--netpay-blue-gray)"
-            >
-              @for (application of filteredApplications(); track application.reference) {
-              <tr class="hover:bg-gray-50 transition-colors duration-200">
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (application of allApplications(); track application.reference) {
+              <tr class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium" class="text-netpay-dark-blue">
+                  <div class="text-sm font-medium text-dark-text">
                     {{ application.reference }}
                   </div>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-sm font-medium" class="text-netpay-dark-blue">
+                  <div class="text-sm font-medium text-dark-text">
                     {{ application.businessName }}
                   </div>
-                  <div class="text-sm" class="text-netpay-medium-blue">
-                    {{ application.businessAddress }}
+                  <div class="text-sm text-gray-500">
+                    {{ application.contactPerson }}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-dark-text">
+                    {{ application.contactPersonName }}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{ application.businessEmail }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="inline-flex px-3 py-1 text-xs font-semibold rounded-full"
-                    [ngClass]="{
-                      'bg-yellow-100 text-yellow-800': application.status === 'pending',
-                      'bg-green-100 text-green-800': application.status === 'called'
-                    }"
-                  >
-                    {{ application.status | titlecase }}
+                  <span [class]="getStatusClasses(application.status)">
+                    {{ application.status }}
                   </span>
                 </td>
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm"
-                  class="text-netpay-medium-blue"
-                >
-                  {{ application.submittedAt | date : 'short' }}
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(application.submittedAt) }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <div class="flex items-center space-x-3">
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex items-center justify-end space-x-2">
                     <button
-                      (click)="openDetailsModal(application)"
-                      class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors duration-200 hover:bg-blue-50"
-                      style="
-                        color: var(--netpay-primary-blue);
-                        border-color: var(--netpay-primary-blue);
-                      "
-                      title="View Details"
+                      (click)="viewApplication(application)"
+                      class="text-admin-button-bg hover:text-admin-button-hover-bg transition-colors duration-200"
                     >
-                      <svg
-                        class="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -323,29 +262,21 @@
                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                         ></path>
                       </svg>
-                      View
                     </button>
                     @if (application.status === 'pending') {
                     <button
                       (click)="markAsCalled(application)"
-                      class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors duration-200 hover:bg-green-50"
-                      class="text-green-500 border-green-500"
-                      title="Mark as Called"
+                      class="text-admin-accent hover:text-admin-accent transition-colors duration-200"
+                      title="Mark as called"
                     >
-                      <svg
-                        class="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M5 13l4 4L19 7"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                         ></path>
                       </svg>
-                      Mark as Called
                     </button>
                     }
                   </div>
@@ -356,275 +287,173 @@
           </table>
         </div>
 
-        <!-- Replaced old pagination with new reusable component -->
-        <app-pagination
-          [currentPage]="currentPage()"
-          [totalCount]="totalCount()"
-          [itemsPerPage]="paginationConfig.itemsPerPage || 10"
-          [config]="paginationConfig"
-          (pageChange)="onPageChange($event)"
-          (firstPage)="onFirstPage()"
-          (lastPage)="onLastPage()"
-          (previousPage)="onPreviousPage()"
-          (nextPage)="onNextPage()"
-        >
-        </app-pagination>
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+        <div class="px-6 py-4 border-t border-gray-200">
+          <app-pagination
+            [currentPage]="currentPage()"
+            [totalCount]="totalCount()"
+            [itemsPerPage]="10"
+            [config]="paginationConfig"
+            (pageChange)="onPageChange($event)"
+          ></app-pagination>
+        </div>
+        } }
       </div>
-    </main>
+    </div>
   </div>
 
-  <!-- Enhanced modal with better responsive design and improved layout -->
+  <!-- Application Details Modal -->
   @if (showDetailsModal()) {
-  <div
-    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
-    id="details-modal"
-    (click)="closeDetailsModal()"
-  >
+  <div class="fixed inset-0 z-50 overflow-y-auto">
     <div
-      class="relative bg-white border shadow-xl rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
-      (click)="$event.stopPropagation()"
+      class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
     >
+      <!-- Background overlay -->
       <div
-        class="sticky top-0 bg-white border-b px-6 py-4 rounded-t-xl"
-        class="border-netpay-blue-gray"
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        (click)="closeDetailsModal()"
+      ></div>
+
+      <!-- Modal panel -->
+      <div
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
       >
-        <div class="flex items-center justify-between">
-          <h3 class="text-xl font-semibold" class="text-netpay-dark-blue">
-            Application Details
-          </h3>
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-medium text-dark-text">Application Details</h3>
+            <button
+              (click)="closeDetailsModal()"
+              class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Application Details -->
+          @if (selectedApplication()) {
+          <div class="space-y-6">
+            <!-- Reference Number -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Reference Number</h4>
+              <p class="text-lg font-semibold text-dark-text">
+                {{ selectedApplication()!.reference }}
+              </p>
+            </div>
+
+            <!-- Business Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Business Name</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.businessName }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Business Email</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.businessEmail }}</p>
+              </div>
+              <div class="md:col-span-2">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Business Address</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.businessAddress }}</p>
+              </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Person</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.contactPerson }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Number</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.contactNumber }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Telephone Number</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.telephoneNo || 'N/A' }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Registered By</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.registeredBy }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Registered By Contact</h4>
+                <p class="text-dark-text">{{ selectedApplication()!.registeredByContactNumber }}</p>
+              </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Payment Information</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h5 class="text-xs font-medium text-gray-600 mb-1">Current Payment Methods</h5>
+                  <div class="flex flex-wrap gap-2">
+                    @if (selectedApplication()!.currentModeOfPayment.cash) {
+                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full"
+                      >Cash</span
+                    >
+                    } @if (selectedApplication()!.currentModeOfPayment.eWallets) {
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                      >E-Wallets</span
+                    >
+                    } @if (selectedApplication()!.currentModeOfPayment.qrph) {
+                    <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full"
+                      >QR PH</span
+                    >
+                    } @if (selectedApplication()!.currentModeOfPayment.cardPayment) {
+                    <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full"
+                      >Card Payment</span
+                    >
+                    }
+                  </div>
+                </div>
+                <div>
+                  <h5 class="text-xs font-medium text-gray-600 mb-1">
+                    Has Existing Payment Portal
+                  </h5>
+                  <p class="text-dark-text">
+                    {{ selectedApplication()!.hasExistingPaymentPortal }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Application Status and Date -->
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Status</h4>
+                <span [class]="getStatusClasses(selectedApplication()!.status)">
+                  {{ selectedApplication()!.status }}
+                </span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Date Applied</h4>
+                <p class="text-dark-text">{{ formatDate(selectedApplication()!.submittedAt) }}</p>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
           <button
+            type="button"
             (click)="closeDetailsModal()"
-            class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-admin-button-bg text-base font-medium text-white-text hover:bg-admin-button-hover-bg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-button-bg sm:ml-3 sm:w-auto sm:text-sm"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
+            Close
           </button>
         </div>
       </div>
-
-      @if (selectedApplication()) {
-      <div class="p-6">
-        <!-- Enhanced responsive grid layout for better mobile experience -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- First Column: Business Information -->
-          <div class="space-y-6">
-            <div>
-              <h4
-                class="text-lg font-semibold mb-4 pb-2 border-b"
-                style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
-              >
-                Business Information
-              </h4>
-              <div class="space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Business Name</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.businessName }}
-                  </span>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Business Address</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.businessAddress }}
-                  </span>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Business Email</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.businessEmail }}
-                  </span>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Telephone Number</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.telephoneNo }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Second Column: Contact Information -->
-          <div class="space-y-6">
-            <div>
-              <h4
-                class="text-lg font-semibold mb-4 pb-2 border-b"
-                style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
-              >
-                Contact Information
-              </h4>
-              <div class="space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Registered By</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.registeredBy }}
-                  </span>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Registered Contact Number</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.registeredByContactNumber }}
-                  </span>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Contact Person Name</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{
-                      selectedApplication()?.contactPerson ||
-                        selectedApplication()?.contactPersonName
-                    }}
-                  </span>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <span
-                    class="text-sm font-medium block mb-1"
-                    class="text-netpay-medium-blue"
-                    >Contact Number</span
-                  >
-                  <span class="text-sm" class="text-netpay-dark-blue">
-                    {{ selectedApplication()?.contactNumber }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional information in full-width sections below -->
-        <div class="mt-8 space-y-6">
-          <!-- Payment Information Section -->
-          <div>
-            <h4
-              class="text-lg font-semibold mb-4 pb-2 border-b"
-              style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
-            >
-              Payment Information
-            </h4>
-            <div class="space-y-4">
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Has Existing Payment Portal</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{ selectedApplication()?.hasExistingPaymentPortal ? 'Yes' : 'No' }}
-                </span>
-              </div>
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Current Mode of Payment</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{ getFormattedPaymentMethods(selectedApplication()?.currentModeOfPayment) }}
-                </span>
-              </div>
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Estimated Transaction Numbers</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{ selectedApplication()?.estimatedTransactionNumbers }}
-                </span>
-              </div>
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Estimated Average Amount</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{
-                    getEstimatedAmount(selectedApplication()?.estimatedAverageAmount)
-                      | currency : 'PHP' : 'symbol' : '1.2-2'
-                  }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Application Details Section -->
-          <div>
-            <h4
-              class="text-lg font-semibold mb-4 pb-2 border-b"
-              style="color: var(--netpay-dark-blue); border-color: var(--netpay-blue-gray)"
-            >
-              Application Details
-            </h4>
-            <div class="space-y-4">
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Reference No</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{ selectedApplication()?.reference }}
-                </span>
-              </div>
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Status</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{ selectedApplication()?.status | titlecase }}
-                </span>
-              </div>
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <span
-                  class="text-sm font-medium block mb-1"
-                  class="text-netpay-medium-blue"
-                  >Date Submitted</span
-                >
-                <span class="text-sm" class="text-netpay-dark-blue">
-                  {{ selectedApplication()?.submittedAt | date : 'medium' }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      }
     </div>
   </div>
   }

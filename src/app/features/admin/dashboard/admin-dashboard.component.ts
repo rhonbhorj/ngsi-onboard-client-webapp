@@ -6,12 +6,12 @@ import { AdminAuthService } from "../services/admin-auth.service"
 import { AdminDashboardService } from "../services/admin-dashboard.service"
 import type { MerchantApplication } from "../../../services/application.service"
 import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
-import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
+import { AdminNavbarComponent } from "../../../shared/components/admin-navbar/admin-navbar.component"
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent, AdminHeaderComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent, AdminNavbarComponent],
   templateUrl: "./admin-dashboard.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,6 +35,7 @@ export class AdminDashboardComponent implements OnInit {
   readonly showExportDropdown = signal(false)
   readonly showAdminDropdown = signal(false)
   readonly searchQuery = signal("")
+  readonly isExporting = signal(false)
 
   readonly totalPendingCount = signal(0)
   readonly totalCalledCount = signal(0)
@@ -43,6 +44,7 @@ export class AdminDashboardComponent implements OnInit {
   // Navigation state
   readonly activeSection = signal<"dashboard" | "settings">("dashboard")
   readonly activeTab = signal<"pending" | "called">("pending")
+  readonly statusFilter = signal<"pending" | "approved">("pending")
 
   // Modal signals
   readonly showDetailsModal = signal(false)
@@ -54,7 +56,6 @@ export class AdminDashboardComponent implements OnInit {
   readonly isChangingPassword = signal(false)
 
   readonly paginationConfig: PaginationConfig = {
-    showItemsInfo: true,
     showGoToPage: true,
     itemsPerPage: 10,
     itemName: "applications",
@@ -110,57 +111,32 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private calculateTotalsFromData(): void {
-    this.dashboardService.getAllApplicationsForExport().subscribe({
-      next: (allApplications) => {
-        const pendingCount = allApplications.filter((app) => app.status === "pending").length
-        const calledCount = allApplications.filter((app) => app.status === "called").length
+    // Calculate totals from current page data only
+    // Note: This gives approximate counts since we only have current page data
+    const currentApplications = this.allApplications()
+    const pendingCount = currentApplications.filter((app) => app.status === "pending").length
+    const calledCount = currentApplications.filter((app) => app.status === "called").length
 
-        this.totalPendingCount.set(pendingCount)
-        this.totalCalledCount.set(calledCount)
-        this.totalApplicationsCount.set(allApplications.length)
+    this.totalPendingCount.set(pendingCount)
+    this.totalCalledCount.set(calledCount)
+    this.totalApplicationsCount.set(currentApplications.length)
 
-        console.log(
-          "[v0] Calculated totals from ALL data - Pending:",
-          pendingCount,
-          "Called:",
-          calledCount,
-          "Total:",
-          allApplications.length,
-        )
-      },
-      error: (error) => {
-        console.error("[v0] Error getting all applications for totals:", error)
-        const currentApps = this.allApplications()
-        const currentPendingCount = currentApps.filter((app) => app.status === "pending").length
-        const currentCalledCount = currentApps.filter((app) => app.status === "called").length
-
-        this.totalPendingCount.set(currentPendingCount)
-        this.totalCalledCount.set(currentCalledCount)
-        this.totalApplicationsCount.set(this.totalCount())
-
-        console.log(
-          "[v0] Fallback totals from current page - Pending:",
-          currentPendingCount,
-          "Called:",
-          currentCalledCount,
-          "Total:",
-          this.totalCount(),
-        )
-      },
-    })
+    console.log(
+      "[v0] Calculated totals from current page data - Pending:",
+      pendingCount,
+      "Called:",
+      calledCount,
+      "Total:",
+      this.totalCount(),
+    )
   }
 
   onPageChange(page: number): void {
     console.log("[v0] onPageChange called with page:", page, "current totalPages:", this.totalPages())
 
     if (page >= 1 && page <= this.totalPages()) {
-      console.log("[v0] Page change valid, navigating to page:", page)
-
-      if (this.activeSection() === "dashboard") {
-        this.router.navigate(["/admin/dashboard", page])
-      } else {
-        this.loadDashboardData(page)
-      }
+      console.log("[v0] Page change valid, loading page:", page)
+      this.loadDashboardData(page)
     } else {
       console.log("[v0] Page change invalid - page:", page, "totalPages:", this.totalPages())
     }
@@ -225,7 +201,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   exportToExcel(): void {
-    this.isLoading.set(true)
+    this.isExporting.set(true)
     this.dashboardService.downloadExcelReport().subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob)
@@ -237,11 +213,11 @@ export class AdminDashboardComponent implements OnInit {
         document.body.removeChild(link)
         window.URL.revokeObjectURL(url)
         this.showExportDropdown.set(false)
-        this.isLoading.set(false)
+        this.isExporting.set(false)
       },
       error: (error) => {
         console.error("[v0] Error exporting Excel:", error)
-        this.isLoading.set(false)
+        this.isExporting.set(false)
       },
     })
   }
@@ -353,7 +329,6 @@ export class AdminDashboardComponent implements OnInit {
             this.allApplications.set(updatedApplications)
             this.filterApplications()
             alert("Application marked as called successfully")
-            this.calculateTotalsFromData()
           } else {
             alert(response.message || "Failed to mark application as called")
           }
@@ -372,10 +347,13 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private filterApplications(): void {
-    const activeTab = this.activeTab()
+    const statusFilter = this.statusFilter()
     const searchQuery = this.searchQuery().toLowerCase().trim()
     
-    let filtered = this.allApplications().filter((app) => app.status === activeTab)
+    let filtered = this.allApplications()
+    
+    // Apply status filter (only pending or approved)
+    filtered = filtered.filter((app) => app.status === statusFilter)
     
     // Apply search filter if there's a search query
     if (searchQuery) {
@@ -396,14 +374,10 @@ export class AdminDashboardComponent implements OnInit {
           businessAddress.includes(searchQuery)
         )
       })
-      
-      // When searching, use filtered count for pagination
-      this.totalCount.set(filtered.length)
-    } else {
-      // When not searching, restore original total count
-      this.totalCount.set(this.originalTotalCount())
     }
     
+    // For server-side pagination, we don't recalculate total pages
+    // The server provides the correct totalPages and totalCount
     this.filteredApplications.set(filtered)
   }
 
@@ -427,5 +401,65 @@ export class AdminDashboardComponent implements OnInit {
   clearSearch(): void {
     this.searchQuery.set("")
     this.filterApplications()
+  }
+
+  // New methods for modern dashboard
+  getPendingCount(): number {
+    return this.allApplications().filter(app => app.status === 'pending').length
+  }
+
+  getApprovedCount(): number {
+    return this.allApplications().filter(app => app.status === 'approved').length
+  }
+
+  getRejectedCount(): number {
+    return this.allApplications().filter(app => app.status === 'rejected').length
+  }
+
+  getTabClasses(status: string): string {
+    const isActive = this.statusFilter() === status
+    const baseClasses = "inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+    
+    if (isActive) {
+      return `${baseClasses} bg-admin-button-bg text-white-text`
+    } else {
+      return `${baseClasses} text-gray-700 hover:bg-gray-100`
+    }
+  }
+
+  getStatusClasses(status: string): string {
+    const baseClasses = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+    
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return `${baseClasses} bg-yellow-100 text-yellow-800`
+      case 'approved':
+        return `${baseClasses} bg-green-100 text-green-800`
+      case 'rejected':
+        return `${baseClasses} bg-red-100 text-red-800`
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`
+    }
+  }
+
+  formatDate(date: string | Date): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    return dateObj.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+
+  // Additional methods for the new template
+  setStatusFilter(status: "pending" | "approved"): void {
+    this.statusFilter.set(status)
+    this.filterApplications()
+  }
+
+
+  viewApplication(application: MerchantApplication): void {
+    this.selectedApplication.set(application)
+    this.showDetailsModal.set(true)
   }
 }

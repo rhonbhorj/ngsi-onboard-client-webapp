@@ -21,7 +21,7 @@ import { ApplicationService } from "../../services/application.service"
   ],
   template: `
     <!-- Enhanced responsive layout with better mobile spacing and typography -->
-    <div class="min-h-screen bg-netpay-light-gray py-2 sm:py-4 px-2 sm:px-4 md:px-6 lg:px-8">
+    <div class="min-h-screen bg-light-gray py-2 sm:py-4 px-2 sm:px-4 md:px-6 lg:px-8">
       <!-- Header -->
       <div class="max-w-4xl mx-auto mb-4 sm:mb-8">
         <div class="text-center bg-white rounded-lg shadow-sm p-3 sm:p-6 border border-gray-200">
@@ -30,7 +30,7 @@ import { ApplicationService } from "../../services/application.service"
               <img src="images/ngsi-logo.png" alt="Netpay Logo" class="w-16 h-16 sm:w-30 sm:h-30" />
             </div>
             <div class="text-center sm:text-left">
-              <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-netpay-dark-blue">
+              <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-dark-text">
                 NetPay Merchant Onboarding
               </h1>
               <p class="text-sm sm:text-base text-gray-600 mt-1">
@@ -50,7 +50,7 @@ import { ApplicationService } from "../../services/application.service"
               class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
               [class]="
                 currentStep() >= 1
-                  ? 'bg-netpay-primary-blue text-white'
+                  ? 'bg-form-button-bg text-white-text'
                   : 'bg-gray-200 text-gray-500'
               "
             >
@@ -63,7 +63,7 @@ import { ApplicationService } from "../../services/application.service"
               class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
               [class]="
                 currentStep() >= 2
-                  ? 'bg-netpay-primary-blue text-white'
+                  ? 'bg-form-button-bg text-white-text'
                   : 'bg-gray-200 text-gray-500'
               "
             >
@@ -76,7 +76,7 @@ import { ApplicationService } from "../../services/application.service"
               class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
               [class]="
                 currentStep() >= 3
-                  ? 'bg-netpay-primary-blue text-white'
+                  ? 'bg-form-button-bg text-white-text'
                   : 'bg-gray-200 text-gray-500'
               "
             >
@@ -89,7 +89,7 @@ import { ApplicationService } from "../../services/application.service"
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
                   currentStep() >= 1
-                    ? 'bg-netpay-primary-blue text-white'
+                    ? 'bg-form-button-bg text-white-text'
                     : 'bg-gray-200 text-gray-500'
                 "
               >
@@ -108,7 +108,7 @@ import { ApplicationService } from "../../services/application.service"
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
                   currentStep() >= 2
-                    ? 'bg-netpay-primary-blue text-white'
+                    ? 'bg-form-button-bg text-white-text'
                     : 'bg-gray-200 text-gray-500'
                 "
               >
@@ -127,7 +127,7 @@ import { ApplicationService } from "../../services/application.service"
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                 [class]="
                   currentStep() >= 3
-                    ? 'bg-netpay-primary-blue text-white'
+                    ? 'bg-form-button-bg text-white-text'
                     : 'bg-gray-200 text-gray-500'
                 "
               >
@@ -179,7 +179,7 @@ import { ApplicationService } from "../../services/application.service"
             <button
               (click)="nextStep()"
               [disabled]="!isStepValid()"
-              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-form-button-bg text-white-text rounded-md hover:bg-admin-accent focus:outline-none focus:ring-2 focus:ring-form-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
             >
               Next
             </button>
@@ -187,7 +187,7 @@ import { ApplicationService } from "../../services/application.service"
             <button
               (click)="submitForm()"
               [disabled]="isSubmitting() || !businessInfoForm.valid"
-              class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-netpay-primary-blue text-white rounded-md hover:bg-netpay-accent-blue focus:outline-none focus:ring-2 focus:ring-netpay-primary-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+              class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-form-button-bg text-white-text rounded-md hover:bg-admin-accent focus:outline-none focus:ring-2 focus:ring-form-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               style="color: white;"
             >
               {{ getSubmitButtonText() }}

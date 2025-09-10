@@ -5,25 +5,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Your custom NetPay color palette
-        'netpay': {
-          'white': '#FFFFFF',
-          'dark-blue': '#05113B',
-          'primary-blue': '#016CFB',
-          'teal': '#2BC4AD',
-          'light-gray': '#F2F2F2',
-          'blue-gray': '#DAE3F3',
-          'medium-blue': '#013D8D',
-          'accent-blue': '#014DB3',
+        // Admin Colors
+        'admin': {
+          'button-bg': '#003c6e',
+          'button-hover-bg': '#05113b',
+          'accent': '#2bc4ad',
         },
-        // Keep standard colors for compatibility
-        'navy-900': '#05113B',
-        'blue-600': '#016CFB',
-        'teal-400': '#2BC4AD',
-        'gray-100': '#F2F2F2',
-        'blue-100': '#DAE3F3',
-        'blue-900': '#013D8D',
-        'blue-800': '#014DB3',
+        // Form Colors
+        'form': {
+          'button-bg': '#016cfb',
+        },
+        // Base Colors
+        'white-text': '#ffffff',
+        'dark-text': '#05113b',
+        'light-gray': '#f2f2f2',
+        // Keep some standard colors for compatibility
+        'blue-gray': '#dae3f3',
       },
     },
   },
