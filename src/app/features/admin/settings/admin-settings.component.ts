@@ -3,6 +3,7 @@ import { Router } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { AdminAuthService } from "../services/admin-auth.service"
+import { ToastService } from "../../../shared/services/toast.service"
 import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
 import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
 
@@ -16,6 +17,7 @@ import { AdminHeaderComponent } from "../../../shared/components/admin-header/ad
 export class AdminSettingsComponent {
   private authService = inject(AdminAuthService)
   private router = inject(Router)
+  private toastService = inject(ToastService)
 
   // Settings form signals
   readonly currentPassword = signal("")
@@ -34,7 +36,7 @@ export class AdminSettingsComponent {
       next: (response) => {
         this.isChangingPassword.set(false)
         if (response.success) {
-          alert("Password changed successfully. You will be logged out for security reasons.")
+          this.toastService.success("Password Changed", "Password changed successfully. You will be logged out for security reasons.")
           this.authService.logout()
         } else {
           alert(response.message || "Failed to change password")

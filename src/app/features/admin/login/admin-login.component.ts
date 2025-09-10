@@ -3,6 +3,7 @@ import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule } from "@a
 import { Router } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { AdminAuthService } from "../services/admin-auth.service"
+import { ToastService } from "../../../shared/services/toast.service"
 import type { AdminLoginCredentials } from "../models/admin.model"
 
 @Component({
@@ -19,6 +20,7 @@ export class AdminLoginComponent {
   private fb = inject(FormBuilder)
   private router = inject(Router)
   private authService = inject(AdminAuthService)
+  private toastService = inject(ToastService)
 
   // State signals
   readonly isSubmitting = signal(false)
@@ -52,15 +54,15 @@ export class AdminLoginComponent {
             this.authService.handleLoginSuccess(response, credentials.username)
             this.router.navigate(["/admin/dashboard"])
           } else {
-            this.errorMessage.set("Username or Password is Incorrect")
+            this.toastService.error("Login Failed", "Username or Password is Incorrect")
           }
         },
         error: (error) => {
           this.isSubmitting.set(false)
           if (error.status === 401) {
-            this.errorMessage.set("Username or Password is Incorrect")
+            this.toastService.error("Login Failed", "Username or Password is Incorrect")
           } else {
-            this.errorMessage.set("Login failed. Please try again.")
+            this.toastService.error("Login Failed", "Login failed. Please try again.")
           }
         },
       })
