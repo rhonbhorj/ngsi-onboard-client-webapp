@@ -60,7 +60,7 @@ export interface PaginationConfig {
       transition: all 0.2s ease;
     }
 
-    .pagination-btn:hover:not(.disabled) {
+    .pagination-btn:hover:not(.disabled):not(.active) {
       background: #f2f2f2;
       border-color: #003c6e;
     }

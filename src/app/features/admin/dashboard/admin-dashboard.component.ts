@@ -6,12 +6,13 @@ import { AdminAuthService } from "../services/admin-auth.service"
 import { AdminDashboardService } from "../services/admin-dashboard.service"
 import type { MerchantApplication } from "../../../services/application.service"
 import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
-import { AdminNavbarComponent } from "../../../shared/components/admin-navbar/admin-navbar.component"
+import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
+import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent, AdminNavbarComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent, AdminSidebarComponent, AdminHeaderComponent],
   templateUrl: "./admin-dashboard.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,6 +37,7 @@ export class AdminDashboardComponent implements OnInit {
   readonly showAdminDropdown = signal(false)
   readonly searchQuery = signal("")
   readonly isExporting = signal(false)
+  private searchTimeout: any = null
 
   readonly totalPendingCount = signal(0)
   readonly totalCalledCount = signal(0)
@@ -352,32 +354,16 @@ export class AdminDashboardComponent implements OnInit {
     
     let filtered = this.allApplications()
     
-    // Apply status filter (only pending or approved)
-    filtered = filtered.filter((app) => app.status === statusFilter)
-    
-    // Apply search filter if there's a search query
+    // If we're in search mode, don't apply additional client-side filtering
+    // The search results are already filtered by the server
     if (searchQuery) {
-      filtered = filtered.filter((app) => {
-        const reference = app.reference?.toLowerCase() || ""
-        const businessName = app.businessName?.toLowerCase() || ""
-        const contactPerson = app.contactPersonName?.toLowerCase() || ""
-        const contactNumber = app.contactNumber?.toLowerCase() || ""
-        const businessEmail = app.businessEmail?.toLowerCase() || ""
-        const businessAddress = app.businessAddress?.toLowerCase() || ""
-        
-        return (
-          reference.includes(searchQuery) ||
-          businessName.includes(searchQuery) ||
-          contactPerson.includes(searchQuery) ||
-          contactNumber.includes(searchQuery) ||
-          businessEmail.includes(searchQuery) ||
-          businessAddress.includes(searchQuery)
-        )
-      })
+      // Only apply status filter to search results
+      filtered = filtered.filter((app) => app.status === statusFilter)
+    } else {
+      // Apply status filter for normal browsing
+      filtered = filtered.filter((app) => app.status === statusFilter)
     }
     
-    // For server-side pagination, we don't recalculate total pages
-    // The server provides the correct totalPages and totalCount
     this.filteredApplications.set(filtered)
   }
 
@@ -395,12 +381,48 @@ export class AdminDashboardComponent implements OnInit {
 
   onSearchChange(query: string): void {
     this.searchQuery.set(query)
-    this.filterApplications()
+    
+    // Clear existing timeout
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout)
+    }
+    
+    if (query.trim()) {
+      // Debounce search by 500ms
+      this.searchTimeout = setTimeout(() => {
+        this.performSearch(query.trim())
+      }, 500)
+    } else {
+      // Clear search and load normal data immediately
+      this.loadDashboardData(1)
+    }
   }
 
   clearSearch(): void {
     this.searchQuery.set("")
-    this.filterApplications()
+    this.loadDashboardData(1)
+  }
+
+  private performSearch(searchTerm: string): void {
+    this.isLoading.set(true)
+    
+    this.dashboardService.searchApplicationsWithPagination(searchTerm, 1).subscribe({
+      next: (response) => {
+        console.log("[v0] Search results:", response)
+        this.allApplications.set(response.applications)
+        this.filteredApplications.set(response.applications)
+        this.totalPages.set(response.totalPages)
+        this.currentPage.set(response.currentPage)
+        this.totalCount.set(response.totalCount)
+        this.isLoading.set(false)
+      },
+      error: (error) => {
+        console.error("[v0] Search error:", error)
+        this.isLoading.set(false)
+        // Fallback to normal data loading
+        this.loadDashboardData(1)
+      }
+    })
   }
 
   // New methods for modern dashboard
@@ -454,12 +476,26 @@ export class AdminDashboardComponent implements OnInit {
   // Additional methods for the new template
   setStatusFilter(status: "pending" | "approved"): void {
     this.statusFilter.set(status)
-    this.filterApplications()
+    
+    // If we're in search mode, re-perform search with new status filter
+    const searchQuery = this.searchQuery().trim()
+    if (searchQuery) {
+      this.performSearch(searchQuery)
+    } else {
+      this.filterApplications()
+    }
   }
 
 
   viewApplication(application: MerchantApplication): void {
     this.selectedApplication.set(application)
     this.showDetailsModal.set(true)
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup search timeout
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout)
+    }
   }
 }

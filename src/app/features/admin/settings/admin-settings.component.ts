@@ -3,12 +3,13 @@ import { Router } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { AdminAuthService } from "../services/admin-auth.service"
-import { AdminNavbarComponent } from "../../../shared/components/admin-navbar/admin-navbar.component"
+import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
+import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
 
 @Component({
   selector: "app-admin-settings",
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbarComponent],
+  imports: [CommonModule, FormsModule, AdminSidebarComponent, AdminHeaderComponent],
   templateUrl: "./admin-settings.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
