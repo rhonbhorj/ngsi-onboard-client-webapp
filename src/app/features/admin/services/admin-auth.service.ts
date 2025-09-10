@@ -12,7 +12,7 @@ export class AdminAuthService {
   private router = inject(Router)
   private http = inject(HttpClient)
 
-  private apiUrl = environment.apiUrl // make sure this exists in environment.ts
+  private apiUrl = environment.apiUrl 
 
   // State signals
   readonly currentUser = signal<AdminUser | null>(null)
@@ -23,15 +23,14 @@ export class AdminAuthService {
     this.checkExistingSession()
   }
 
-  // 🔹 Call backend instead of mock
+  // Call backend instead of mock
   login(credentials: AdminLoginCredentials): Observable<AdminLoginResponse> {
     return this.http.post<AdminLoginResponse>(`${this.apiUrl}/auth/login`, credentials)
   }
 
   handleLoginSuccess(response: AdminLoginResponse, username: string): void {
-    // Create user object from login response
     const user: AdminUser = {
-      id: "1", // Backend should provide this
+      id: "1", // Backend will provide this
       username: username,
     }
 

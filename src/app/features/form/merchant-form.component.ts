@@ -20,7 +20,6 @@ import { ApplicationService } from "../../services/application.service"
     SuccessDialogComponent,
   ],
   template: `
-    <!-- Enhanced responsive layout with better mobile spacing and typography -->
     <div class="min-h-screen bg-light-gray py-2 sm:py-4 px-2 sm:px-4 md:px-6 lg:px-8">
       <!-- Header -->
       <div class="max-w-4xl mx-auto mb-4 sm:mb-8">
@@ -262,7 +261,6 @@ export class MerchantOnboardingComponent implements OnInit {
         if (data.formValues) {
           this.businessInfoForm.patchValue(data.formValues)
           this.businessInfoForm.updateValueAndValidity()
-          // Trigger change detection for child components
           setTimeout(() => {
             this.businessInfoForm.markAllAsTouched()
           }, 100)
@@ -335,7 +333,7 @@ export class MerchantOnboardingComponent implements OnInit {
         this.isSubmitting.set(false)
         this.referenceNo.set(response.reference_id)
         this.showSuccessDialog.set(true)
-        this.clearSavedData() // Clear saved data after successful submission
+        this.clearSavedData() 
       },
       error: (error) => {
         console.error("Error submitting application:", error)

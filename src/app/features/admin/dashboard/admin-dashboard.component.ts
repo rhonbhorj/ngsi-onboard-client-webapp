@@ -89,12 +89,12 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private loadDashboardData(page = 1): void {
-    console.log("[v0] loadDashboardData called with page:", page)
+    console.log("loadDashboardData called with page:", page)
     this.isLoading.set(true)
 
     this.dashboardService.getRecentApplications(page).subscribe({
       next: (response) => {
-        console.log("[v0] Dashboard data loaded:", response)
+        console.log("Dashboard data loaded:", response)
         this.allApplications.set(response.applications)
         this.currentPage.set(response.currentPage)
         this.totalPages.set(response.totalPages)
@@ -106,15 +106,13 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading.set(false)
       },
       error: (error) => {
-        console.error("[v0] Error loading applications:", error)
+        console.error("Error loading applications:", error)
         this.isLoading.set(false)
       },
     })
   }
 
   private calculateTotalsFromData(): void {
-    // Calculate totals from current page data only
-    // Note: This gives approximate counts since we only have current page data
     const currentApplications = this.allApplications()
     const pendingCount = currentApplications.filter((app) => app.status === "pending").length
     const calledCount = currentApplications.filter((app) => app.status === "called").length
@@ -124,7 +122,7 @@ export class AdminDashboardComponent implements OnInit {
     this.totalApplicationsCount.set(currentApplications.length)
 
     console.log(
-      "[v0] Calculated totals from current page data - Pending:",
+      "Calculated totals from current page data - Pending:",
       pendingCount,
       "Called:",
       calledCount,
@@ -134,36 +132,36 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    console.log("[v0] onPageChange called with page:", page, "current totalPages:", this.totalPages())
+    console.log("onPageChange called with page:", page, "current totalPages:", this.totalPages())
 
     if (page >= 1 && page <= this.totalPages()) {
-      console.log("[v0] Page change valid, loading page:", page)
+      console.log("Page change valid, loading page:", page)
       this.loadDashboardData(page)
     } else {
-      console.log("[v0] Page change invalid - page:", page, "totalPages:", this.totalPages())
+      console.log("Page change invalid - page:", page, "totalPages:", this.totalPages())
     }
   }
 
   onFirstPage(): void {
-    console.log("[v0] onFirstPage clicked")
+    console.log("onFirstPage clicked")
     this.onPageChange(1)
   }
 
   onLastPage(): void {
-    console.log("[v0] onLastPage clicked, totalPages:", this.totalPages())
+    console.log("onLastPage clicked, totalPages:", this.totalPages())
     const lastPage = this.totalPages() || 1
     this.onPageChange(lastPage)
   }
 
   onPreviousPage(): void {
-    console.log("[v0] onPreviousPage clicked, currentPage:", this.currentPage())
+    console.log("onPreviousPage clicked, currentPage:", this.currentPage())
     if (this.currentPage() > 1) {
       this.onPageChange(this.currentPage() - 1)
     }
   }
 
   onNextPage(): void {
-    console.log("[v0] onNextPage clicked, currentPage:", this.currentPage(), "totalPages:", this.totalPages())
+    console.log("onNextPage clicked, currentPage:", this.currentPage(), "totalPages:", this.totalPages())
     if (this.currentPage() < this.totalPages()) {
       this.onPageChange(this.currentPage() + 1)
     }
@@ -171,14 +169,14 @@ export class AdminDashboardComponent implements OnInit {
 
   onGoToPage(): void {
     const page = Number.parseInt(this.goToPage())
-    console.log("[v0] onGoToPage called with:", this.goToPage(), "parsed as:", page)
+    console.log("onGoToPage called with:", this.goToPage(), "parsed as:", page)
     const maxPages = this.totalPages() || 1
     if (!isNaN(page) && page >= 1 && page <= maxPages) {
-      console.log("[v0] Go to page valid, changing to page:", page)
+      console.log("Go to page valid, changing to page:", page)
       this.onPageChange(page)
       this.goToPage.set("")
     } else {
-      console.log("[v0] Go to page invalid - page:", page, "totalPages:", maxPages)
+      console.log("Go to page invalid - page:", page, "totalPages:", maxPages)
     }
   }
 
@@ -196,7 +194,7 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading.set(false)
       },
       error: (error) => {
-        console.error("[v0] Error exporting CSV:", error)
+        console.error("Error exporting CSV:", error)
         this.isLoading.set(false)
       },
     })
@@ -218,7 +216,7 @@ export class AdminDashboardComponent implements OnInit {
         this.isExporting.set(false)
       },
       error: (error) => {
-        console.error("[v0] Error exporting Excel:", error)
+        console.error("Error exporting Excel:", error)
         this.isExporting.set(false)
       },
     })
@@ -354,13 +352,9 @@ export class AdminDashboardComponent implements OnInit {
     
     let filtered = this.allApplications()
     
-    // If we're in search mode, don't apply additional client-side filtering
-    // The search results are already filtered by the server
     if (searchQuery) {
-      // Only apply status filter to search results
       filtered = filtered.filter((app) => app.status === statusFilter)
     } else {
-      // Apply status filter for normal browsing
       filtered = filtered.filter((app) => app.status === statusFilter)
     }
     
@@ -382,18 +376,15 @@ export class AdminDashboardComponent implements OnInit {
   onSearchChange(query: string): void {
     this.searchQuery.set(query)
     
-    // Clear existing timeout
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout)
     }
     
     if (query.trim()) {
-      // Debounce search by 500ms
       this.searchTimeout = setTimeout(() => {
         this.performSearch(query.trim())
       }, 500)
     } else {
-      // Clear search and load normal data immediately
       this.loadDashboardData(1)
     }
   }
@@ -408,7 +399,7 @@ export class AdminDashboardComponent implements OnInit {
     
     this.dashboardService.searchApplicationsWithPagination(searchTerm, 1).subscribe({
       next: (response) => {
-        console.log("[v0] Search results:", response)
+        console.log("Search results:", response)
         this.allApplications.set(response.applications)
         this.filteredApplications.set(response.applications)
         this.totalPages.set(response.totalPages)
@@ -417,15 +408,13 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading.set(false)
       },
       error: (error) => {
-        console.error("[v0] Search error:", error)
+        console.error("Search error:", error)
         this.isLoading.set(false)
-        // Fallback to normal data loading
         this.loadDashboardData(1)
       }
     })
   }
 
-  // New methods for modern dashboard
   getPendingCount(): number {
     return this.allApplications().filter(app => app.status === 'pending').length
   }
@@ -473,11 +462,9 @@ export class AdminDashboardComponent implements OnInit {
     })
   }
 
-  // Additional methods for the new template
   setStatusFilter(status: "pending" | "approved"): void {
     this.statusFilter.set(status)
     
-    // If we're in search mode, re-perform search with new status filter
     const searchQuery = this.searchQuery().trim()
     if (searchQuery) {
       this.performSearch(searchQuery)
@@ -493,7 +480,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    // Cleanup search timeout
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout)
     }

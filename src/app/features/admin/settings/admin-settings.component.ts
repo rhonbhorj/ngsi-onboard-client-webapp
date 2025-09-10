@@ -34,8 +34,8 @@ export class AdminSettingsComponent {
       next: (response) => {
         this.isChangingPassword.set(false)
         if (response.success) {
-          alert("Password changed successfully")
-          this.resetForm()
+          alert("Password changed successfully. You will be logged out for security reasons.")
+          this.authService.logout()
         } else {
           alert(response.message || "Failed to change password")
         }
@@ -46,11 +46,5 @@ export class AdminSettingsComponent {
         alert("Error changing password")
       },
     })
-  }
-
-  private resetForm(): void {
-    this.currentPassword.set("")
-    this.newPassword.set("")
-    this.confirmPassword.set("")
   }
 }

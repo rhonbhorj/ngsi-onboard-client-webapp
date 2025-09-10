@@ -209,7 +209,6 @@ export class BusinessInfoStepComponent implements OnInit {
 
     // Check if the checkbox was previously checked and restore the field states
     if (sameAsRegisteredByControl?.value) {
-      // If checkbox is checked, apply the same logic as onSameAsRegisteredByChange
       this.applySameAsRegisteredByLogic(true)
     }
   }

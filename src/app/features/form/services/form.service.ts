@@ -17,11 +17,11 @@ export class FormService {
     }
 
     return of(control.value).pipe(
-      debounceTime(500), // Wait 500ms after user stops typing
+      debounceTime(500), 
       switchMap((contactNumber) =>
         this.applicationService.checkContactNumberExists(contactNumber).pipe(
           map((exists) => (exists ? { contactNumberExists: true } : null)),
-          catchError(() => of(null)), // If API fails, don't block the form
+          catchError(() => of(null)), 
         ),
       ),
     )

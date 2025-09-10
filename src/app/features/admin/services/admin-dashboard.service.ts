@@ -71,7 +71,7 @@ export class AdminDashboardService {
     const endpoint =
       page === 1 ? `${environment.apiUrl}/admin/dashboard` : `${environment.apiUrl}/admin/dashboard/${page}`
 
-    console.log("[v0] Service making request to:", endpoint)
+    console.log("Service making request to:", endpoint)
 
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
@@ -81,17 +81,17 @@ export class AdminDashboardService {
 
     return this.http.get<AdminDashboardResponse>(endpoint, { headers }).pipe(
       map((response) => {
-        console.log("[v0] Service received raw response:", response)
-        console.log("[v0] Response type:", typeof response)
-        console.log("[v0] Response keys:", Object.keys(response))
-        console.log("[v0] Response.totalPages:", response.totalPages)
-        console.log("[v0] Companies count:", response.companies?.length || 0)
+        console.log("Service received raw response:", response)
+        console.log("Response type:", typeof response)
+        console.log("Response keys:", Object.keys(response))
+        console.log("Response.totalPages:", response.totalPages)
+        console.log("Companies count:", response.companies?.length || 0)
 
-        const currentPage = page // Use the requested page as current page
+        const currentPage = page 
 
         const totalCount = response.total || response.totalPages * 10
 
-        console.log("[v0] Using backend total:", totalCount)
+        console.log("Using backend total:", totalCount)
 
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
@@ -126,14 +126,14 @@ export class AdminDashboardService {
           currentPage,
           totalCount,
         }
-        console.log("[v0] Service returning:", result)
+        console.log("Service returning:", result)
 
         return result
       }),
       catchError((error) => {
-        console.error("[v0] HTTP Error in service:", error)
-        console.error("[v0] Error status:", error.status)
-        console.error("[v0] Error message:", error.message)
+        console.error("HTTP Error in service:", error)
+        console.error("Error status:", error.status)
+        console.error("Error message:", error.message)
         return of({
           applications: [],
           totalPages: 0,
@@ -147,7 +147,7 @@ export class AdminDashboardService {
   searchApplications(searchTerm: string): Observable<{ applications: MerchantApplication[]; totalCount: number }> {
     const endpoint = `${environment.apiUrl}/admin/dashboard/find-company/${encodeURIComponent(searchTerm)}`
 
-    console.log("[v0] Service making search request to:", endpoint)
+    console.log("Service making search request to:", endpoint)
 
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
@@ -157,7 +157,7 @@ export class AdminDashboardService {
 
     return this.http.get<SearchCompany[]>(endpoint, { headers }).pipe(
       map((companies) => {
-        console.log("[v0] Search results received:", companies)
+        console.log("Search results received:", companies)
 
         const applications = companies.map((company) => ({
           reference: company.referenceNo,
@@ -191,7 +191,7 @@ export class AdminDashboardService {
         }
       }),
       catchError((error) => {
-        console.error("[v0] HTTP Error in search:", error)
+        console.error("HTTP Error in search:", error)
         return of({
           applications: [],
           totalCount: 0,
@@ -204,8 +204,6 @@ export class AdminDashboardService {
     searchTerm: string,
     page = 1,
   ): Observable<{ applications: MerchantApplication[]; totalPages: number; currentPage: number; totalCount: number }> {
-    // For now, we'll implement client-side pagination for search results
-    // In a real application, you'd want server-side pagination for search
     return this.searchApplications(searchTerm).pipe(
       map((searchResponse) => {
         const itemsPerPage = 10
@@ -233,9 +231,9 @@ export class AdminDashboardService {
 
   updateApplicationStatus(
     referenceNo: string,
-    status: "called", // Updated to only accept "called" status
+    status: "called",
   ): Observable<{ success: boolean; message?: string }> {
-    console.log("[v0] Updating application status locally:", { referenceNo, status })
+    console.log("Updating application status locally:", { referenceNo, status })
 
     this.addNotification({
       id: "notif_" + Date.now(),
@@ -254,16 +252,15 @@ export class AdminDashboardService {
   }
 
   getAllApplicationsForExport(): Observable<MerchantApplication[]> {
-    console.log("[v0] Getting all applications by fetching all pages")
+    console.log("Getting all applications by fetching all pages")
 
     // First get page 1 to know total pages
     return this.getRecentApplications(1).pipe(
       switchMap((firstPageResponse) => {
         const totalPages = firstPageResponse.totalPages
-        console.log("[v0] Total pages to fetch:", totalPages)
+        console.log("Total pages to fetch:", totalPages)
 
         if (totalPages <= 1) {
-          // Only one page, return the applications
           return of(firstPageResponse.applications)
         }
 
@@ -282,13 +279,13 @@ export class AdminDashboardService {
               ...allPageResponses.flatMap((response) => response.applications),
             ]
 
-            console.log("[v0] Combined all pages, total applications:", allApplications.length)
+            console.log("Combined all pages, total applications:", allApplications.length)
             return allApplications
           }),
         )
       }),
       catchError((error) => {
-        console.error("[v0] HTTP Error in getAllApplicationsForExport:", error)
+        console.error("HTTP Error in getAllApplicationsForExport:", error)
         return of([])
       }),
     )
@@ -297,7 +294,7 @@ export class AdminDashboardService {
   downloadExcelReport(): Observable<Blob> {
     const endpoint = `${environment.apiUrl}/admin/dashboard/download`
 
-    console.log("[v0] Service making download request to:", endpoint)
+    console.log("Service making download request to:", endpoint)
 
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
@@ -311,14 +308,14 @@ export class AdminDashboardService {
       })
       .pipe(
         catchError((error) => {
-          console.error("[v0] HTTP Error in download:", error)
+          console.error("HTTP Error in download:", error)
           throw error
         }),
       )
   }
 
   getDatabaseTotals(): Observable<{ pending: number; called: number; total: number }> {
-    console.log("[v0] Calculating totals from existing data instead of API call")
+    console.log("Calculating totals from existing data instead of API call")
 
     return this.getRecentApplications(1).pipe(
       map((response) => {
@@ -327,7 +324,7 @@ export class AdminDashboardService {
         const called = applications.filter((app) => app.status === "called").length
         const total = applications.length
 
-        console.log("[v0] Calculated totals:", { pending, called, total })
+        console.log("Calculated totals:", { pending, called, total })
 
         return {
           pending,
@@ -336,7 +333,7 @@ export class AdminDashboardService {
         }
       }),
       catchError((error) => {
-        console.error("[v0] Error calculating totals:", error)
+        console.error("Error calculating totals:", error)
         return of({
           pending: 0,
           called: 0,
