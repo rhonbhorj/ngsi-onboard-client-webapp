@@ -8,7 +8,7 @@ import { filter } from "rxjs/operators"
   standalone: true,
   imports: [CommonModule],
   template: `
-    <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+    <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-6 py-4">
       <div class="flex items-center justify-between">
         <!-- Page Title -->
         <div>

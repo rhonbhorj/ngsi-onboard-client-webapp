@@ -178,7 +178,7 @@ import { ApplicationService } from "../../services/application.service"
             <button
               (click)="nextStep()"
               [disabled]="!isStepValid()"
-              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-form-button-bg text-white-text rounded-md hover:bg-admin-accent focus:outline-none focus:ring-2 focus:ring-form-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-form-button-bg text-white-text rounded-md hover:bg-form-button-hover-bg focus:outline-none focus:ring-2 focus:ring-form-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
             >
               Next
             </button>
@@ -186,7 +186,7 @@ import { ApplicationService } from "../../services/application.service"
             <button
               (click)="submitForm()"
               [disabled]="isSubmitting() || !businessInfoForm.valid"
-              class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-form-button-bg text-white-text rounded-md hover:bg-admin-accent focus:outline-none focus:ring-2 focus:ring-form-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+              class="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-form-button-bg text-white-text rounded-md hover:bg-form-button-hover-bg focus:outline-none focus:ring-2 focus:ring-form-button-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               style="color: white;"
             >
               {{ getSubmitButtonText() }}

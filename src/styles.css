@@ -7,11 +7,11 @@
 :root {
   /* Admin Colors */
   --admin-button-bg: #003c6e;
-  --admin-button-hover-bg: #05113b;
-  --admin-accent-color: #2bc4ad;
+  --admin-button-hover-bg: #004a8a;
   
   /* Form Colors */
   --form-button-bg: #016cfb;
+  --form-button-hover-bg: #0056cc;
   
   /* Base Colors */
   --white-text: #ffffff;

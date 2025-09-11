@@ -8,12 +8,12 @@ module.exports = {
         // Admin Colors
         'admin': {
           'button-bg': '#003c6e',
-          'button-hover-bg': '#05113b',
-          'accent': '#2bc4ad',
+          'button-hover-bg': '#004a8a',
         },
         // Form Colors
         'form': {
           'button-bg': '#016cfb',
+          'button-hover-bg': '#0056cc',
         },
         // Base Colors
         'white-text': '#ffffff',
