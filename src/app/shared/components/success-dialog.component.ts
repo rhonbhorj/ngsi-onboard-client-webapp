@@ -62,7 +62,7 @@ import { CommonModule } from "@angular/common"
           <div class="mt-6 w-full">
             <button
               (click)="close.emit()"
-              class="px-6 py-3 bg-netpay-primary-blue text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-netpay-primary-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-netpay-primary-blue transition-colors duration-200"
+              class="px-6 py-3 bg-form-button-bg text-white-text text-base font-medium rounded-lg w-full shadow-sm hover:bg-form-button-hover-bg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-form-button-bg transition-colors duration-200"
             >
               Close
             </button>

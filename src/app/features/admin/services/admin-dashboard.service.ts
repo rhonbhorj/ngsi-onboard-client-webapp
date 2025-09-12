@@ -88,10 +88,12 @@ export class AdminDashboardService {
         console.log("Companies count:", response.companies?.length || 0)
 
         const currentPage = page 
-
-        const totalCount = response.total || response.totalPages * 10
+        const itemsPerPage = 10
+        const totalCount = response.total || 0
+        const totalPages = Math.ceil(totalCount / itemsPerPage)
 
         console.log("Using backend total:", totalCount)
+        console.log("Calculated totalPages:", totalPages)
 
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
@@ -122,7 +124,7 @@ export class AdminDashboardService {
 
         const result = {
           applications,
-          totalPages: response.totalPages,
+          totalPages,
           currentPage,
           totalCount,
         }

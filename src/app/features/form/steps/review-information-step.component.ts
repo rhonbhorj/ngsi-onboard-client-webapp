@@ -9,12 +9,12 @@ import { CommonModule } from "@angular/common"
   template: `
     <div class="space-y-6">
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-netpay-dark-blue mb-2">Review Your Information</h2>
+        <h2 class="text-2xl font-bold text-dark-text mb-2">Review Your Information</h2>
         <p class="text-gray-600">Please review all the information you entered before submitting your application.</p>
       </div>
       <!-- Business Information Section -->
       <div class="bg-gray-50 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-netpay-dark-blue mb-4 flex items-center">
+        <h3 class="text-lg font-semibold text-dark-text mb-4 flex items-center">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
           </svg>
@@ -71,7 +71,7 @@ import { CommonModule } from "@angular/common"
         </div>
       </div>
       <div class="bg-gray-50 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-netpay-dark-blue mb-4 flex items-center">
+        <h3 class="text-lg font-semibold text-dark-text mb-4 flex items-center">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m2 0h5m-9 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3v8a3 3 0 003 3z"></path>
           </svg>

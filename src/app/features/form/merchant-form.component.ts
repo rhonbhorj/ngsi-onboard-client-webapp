@@ -238,6 +238,12 @@ export class MerchantOnboardingComponent implements OnInit {
     this.businessInfoForm.valueChanges.subscribe(() => {
       this.saveFormData()
     })
+
+    // Listen for status changes to update button state more responsively
+    this.businessInfoForm.statusChanges.subscribe(() => {
+      // Force change detection to update button state
+      // This will be handled by Angular's change detection automatically
+    })
   }
 
   // Auto-save form data to localStorage
@@ -305,6 +311,10 @@ export class MerchantOnboardingComponent implements OnInit {
         const control = this.businessInfoForm.get(field)
         if (control?.disabled) {
           return control.value && control.value.trim() !== ""
+        }
+        // For contact number fields, check if they have valid format and are not pending
+        if (field === "registeredByContactNumber" || field === "contactNumber") {
+          return control?.valid && !control?.pending && control?.value && control.value.length === 10
         }
         return control?.valid && !control?.pending
       })

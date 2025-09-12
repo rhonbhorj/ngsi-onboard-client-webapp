@@ -95,15 +95,22 @@ export class AdminDashboardComponent implements OnInit {
     this.dashboardService.getRecentApplications(page).subscribe({
       next: (response) => {
         console.log("Dashboard data loaded:", response)
+        console.log("Setting totalPages to:", response.totalPages)
+        console.log("Setting totalCount to:", response.totalCount)
+        
         this.allApplications.set(response.applications)
         this.currentPage.set(response.currentPage)
         this.totalPages.set(response.totalPages)
         this.totalCount.set(response.totalCount)
         this.originalTotalCount.set(response.totalCount)
-        this.filterApplications()
+        
+        // Set filtered applications to the same as all applications for server-side pagination
+        this.filteredApplications.set(response.applications)
 
         this.calculateTotalsFromData()
         this.isLoading.set(false)
+        
+        console.log("After setting - totalPages:", this.totalPages(), "totalCount:", this.totalCount())
       },
       error: (error) => {
         console.error("Error loading applications:", error)
@@ -117,26 +124,30 @@ export class AdminDashboardComponent implements OnInit {
     const pendingCount = currentApplications.filter((app) => app.status === "pending").length
     const calledCount = currentApplications.filter((app) => app.status === "called").length
 
-    this.totalPendingCount.set(pendingCount)
-    this.totalCalledCount.set(calledCount)
+        this.totalPendingCount.set(pendingCount)
+        this.totalCalledCount.set(calledCount)
     this.totalApplicationsCount.set(currentApplications.length)
 
-    console.log(
+        console.log(
       "Calculated totals from current page data - Pending:",
-      pendingCount,
-      "Called:",
-      calledCount,
-      "Total:",
-      this.totalCount(),
-    )
+          pendingCount,
+          "Called:",
+          calledCount,
+          "Total:",
+          this.totalCount(),
+        )
+    
+    // Don't modify totalPages or totalCount here - they should come from server
+    console.log("Pagination state - totalPages:", this.totalPages(), "totalCount:", this.totalCount())
   }
 
   onPageChange(page: number): void {
     console.log("onPageChange called with page:", page, "current totalPages:", this.totalPages())
+    console.log("Current totalCount:", this.totalCount())
 
     if (page >= 1 && page <= this.totalPages()) {
       console.log("Page change valid, loading page:", page)
-      this.loadDashboardData(page)
+        this.loadDashboardData(page)
     } else {
       console.log("Page change invalid - page:", page, "totalPages:", this.totalPages())
     }
@@ -352,9 +363,8 @@ export class AdminDashboardComponent implements OnInit {
     
     let filtered = this.allApplications()
     
-    if (searchQuery) {
-      filtered = filtered.filter((app) => app.status === statusFilter)
-    } else {
+    // Only filter by status if not in search mode
+    if (!searchQuery) {
       filtered = filtered.filter((app) => app.status === statusFilter)
     }
     
@@ -469,7 +479,8 @@ export class AdminDashboardComponent implements OnInit {
     if (searchQuery) {
       this.performSearch(searchQuery)
     } else {
-      this.filterApplications()
+      // Reset to page 1 when changing status filter
+      this.loadDashboardData(1)
     }
   }
 

@@ -56,6 +56,7 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
                   placeholder="9XXXXXXXXX"
                   class="w-full px-4 py-3 border border-gray-300 rounded-r-lg focus:border-transparent"
                   [class.border-red-500]="isFieldInvalid('registeredByContactNumber')"
+                  (input)="onContactNumberInput('registeredByContactNumber')"
                 />
               </div>
               @if (getControl('registeredByContactNumber').pending) {
@@ -150,6 +151,7 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
                   placeholder="9XXXXXXXXX"
                   class="w-full px-4 py-3 border border-gray-300 rounded-r-lg focus:border-transparent"
                   [class.border-red-500]="isFieldInvalid('contactNumber')"
+                  (input)="onContactNumberInput('contactNumber')"
                 />
               </div>
               @if (getControl('contactNumber').pending) {
@@ -243,6 +245,14 @@ export class BusinessInfoStepComponent implements OnInit {
     } else {
       this.getControl("contactPerson").enable()
       this.getControl("contactNumber").enable()
+    }
+  }
+
+  onContactNumberInput(fieldName: string): void {
+    const control = this.getControl(fieldName)
+    // Mark as touched to trigger validation display
+    if (control && !control.touched) {
+      control.markAsTouched()
     }
   }
 }

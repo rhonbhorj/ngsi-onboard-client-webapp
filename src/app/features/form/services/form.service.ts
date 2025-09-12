@@ -17,7 +17,7 @@ export class FormService {
     }
 
     return of(control.value).pipe(
-      debounceTime(500), 
+      debounceTime(300), // Reduced debounce time for faster response
       switchMap((contactNumber) =>
         this.applicationService.checkContactNumberExists(contactNumber).pipe(
           map((exists) => (exists ? { contactNumberExists: true } : null)),

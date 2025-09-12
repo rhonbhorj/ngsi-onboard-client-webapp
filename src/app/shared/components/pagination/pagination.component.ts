@@ -1,134 +1,159 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface PaginationConfig {
-  showItemsInfo?: boolean;
-  showGoToPage?: boolean;
-  itemsPerPage?: number;
-  itemName?: string;
+  readonly showItemsInfo?: boolean;
+  readonly showGoToPage?: boolean;
+  readonly itemsPerPage?: number;
+  readonly itemName?: string;
 }
+
+type PageNumber = number | '...';
 
 @Component({
   selector: 'app-pagination',
-  standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="pagination-container" *ngIf="totalPages > 1">
+    @if (totalPages() > 1) {
+      <nav class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 my-4 px-1" 
+           role="navigation" 
+           aria-label="Pagination Navigation">
+        
+        <!-- Results Info -->
+        <div class="text-sm text-gray-600 font-medium flex-shrink-0 order-2 sm:order-1">
+          Showing {{ startItem() }} to {{ endItem() }} of {{ totalCount() }} results
+        </div>
+        
+        <!-- Pagination Controls -->
+        <div class="flex items-center gap-1.5 order-1 sm:order-2">
+          <!-- Previous Button -->
       <button 
-        class="pagination-btn"
-        [disabled]="currentPage === 1"
-        (click)="onPreviousPage()"
-        [class.disabled]="currentPage === 1">
+            type="button"
+            class="px-3 py-1.5 text-xs font-medium border border-gray-300 bg-white text-gray-700 rounded hover:border-admin-button-bg hover:text-admin-button-bg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-button-bg focus:ring-offset-1"
+            [disabled]="!canGoPrevious()"
+            [attr.aria-label]="'Go to previous page'"
+            (click)="goToPreviousPage()">
         Previous
       </button>
       
-      <div class="page-numbers">
+          <!-- Page Numbers -->
+          <div class="flex gap-0.5 mx-2" role="group" aria-label="Page numbers">
+            @for (page of pageNumbers(); track page) {
         <button 
-          *ngFor="let page of visiblePages" 
-          class="pagination-btn page-number"
-          [class.active]="page === currentPage"
-          (click)="onPageChange(page)">
+                type="button"
+                class="w-7 h-7 text-xs font-medium border rounded transition-colors duration-150 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-admin-button-bg focus:ring-offset-1"
+                [class]="isCurrentPage(page) 
+                  ? 'border-admin-button-bg bg-admin-button-bg text-white hover:bg-admin-button-hover-bg hover:border-admin-button-hover-bg' 
+                  : 'border-gray-300 bg-white text-gray-700 hover:border-admin-button-bg hover:text-admin-button-bg hover:bg-gray-50'"
+                [disabled]="isEllipsis(page)"
+                [attr.aria-label]="getPageAriaLabel(page)"
+                [attr.aria-current]="isCurrentPage(page) ? 'page' : null"
+                (click)="goToPage(page)">
           {{ page }}
         </button>
+            }
       </div>
       
+          <!-- Next Button -->
       <button 
-        class="pagination-btn"
-        [disabled]="currentPage === totalPages"
-        (click)="onNextPage()"
-        [class.disabled]="currentPage === totalPages">
+            type="button"
+            class="px-3 py-1.5 text-xs font-medium border border-gray-300 bg-white text-gray-700 rounded hover:border-admin-button-bg hover:text-admin-button-bg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-button-bg focus:ring-offset-1"
+            [disabled]="!canGoNext()"
+            [attr.aria-label]="'Go to next page'"
+            (click)="goToNextPage()">
         Next
       </button>
     </div>
+      </nav>
+    }
   `,
-  styles: [`
-    .pagination-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      margin: 20px 0;
-    }
-
-    .pagination-btn {
-      padding: 8px 16px;
-      border: 1px solid #ddd;
-      background: #ffffff;
-      color: #05113b;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .pagination-btn:hover:not(.disabled):not(.active) {
-      background: #f2f2f2;
-      border-color: #003c6e;
-    }
-
-    .pagination-btn.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .pagination-btn.active {
-      background: #003c6e;
-      color: #ffffff;
-      border-color: #003c6e;
-    }
-
-    .page-numbers {
-      display: flex;
-      gap: 4px;
-    }
-  `]
 })
 export class PaginationComponent {
-  @Input() currentPage: number = 1;
-  @Input() totalCount: number = 0;
-  @Input() itemsPerPage: number = 10;
-  @Input() config: PaginationConfig = {};
-  @Input() maxVisiblePages: number = 5;
-  @Output() pageChange = new EventEmitter<number>();
-  @Output() firstPage = new EventEmitter<void>();
-  @Output() lastPage = new EventEmitter<void>();
-  @Output() previousPage = new EventEmitter<void>();
-  @Output() nextPage = new EventEmitter<void>();
+  // Inputs using new input() function
+  readonly currentPage = input(1);
+  readonly totalCount = input(0);
+  readonly itemsPerPage = input(10);
+  readonly config = input<PaginationConfig>({});
+  readonly maxVisiblePages = input(5);
 
-  get totalPages(): number {
-    return Math.ceil(this.totalCount / this.itemsPerPage) || 1;
-  }
+  // Outputs using new output() function
+  readonly pageChange = output<number>();
 
-  get visiblePages(): number[] {
-    const pages: number[] = [];
-    const start = Math.max(1, this.currentPage - Math.floor(this.maxVisiblePages / 2));
-    const end = Math.min(this.totalPages, start + this.maxVisiblePages - 1);
+  // Computed properties for derived state
+  readonly totalPages = computed(() => 
+    Math.ceil(this.totalCount() / this.itemsPerPage()) || 1
+  );
+
+  readonly startItem = computed(() => 
+    (this.currentPage() - 1) * this.itemsPerPage() + 1
+  );
+
+  readonly endItem = computed(() => 
+    Math.min(this.currentPage() * this.itemsPerPage(), this.totalCount())
+  );
+
+  readonly pageNumbers = computed(() => this.generatePageNumbers());
+
+  readonly canGoPrevious = computed(() => this.currentPage() > 1);
+  readonly canGoNext = computed(() => this.currentPage() < this.totalPages());
+
+  private generatePageNumbers(): PageNumber[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
     
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    const pages: PageNumber[] = [1];
+    
+    if (current <= 4) {
+      pages.push(...Array.from({ length: 4 }, (_, i) => i + 2));
+      pages.push('...', total);
+    } else if (current >= total - 3) {
+      pages.push('...', ...Array.from({ length: 5 }, (_, i) => total - 4 + i));
+    } else {
+      pages.push('...', current - 1, current, current + 1, '...', total);
     }
     
     return pages;
   }
 
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+  isCurrentPage(page: PageNumber): boolean {
+    return page === this.currentPage();
+  }
+
+  isEllipsis(page: PageNumber): boolean {
+    return page === '...';
+  }
+
+  getPageAriaLabel(page: PageNumber): string {
+    if (this.isEllipsis(page)) {
+      return 'More pages';
+    }
+    return `Go to page ${page}`;
+  }
+
+  goToPage(page: PageNumber): void {
+    if (typeof page === 'number' && this.isValidPage(page)) {
       this.pageChange.emit(page);
     }
   }
 
-  onFirstPage(): void {
-    this.firstPage.emit();
+  goToPreviousPage(): void {
+    if (this.canGoPrevious()) {
+      this.pageChange.emit(this.currentPage() - 1);
+    }
   }
 
-  onLastPage(): void {
-    this.lastPage.emit();
+  goToNextPage(): void {
+    if (this.canGoNext()) {
+      this.pageChange.emit(this.currentPage() + 1);
+    }
   }
 
-  onPreviousPage(): void {
-    this.previousPage.emit();
-  }
-
-  onNextPage(): void {
-    this.nextPage.emit();
+  private isValidPage(page: number): boolean {
+    return page >= 1 && page <= this.totalPages() && page !== this.currentPage();
   }
 }

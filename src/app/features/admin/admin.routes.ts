@@ -20,12 +20,6 @@ export const adminRoutes: Routes = [
     canActivate: [adminAuthGuard],
   },
   {
-    path: "applications",
-    loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
-    title: "Admin Applications",
-    canActivate: [adminAuthGuard],
-  },
-  {
     path: "applications/:tab",
     loadComponent: () => import("./dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
     title: "Admin Applications",

@@ -8,9 +8,9 @@ import { CommonModule } from "@angular/common"
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="form-step">
-      <h2 class="text-xl font-semibold text-netpay-dark-blue mb-6 flex items-center">
+      <h2 class="text-xl font-semibold text-dark-text mb-6 flex items-center">
         <svg
-          class="w-5 h-5 mr-2 text-netpay-primary-blue"
+          class="w-5 h-5 mr-2 text-form-button-bg"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -38,7 +38,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="hasExistingPaymentPortal"
                 value="YES"
                 name="hasExistingPaymentPortal"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">YES</span>
             </label>
@@ -48,7 +48,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="hasExistingPaymentPortal"
                 value="NO"
                 name="hasExistingPaymentPortal"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">NO</span>
             </label>
@@ -68,7 +68,7 @@ import { CommonModule } from "@angular/common"
               <input
                 type="checkbox"
                 formControlName="cash"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">CASH</span>
             </label>
@@ -76,7 +76,7 @@ import { CommonModule } from "@angular/common"
               <input
                 type="checkbox"
                 formControlName="eWallets"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">E-WALLETS (GCASH, PAYMAYA, SEABANK, & ETC.)</span>
             </label>
@@ -84,7 +84,7 @@ import { CommonModule } from "@angular/common"
               <input
                 type="checkbox"
                 formControlName="qrph"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">QRPH</span>
             </label>
@@ -92,7 +92,7 @@ import { CommonModule } from "@angular/common"
               <input
                 type="checkbox"
                 formControlName="cardPayment"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">CARD PAYMENT</span>
             </label>
@@ -111,7 +111,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="estimatedTransactionNumbers"
                 value="1 – 50"
                 name="estimatedTransactionNumbers"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">1 – 50</span>
             </label>
@@ -121,7 +121,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="estimatedTransactionNumbers"
                 value="51 – 100"
                 name="estimatedTransactionNumbers"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">51 – 100</span>
             </label>
@@ -131,7 +131,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="estimatedTransactionNumbers"
                 value="ABOVE 100"
                 name="estimatedTransactionNumbers"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">ABOVE 100</span>
             </label>
@@ -150,7 +150,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="estimatedAverageAmount"
                 value="1 – 10,000"
                 name="estimatedAverageAmount"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">1 – 10,000</span>
             </label>
@@ -160,7 +160,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="estimatedAverageAmount"
                 value="10,001 – 50,000"
                 name="estimatedAverageAmount"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">10,001 – 50,000</span>
             </label>
@@ -170,7 +170,7 @@ import { CommonModule } from "@angular/common"
                 formControlName="estimatedAverageAmount"
                 value="ABOVE 50,000"
                 name="estimatedAverageAmount"
-                class="mr-3 text-netpay-primary-blue focus:ring-netpay-primary-blue"
+                class="mr-3 text-form-button-bg focus:ring-form-button-bg"
               />
               <span class="text-sm">ABOVE 50,000</span>
             </label>
