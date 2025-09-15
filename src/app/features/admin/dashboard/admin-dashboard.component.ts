@@ -8,6 +8,7 @@ import type { MerchantApplication } from "../../../services/application.service"
 import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
 import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
 import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
+import { SidebarService } from "../../../shared/services/sidebar.service"
 
 @Component({
   selector: "app-admin-dashboard",
@@ -21,6 +22,10 @@ export class AdminDashboardComponent implements OnInit {
   private dashboardService = inject(AdminDashboardService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
+  private sidebarService = inject(SidebarService)
+
+  // Sidebar state
+  isSidebarCollapsed = this.sidebarService.isCollapsed
 
   // Dashboard data
   readonly allApplications = signal<MerchantApplication[]>([])
@@ -45,8 +50,6 @@ export class AdminDashboardComponent implements OnInit {
 
   // Navigation state
   readonly activeSection = signal<"dashboard" | "settings">("dashboard")
-  readonly activeTab = signal<"pending" | "called">("pending")
-  readonly statusFilter = signal<"pending" | "approved">("pending")
 
   // Modal signals
   readonly showDetailsModal = signal(false)
@@ -352,20 +355,19 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  setActiveTab(tab: "pending" | "called"): void {
-    this.activeTab.set(tab)
-    this.filterApplications()
-  }
-
   private filterApplications(): void {
-    const statusFilter = this.statusFilter()
     const searchQuery = this.searchQuery().toLowerCase().trim()
     
     let filtered = this.allApplications()
     
-    // Only filter by status if not in search mode
-    if (!searchQuery) {
-      filtered = filtered.filter((app) => app.status === statusFilter)
+    // Apply search filter if there's a search query
+    if (searchQuery) {
+      filtered = filtered.filter((app) => 
+        app.reference?.toLowerCase().includes(searchQuery) ||
+        app.businessName?.toLowerCase().includes(searchQuery) ||
+        app.contactPerson?.toLowerCase().includes(searchQuery) ||
+        app.businessEmail?.toLowerCase().includes(searchQuery)
+      )
     }
     
     this.filteredApplications.set(filtered)
@@ -425,28 +427,6 @@ export class AdminDashboardComponent implements OnInit {
     })
   }
 
-  getPendingCount(): number {
-    return this.allApplications().filter(app => app.status === 'pending').length
-  }
-
-  getApprovedCount(): number {
-    return this.allApplications().filter(app => app.status === 'approved').length
-  }
-
-  getRejectedCount(): number {
-    return this.allApplications().filter(app => app.status === 'rejected').length
-  }
-
-  getTabClasses(status: string): string {
-    const isActive = this.statusFilter() === status
-    const baseClasses = "inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
-    
-    if (isActive) {
-      return `${baseClasses} bg-admin-button-bg text-white-text`
-    } else {
-      return `${baseClasses} text-gray-700 hover:bg-gray-100`
-    }
-  }
 
   getStatusClasses(status: string): string {
     const baseClasses = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -472,17 +452,6 @@ export class AdminDashboardComponent implements OnInit {
     })
   }
 
-  setStatusFilter(status: "pending" | "approved"): void {
-    this.statusFilter.set(status)
-    
-    const searchQuery = this.searchQuery().trim()
-    if (searchQuery) {
-      this.performSearch(searchQuery)
-    } else {
-      // Reset to page 1 when changing status filter
-      this.loadDashboardData(1)
-    }
-  }
 
 
   viewApplication(application: MerchantApplication): void {

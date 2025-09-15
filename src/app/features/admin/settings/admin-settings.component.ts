@@ -6,6 +6,7 @@ import { AdminAuthService } from "../services/admin-auth.service"
 import { ToastService } from "../../../shared/services/toast.service"
 import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
 import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
+import { SidebarService } from "../../../shared/services/sidebar.service"
 
 @Component({
   selector: "app-admin-settings",
@@ -18,6 +19,10 @@ export class AdminSettingsComponent {
   private authService = inject(AdminAuthService)
   private router = inject(Router)
   private toastService = inject(ToastService)
+  private sidebarService = inject(SidebarService)
+
+  // Sidebar state
+  isSidebarCollapsed = this.sidebarService.isCollapsed
 
   // Settings form signals
   readonly currentPassword = signal("")
