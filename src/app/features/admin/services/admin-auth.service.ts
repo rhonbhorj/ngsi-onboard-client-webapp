@@ -53,6 +53,13 @@ export class AdminAuthService {
     return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/change-password`, payload, { headers })
   }
 
+  changeUsername(newUsername: string, currentPassword: string): Observable<{ success: boolean; message: string }> {
+    const token = this.authToken()
+    const headers = { Authorization: `Bearer ${token}` }
+    const payload = { newUsername, currentPassword }
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/auth/change-username`, payload, { headers })
+  }
+
   private setAuthData(user: AdminUser, token: string): void {
     this.currentUser.set(user)
     this.isAuthenticated.set(true)

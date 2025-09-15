@@ -12,7 +12,7 @@ import { filter } from "rxjs/operators"
       <div class="flex items-center justify-between">
         <!-- Page Title -->
         <div>
-          <h1 class="text-2xl font-bold text-dark-text">{{ pageTitle() }}</h1>
+          <h1 class="text-2xl font-bold text-dark-text transition-none">{{ pageTitle() }}</h1>
         </div>
 
         <!-- Profile Section -->

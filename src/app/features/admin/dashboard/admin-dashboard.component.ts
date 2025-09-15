@@ -9,6 +9,7 @@ import { PaginationComponent, type PaginationConfig } from "../../../shared/comp
 import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
 import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
 import { SidebarService } from "../../../shared/services/sidebar.service"
+import { ToastService } from "../../../shared/services/toast.service"
 
 @Component({
   selector: "app-admin-dashboard",
@@ -23,6 +24,7 @@ export class AdminDashboardComponent implements OnInit {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private sidebarService = inject(SidebarService)
+  private toastService = inject(ToastService)
 
   // Sidebar state
   isSidebarCollapsed = this.sidebarService.isCollapsed
@@ -329,7 +331,7 @@ export class AdminDashboardComponent implements OnInit {
 
   markAsCalled(application: MerchantApplication): void {
     if (!application.reference) {
-      alert("Application reference is missing")
+      this.toastService.error("Error", "Application reference is missing")
       return
     }
 
@@ -342,14 +344,14 @@ export class AdminDashboardComponent implements OnInit {
             )
             this.allApplications.set(updatedApplications)
             this.filterApplications()
-            alert("Application marked as called successfully")
+            this.toastService.success("Success", "Application marked as called successfully")
           } else {
-            alert(response.message || "Failed to mark application as called")
+            this.toastService.error("Error", response.message || "Failed to mark application as called")
           }
         },
         error: (error) => {
           console.error("Error marking application as called:", error)
-          alert("Error marking application as called")
+          this.toastService.error("Error", "Failed to mark application as called")
         },
       })
     }

@@ -10,7 +10,7 @@ import { SidebarService } from "../../services/sidebar.service"
   imports: [CommonModule, RouterModule],
   template: `
     <div 
-      class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out"
+      class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg border-r border-gray-200"
       [class]="isCollapsed() ? 'w-20' : 'w-64'"
     >
       <!-- Toggle Button -->
@@ -21,7 +21,7 @@ import { SidebarService } from "../../services/sidebar.service"
           [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
         >
           <svg 
-            class="w-3 h-3 text-gray-600 transition-transform duration-300"
+            class="w-3 h-3 text-gray-600"
             [class.rotate-180]="isCollapsed()"
             fill="none" 
             stroke="currentColor" 
@@ -45,13 +45,13 @@ import { SidebarService } from "../../services/sidebar.service"
             [class.h-16]="!isCollapsed()"
           />
           @if (!isCollapsed()) {
-            <div class="transition-opacity duration-300" [class.opacity-0]="isCollapsed()">
+            <div>
               <h1 class="text-2xl font-bold text-dark-text">NGSI</h1>
             </div>
           }
         </div>
         @if (!isCollapsed()) {
-          <div class="mt-3 transition-opacity duration-300" [class.opacity-0]="isCollapsed()">
+          <div class="mt-3">
             <p class="text-sm text-gray-600 ml-2">Merchant Onboarding</p>
           </div>
         }
@@ -63,7 +63,7 @@ import { SidebarService } from "../../services/sidebar.service"
           <a
             routerLink="/admin/dashboard"
             routerLinkActive="bg-admin-button-bg text-white-text"
-            class="nav-link flex items-center text-sm font-medium rounded-lg text-dark-text transition-all duration-200"
+            class="nav-link flex items-center text-sm font-medium rounded-lg text-dark-text"
             [class]="isCollapsed() ? 'px-3 py-3 justify-center' : 'px-4 py-3'"
             [class.hover-gray]="!isActive('/admin/dashboard')"
             [title]="isCollapsed() ? 'Dashboard' : ''"
@@ -73,14 +73,14 @@ import { SidebarService } from "../../services/sidebar.service"
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
             </svg>
             @if (!isCollapsed()) {
-              <span class="ml-3 transition-opacity duration-300">Dashboard</span>
+              <span class="ml-3">Dashboard</span>
             }
           </a>
 
           <a
             routerLink="/admin/settings"
             routerLinkActive="bg-admin-button-bg text-white-text"
-            class="nav-link flex items-center text-sm font-medium rounded-lg text-dark-text transition-all duration-200"
+            class="nav-link flex items-center text-sm font-medium rounded-lg text-dark-text"
             [class]="isCollapsed() ? 'px-3 py-3 justify-center' : 'px-4 py-3'"
             [class.hover-gray]="!isActive('/admin/settings')"
             [title]="isCollapsed() ? 'Settings' : ''"
@@ -90,7 +90,7 @@ import { SidebarService } from "../../services/sidebar.service"
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
             @if (!isCollapsed()) {
-              <span class="ml-3 transition-opacity duration-300">Settings</span>
+              <span class="ml-3">Settings</span>
             }
           </a>
         </div>
@@ -100,7 +100,7 @@ import { SidebarService } from "../../services/sidebar.service"
       <div class="absolute bottom-0 left-0 right-0 p-4">
         <button
           (click)="logout()"
-          class="w-full flex items-center text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-all duration-200"
+          class="w-full flex items-center text-sm font-medium text-red-600 rounded-lg hover:bg-red-50"
           [class]="isCollapsed() ? 'px-3 py-3 justify-center' : 'px-4 py-3'"
           [title]="isCollapsed() ? 'Sign Out' : ''"
         >
@@ -108,7 +108,7 @@ import { SidebarService } from "../../services/sidebar.service"
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
           </svg>
           @if (!isCollapsed()) {
-            <span class="ml-3 transition-opacity duration-300">Sign Out</span>
+            <span class="ml-3">Sign Out</span>
           }
         </button>
       </div>
