@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { Router, NavigationEnd } from "@angular/router"
 import { filter } from "rxjs/operators"
+import { SidebarService } from "../../services/sidebar.service"
 
 @Component({
   selector: "app-admin-header",
@@ -10,30 +11,38 @@ import { filter } from "rxjs/operators"
   template: `
     <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-6 py-4">
       <div class="flex items-center justify-between">
-        <!-- Page Title -->
-        <div>
-          <h1 class="text-2xl font-bold text-dark-text transition-none">{{ pageTitle() }}</h1>
-        </div>
-
-        <!-- Profile Section -->
+        <!-- Left Section: Toggle Button + Page Title -->
         <div class="flex items-center space-x-4">
-          <!-- Profile Icon -->
-          <div class="w-8 h-8 bg-admin-button-bg rounded-full flex items-center justify-center">
-            <svg class="w-5 h-5 text-white-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          <!-- Hamburger Menu Toggle Button -->
+          <button
+            (click)="toggleSidebar()"
+            class="w-10 h-10 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+            [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+          >
+            <svg 
+              class="w-5 h-5 text-gray-700 transition-all duration-300 ease-in-out"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
-          </div>
+          </button>
+          
+          <!-- Page Title -->
+          <h1 class="text-2xl font-bold text-dark-text transition-none">{{ pageTitle() }}</h1>
         </div>
       </div>
     </header>
   `,
-  styles: [`
-    /* No additional styles needed */
-  `]
+
 })
 export class AdminHeaderComponent implements OnInit {
   private router = inject(Router)
+  private sidebarService = inject(SidebarService)
+  
   pageTitle = signal("Dashboard")
+  isCollapsed = this.sidebarService.isCollapsed
 
   ngOnInit() {
     // Set initial title
@@ -56,5 +65,9 @@ export class AdminHeaderComponent implements OnInit {
     } else {
       this.pageTitle.set('Admin')
     }
+  }
+
+  toggleSidebar() {
+    this.sidebarService.toggle()
   }
 }

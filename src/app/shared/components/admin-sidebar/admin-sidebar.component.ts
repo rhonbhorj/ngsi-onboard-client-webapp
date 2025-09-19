@@ -10,55 +10,36 @@ import { SidebarService } from "../../services/sidebar.service"
   imports: [CommonModule, RouterModule],
   template: `
     <div 
-      class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg border-r border-gray-200"
+      class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out"
       [class]="isCollapsed() ? 'w-20' : 'w-64'"
     >
-      <!-- Toggle Button -->
-      <div class="absolute -right-3 top-6 z-10">
-        <button
-          (click)="toggleSidebar()"
-          class="w-6 h-6 bg-white border border-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
-          [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
-        >
-          <svg 
-            class="w-3 h-3 text-gray-600"
-            [class.rotate-180]="isCollapsed()"
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-        </button>
-      </div>
 
       <!-- Logo and Company Section -->
-      <div class="px-6 py-8">
+      <div class="px-6 py-8 transition-all duration-300 ease-in-out">
         <div class="flex items-center space-x-4">
           <img 
-            src="images/ngsi-logo.png" 
+            [src]="isCollapsed() ? 'images/ngsi-logo.png' : 'images/ngsi-name-logo.png'" 
             alt="NGSI Logo" 
-            class="w-12 h-12 flex-shrink-0"
+            class="flex-shrink-0 transition-all duration-300 ease-in-out"
             [class.w-12]="isCollapsed()"
-            [class.w-16]="!isCollapsed()"
             [class.h-12]="isCollapsed()"
-            [class.h-16]="!isCollapsed()"
+            [class.w-auto]="!isCollapsed()"
+            [class.h-12]="!isCollapsed()"
           />
-          @if (!isCollapsed()) {
-            <div>
-              <h1 class="text-2xl font-bold text-dark-text">NGSI</h1>
-            </div>
-          }
         </div>
         @if (!isCollapsed()) {
-          <div class="mt-3">
+          <div class="mt-3 transition-all duration-300 ease-in-out opacity-100">
+            <p class="text-sm text-gray-600 ml-2">Merchant Onboarding</p>
+          </div>
+        } @else {
+          <div class="mt-3 transition-all duration-300 ease-in-out opacity-0 h-0 overflow-hidden">
             <p class="text-sm text-gray-600 ml-2">Merchant Onboarding</p>
           </div>
         }
       </div>
 
       <!-- Navigation Links -->
-      <nav class="mt-8 px-4">
+      <nav class="mt-8 px-4 transition-all duration-300 ease-in-out">
         <div class="space-y-2">
           <a
             routerLink="/admin/dashboard"
@@ -97,7 +78,7 @@ import { SidebarService } from "../../services/sidebar.service"
       </nav>
 
       <!-- Logout Section -->
-      <div class="absolute bottom-0 left-0 right-0 p-4">
+      <div class="absolute bottom-0 left-0 right-0 p-4 transition-all duration-300 ease-in-out">
         <button
           (click)="logout()"
           class="w-full flex items-center text-sm font-medium text-red-600 rounded-lg hover:bg-red-50"
@@ -115,10 +96,9 @@ import { SidebarService } from "../../services/sidebar.service"
     </div>
   `,
   styles: [`
-    /* Hover effect only for non-active items */
     .hover-gray:hover {
-      background-color: rgb(243 244 246); /* gray-100 */
-      color: rgb(51 65 85);                /* dark-text */
+      background-color: rgb(243 244 246); 
+      color: rgb(51 65 85);                
     }
   `]
 })
@@ -132,10 +112,6 @@ export class AdminSidebarComponent {
 
   isActive(route: string): boolean {
     return this.router.url === route
-  }
-
-  toggleSidebar() {
-    this.sidebarService.toggle()
   }
 
   logout() {
