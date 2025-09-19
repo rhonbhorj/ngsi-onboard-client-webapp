@@ -52,6 +52,9 @@ export class AdminDashboardComponent implements OnInit {
 
   // Navigation state
   readonly activeSection = signal<"dashboard" | "settings">("dashboard")
+  
+  // Tab state
+  readonly activeTab = signal<"pending" | "called">("pending")
 
   // Modal signals
   readonly showDetailsModal = signal(false)
@@ -113,6 +116,7 @@ export class AdminDashboardComponent implements OnInit {
         this.filteredApplications.set(response.applications)
 
         this.calculateTotalsFromData()
+        this.filterApplications()
         this.isLoading.set(false)
         
         console.log("After setting - totalPages:", this.totalPages(), "totalCount:", this.totalCount())
@@ -343,6 +347,7 @@ export class AdminDashboardComponent implements OnInit {
               app.reference === application.reference ? { ...app, status: "called" as const } : app,
             )
             this.allApplications.set(updatedApplications)
+            this.calculateTotalsFromData()
             this.filterApplications()
             this.toastService.success("Success", "Application marked as called successfully")
           } else {
@@ -359,8 +364,12 @@ export class AdminDashboardComponent implements OnInit {
 
   private filterApplications(): void {
     const searchQuery = this.searchQuery().toLowerCase().trim()
+    const currentTab = this.activeTab()
     
     let filtered = this.allApplications()
+    
+    // Apply tab filter first
+    filtered = filtered.filter((app) => app.status === currentTab)
     
     // Apply search filter if there's a search query
     if (searchQuery) {
@@ -373,6 +382,11 @@ export class AdminDashboardComponent implements OnInit {
     }
     
     this.filteredApplications.set(filtered)
+  }
+
+  switchTab(tab: "pending" | "called"): void {
+    this.activeTab.set(tab)
+    this.filterApplications()
   }
 
   toggleAdminDropdown(): void {
@@ -415,7 +429,8 @@ export class AdminDashboardComponent implements OnInit {
       next: (response) => {
         console.log("Search results:", response)
         this.allApplications.set(response.applications)
-        this.filteredApplications.set(response.applications)
+        this.calculateTotalsFromData()
+        this.filterApplications()
         this.totalPages.set(response.totalPages)
         this.currentPage.set(response.currentPage)
         this.totalCount.set(response.totalCount)
