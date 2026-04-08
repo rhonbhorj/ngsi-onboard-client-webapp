@@ -61,7 +61,7 @@ import { CommonModule } from "@angular/common"
           
           <div class="mt-6 w-full">
             <button
-              (click)="close.emit()"
+              (click)="handleClose()"
               class="px-6 py-3 bg-form-button-bg text-white-text text-base font-medium rounded-lg w-full shadow-sm hover:bg-form-button-hover-bg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-form-button-bg transition-colors duration-200"
             >
               Close
@@ -95,4 +95,10 @@ import { CommonModule } from "@angular/common"
 export class SuccessDialogComponent {
   readonly referenceNo = input.required<string>()
   readonly close = output<void>()
+  private readonly redirectUrl = "http://uat.pezamarketplace.ph/"
+
+  handleClose(): void {
+    this.close.emit()
+    globalThis.location.assign(this.redirectUrl)
+  }
 }
