@@ -235,22 +235,37 @@ export class AdminDashboardService {
     referenceNo: string,
     status: "called",
   ): Observable<{ success: boolean; message?: string }> {
-    console.log("Updating application status locally:", { referenceNo, status })
-
-    this.addNotification({
-      id: "notif_" + Date.now(),
-      type: "status_change",
-      title: "Application Status Updated",
-      message: `Application ${referenceNo} marked as ${status}`,
-      timestamp: new Date().toISOString(),
-      read: false,
-      actionUrl: `/admin/applications/${referenceNo}`,
-    })
-
-    return of({
-      success: true,
-      message: `Application ${referenceNo} marked as ${status}`,
-    })
+    const token = this.authService.authToken()
+    const headers = { Authorization: `Bearer ${token}` }
+    const payload = { referenceNo, status }
+    
+    return this.http.post<{ success: boolean; message?: string }>(
+      `${environment.apiUrl}/admin/update-application-status`, 
+      payload, 
+      { headers }
+    ).pipe(
+      map(response => {
+        // Add notification on successful update
+        this.addNotification({
+          id: "notif_" + Date.now(),
+          type: "status_change",
+          title: "Application Status Updated",
+          message: `Application ${referenceNo} marked as ${status}`,
+          timestamp: new Date().toISOString(),
+          read: false,
+          actionUrl: `/admin/applications/${referenceNo}`,
+        })
+        
+        return response
+      }),
+      catchError(error => {
+        console.error("Error updating application status:", error)
+        return of({
+          success: false,
+          message: "Failed to update application status"
+        })
+      })
+    )
   }
 
   getAllApplicationsForExport(): Observable<MerchantApplication[]> {
