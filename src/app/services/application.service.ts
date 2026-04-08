@@ -155,10 +155,9 @@ export class ApplicationService {
   submitApplication(
     formData: Omit<MerchantApplication, "status" | "submittedAt">,
   ): Observable<{ application: MerchantApplication; reference_id: string }> {
-    // 🔑 Ensure correct payload shape
+    // Keep nested payment mode object; HttpClient serializes it to JSON.
     const payload = {
       ...formData,
-      currentModeOfPayment: JSON.stringify(formData.currentModeOfPayment), // backend expects string
     }
 
     console.log("📤 Sending payload to backend:", payload)
