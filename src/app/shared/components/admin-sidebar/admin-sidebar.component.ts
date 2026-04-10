@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core"
 import { CommonModule, NgOptimizedImage } from "@angular/common"
 import { Router, RouterModule } from "@angular/router"
-import { AdminAuthService } from "../../../services/admin-auth.service"
+import { AdminAuthService } from "../../../features/admin/admin-auth.service"
 import { SidebarService } from "../../services/sidebar.service"
 
 @Component({

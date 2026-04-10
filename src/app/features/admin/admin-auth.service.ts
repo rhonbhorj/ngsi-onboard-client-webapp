@@ -2,8 +2,8 @@ import { Injectable, computed, inject, signal } from "@angular/core"
 import { HttpClient } from "@angular/common/http"
 import { Router } from "@angular/router"
 import type { Observable } from "rxjs"
-import { environment } from "../../environments/environment"
-import type { AdminLoginCredentials, AdminLoginResponse, AdminUser } from "../features/admin/models/admin.model"
+import { environment } from "../../../environments/environment"
+import type { AdminLoginCredentials, AdminLoginResponse, AdminUser } from "./models/admin.model"
 
 @Injectable({
   providedIn: "root",

@@ -2,13 +2,13 @@ import { Injectable, inject } from "@angular/core"
 import { HttpClient } from "@angular/common/http"
 import type { Observable } from "rxjs"
 import { map } from "rxjs/operators"
-import { environment } from "../../environments/environment"
+import { environment } from "../../../environments/environment"
 import type {
   ApiResponse,
   BackendMerchantApplication,
   MerchantApplication,
   MerchantApplicationPayload,
-} from "../features/form/models/merchant-application.model"
+} from "./models/merchant-application.model"
 
 @Injectable({
   providedIn: "root",
@@ -66,31 +66,6 @@ export class ApplicationService {
         }
       }),
     )
-  }
-
-  getApplications(): Observable<MerchantApplication[]> {
-    return this.http
-      .get<ApiResponse<BackendMerchantApplication[]>>(`${environment.apiUrl}/api/merchant-applications`)
-      .pipe(map((response) => (response.data || []).map((app) => this.transformToMerchantApplication(app))))
-  }
-
-  getApplicationsByStatus(status: MerchantApplication["status"]): Observable<MerchantApplication[]> {
-    return this.http
-      .get<ApiResponse<BackendMerchantApplication[]>>(
-        `${environment.apiUrl}/api/merchant-applications?status=${status}`,
-      )
-      .pipe(map((response) => (response.data || []).map((app) => this.transformToMerchantApplication(app))))
-  }
-
-  updateApplicationStatus(
-    applicationId: string,
-    status: "pending" | "called",
-    notes?: string,
-  ): Observable<MerchantApplication> {
-    return this.http.patch<MerchantApplication>(`${environment.apiUrl}/api/merchant-applications/${applicationId}`, {
-      status,
-      notes,
-    })
   }
 
   checkContactNumberExists(contactNumber: string): Observable<boolean> {

@@ -32,6 +32,10 @@ export class BusinessInfoStepComponent implements OnInit {
       }
     })
 
+    sameAsRegisteredByControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isChecked) => {
+      this.applySameAsRegisteredByLogic(isChecked)
+    })
+
     // Check if the checkbox was previously checked and restore the field states
     if (sameAsRegisteredByControl?.value) {
       this.applySameAsRegisteredByLogic(true)

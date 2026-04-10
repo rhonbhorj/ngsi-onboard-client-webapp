@@ -1,20 +1,19 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal, type OnInit } from "@angular/core"
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, computed, inject, signal, type OnInit } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
-import { type FormGroup, ReactiveFormsModule } from "@angular/forms"
+import { FormBuilder, Validators, type AbstractControl, type FormGroup, type ValidationErrors, ReactiveFormsModule } from "@angular/forms"
 import { CommonModule, NgOptimizedImage } from "@angular/common"
 import { BusinessInfoStepComponent } from "./steps/business-info-step.component"
 import { PaymentDetailsStepComponent } from "./steps/payment-details-step.component"
 import { ReviewInformationStepComponent } from "./steps/review-information-step.component"
 import { SuccessDialogComponent } from "./components/success-dialog.component"
-import { FormService } from "../../services/form.service"
-import { ApplicationService } from "../../services/application.service"
+import { ApplicationService } from "./application.service"
+import { catchError, debounceTime, map, of, switchMap, type Observable } from "rxjs"
 import type { MerchantApplicationPayload, PaymentMode } from "./models/merchant-application.model"
 
 @Component({
   selector: "app-merchant-onboarding",
   imports: [
     CommonModule,
-    NgOptimizedImage,
     ReactiveFormsModule,
     BusinessInfoStepComponent,
     PaymentDetailsStepComponent,
@@ -26,9 +25,54 @@ import type { MerchantApplicationPayload, PaymentMode } from "./models/merchant-
 })
 export class MerchantOnboardingComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef)
-  private readonly formService = inject(FormService)
+  private readonly fb = inject(FormBuilder)
   private readonly applicationService = inject(ApplicationService)
+  private readonly cdr = inject(ChangeDetectorRef)
   private readonly storageKey = "merchant_form_data"
+  private isRestoringData = false
+
+  private readonly contactNumberAsyncValidator = (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (this.isRestoringData || !control.value || control.value.length < 10) {
+      return of(null)
+    }
+
+    return of(control.value).pipe(
+      debounceTime(300),
+      switchMap((contactNumber) =>
+        this.applicationService.checkContactNumberExists(contactNumber).pipe(
+          map((exists) => (exists ? { contactNumberExists: true } : null)),
+          catchError(() => of(null)),
+        ),
+      ),
+    )
+  }
+
+  private createBusinessInfoForm(): FormGroup {
+    return this.fb.group({
+      contactPersonName: ["", [Validators.required, Validators.minLength(2)]],
+      registeredByContactNumber: [
+        "",
+        [Validators.required, Validators.pattern(/^9\d{9}$/)],
+        [this.contactNumberAsyncValidator],
+      ],
+      contactNumber: ["", [Validators.required, Validators.pattern(/^9\d{9}$/)], [this.contactNumberAsyncValidator]],
+      contactPerson: ["", [Validators.required, Validators.minLength(2)]],
+      sameAsRegisteredBy: [false],
+      businessName: ["", [Validators.required, Validators.minLength(2)]],
+      businessEmail: ["", [Validators.required, Validators.email]],
+      businessAddress: ["", [Validators.required, Validators.minLength(10)]],
+      telephoneNo: [""],
+      hasExistingPaymentPortal: [""],
+      currentModeOfPayment: this.fb.group({
+        cash: [false],
+        eWallets: [false],
+        qrph: [false],
+        cardPayment: [false],
+      }),
+      estimatedTransactionNumbers: [""],
+      estimatedAverageAmount: [""],
+    })
+  }
 
   // State signals
   readonly isLoading = signal(false)
@@ -49,7 +93,11 @@ export class MerchantOnboardingComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    this.businessInfoForm = this.formService.createBusinessInfoForm()
+    this.businessInfoForm = this.createBusinessInfoForm()
+
+    this.businessInfoForm.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.cdr.markForCheck()
+    })
 
     this.businessInfoForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.saveFormData()
@@ -60,7 +108,7 @@ export class MerchantOnboardingComponent implements OnInit {
   private saveFormData(): void {
     const formData = {
       step: this.currentStep(),
-      formValues: this.businessInfoForm.value,
+      formValues: this.businessInfoForm.getRawValue(),
     }
     localStorage.setItem(this.storageKey, JSON.stringify(formData))
   }
@@ -71,14 +119,15 @@ export class MerchantOnboardingComponent implements OnInit {
     if (savedData) {
       try {
         const data = JSON.parse(savedData)
-        if (data.step) {
-          this.currentStep.set(data.step)
-        }
         if (data.formValues) {
+          this.isRestoringData = true
           this.businessInfoForm.patchValue(data.formValues)
           this.businessInfoForm.updateValueAndValidity()
+          this.isRestoringData = false
+          this.cdr.markForCheck()
           setTimeout(() => {
             this.businessInfoForm.markAllAsTouched()
+            this.cdr.markForCheck()
           }, 100)
         }
       } catch (error) {

@@ -1,9 +1,9 @@
 import { Injectable, inject, signal } from "@angular/core"
 import { HttpClient, HttpHeaders } from "@angular/common/http"
 import { catchError, forkJoin, map, of, switchMap, type Observable } from "rxjs"
-import { environment } from "../../environments/environment"
-import type { AdminNotification } from "../features/admin/models/admin.model"
-import type { MerchantApplication } from "../features/form/models/merchant-application.model"
+import { environment } from "../../../environments/environment"
+import type { AdminNotification } from "./models/admin.model"
+import type { MerchantApplication } from "../form/models/merchant-application.model"
 import { AdminAuthService } from "./admin-auth.service"
 
 interface AdminDashboardResponse {
