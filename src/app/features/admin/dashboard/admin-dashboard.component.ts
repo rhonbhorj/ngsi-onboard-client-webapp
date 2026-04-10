@@ -4,7 +4,7 @@ import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { AdminAuthService } from "../services/admin-auth.service"
 import { AdminDashboardService } from "../services/admin-dashboard.service"
-import type { MerchantApplication } from "../../../services/application.service"
+import type { MerchantApplication } from "../../form/models/merchant-application.model"
 import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
 import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
 import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
@@ -482,3 +482,4 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 }
+

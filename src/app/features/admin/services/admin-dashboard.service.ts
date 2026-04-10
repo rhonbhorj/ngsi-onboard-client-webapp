@@ -2,7 +2,7 @@ import { Injectable, signal, inject } from "@angular/core"
 import { HttpClient, HttpHeaders } from "@angular/common/http"
 import { type Observable, of, map, catchError, forkJoin, switchMap } from "rxjs"
 import type { AdminNotification } from "../models/admin.model"
-import type { MerchantApplication } from "../../../services/application.service"
+import type { MerchantApplication } from "../../form/models/merchant-application.model"
 import { environment } from "../../../../environments/environment"
 import { AdminAuthService } from "./admin-auth.service"
 
@@ -400,3 +400,4 @@ export class AdminDashboardService {
     }
   }
 }
+
