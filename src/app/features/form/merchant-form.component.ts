@@ -14,6 +14,7 @@ import type { MerchantApplicationPayload, PaymentMode } from "./models/merchant-
   selector: "app-merchant-onboarding",
   imports: [
     CommonModule,
+    NgOptimizedImage,
     ReactiveFormsModule,
     BusinessInfoStepComponent,
     PaymentDetailsStepComponent,
