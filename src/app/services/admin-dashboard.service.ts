@@ -1,9 +1,9 @@
-import { Injectable, signal, inject } from "@angular/core"
+import { Injectable, inject, signal } from "@angular/core"
 import { HttpClient, HttpHeaders } from "@angular/common/http"
-import { type Observable, of, map, catchError, forkJoin, switchMap } from "rxjs"
-import type { AdminNotification } from "../models/admin.model"
-import type { MerchantApplication } from "../../form/models/merchant-application.model"
-import { environment } from "../../../../environments/environment"
+import { catchError, forkJoin, map, of, switchMap, type Observable } from "rxjs"
+import { environment } from "../../environments/environment"
+import type { AdminNotification } from "../features/admin/models/admin.model"
+import type { MerchantApplication } from "../features/form/models/merchant-application.model"
 import { AdminAuthService } from "./admin-auth.service"
 
 interface AdminDashboardResponse {
@@ -56,8 +56,8 @@ interface SearchCompany {
   providedIn: "root",
 })
 export class AdminDashboardService {
-  private http = inject(HttpClient)
-  private authService = inject(AdminAuthService)
+  private readonly http = inject(HttpClient)
+  private readonly authService = inject(AdminAuthService)
 
   readonly notifications = signal<AdminNotification[]>([])
 
@@ -71,8 +71,6 @@ export class AdminDashboardService {
     const endpoint =
       page === 1 ? `${environment.apiUrl}/admin/dashboard` : `${environment.apiUrl}/admin/dashboard/${page}`
 
-    console.log("Service making request to:", endpoint)
-
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -81,19 +79,10 @@ export class AdminDashboardService {
 
     return this.http.get<AdminDashboardResponse>(endpoint, { headers }).pipe(
       map((response) => {
-        console.log("Service received raw response:", response)
-        console.log("Response type:", typeof response)
-        console.log("Response keys:", Object.keys(response))
-        console.log("Response.totalPages:", response.totalPages)
-        console.log("Companies count:", response.companies?.length || 0)
-
-        const currentPage = page 
+        const currentPage = page
         const itemsPerPage = 10
         const totalCount = response.total || 0
         const totalPages = Math.ceil(totalCount / itemsPerPage)
-
-        console.log("Using backend total:", totalCount)
-        console.log("Calculated totalPages:", totalPages)
 
         const applications = response.companies.map((company) => ({
           reference: company.referenceNo,
@@ -122,34 +111,26 @@ export class AdminDashboardService {
           submittedAt: company.submittedAt,
         }))
 
-        const result = {
+        return {
           applications,
           totalPages,
           currentPage,
           totalCount,
         }
-        console.log("Service returning:", result)
-
-        return result
       }),
-      catchError((error) => {
-        console.error("HTTP Error in service:", error)
-        console.error("Error status:", error.status)
-        console.error("Error message:", error.message)
-        return of({
+      catchError(() =>
+        of({
           applications: [],
           totalPages: 0,
           currentPage: 1,
           totalCount: 0,
-        })
-      }),
+        }),
+      ),
     )
   }
 
   searchApplications(searchTerm: string): Observable<{ applications: MerchantApplication[]; totalCount: number }> {
     const endpoint = `${environment.apiUrl}/admin/dashboard/find-company/${encodeURIComponent(searchTerm)}`
-
-    console.log("Service making search request to:", endpoint)
 
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
@@ -159,8 +140,6 @@ export class AdminDashboardService {
 
     return this.http.get<SearchCompany[]>(endpoint, { headers }).pipe(
       map((companies) => {
-        console.log("Search results received:", companies)
-
         const applications = companies.map((company) => ({
           reference: company.referenceNo,
           contactPersonName: company.contactPersonName,
@@ -192,13 +171,12 @@ export class AdminDashboardService {
           totalCount: applications.length,
         }
       }),
-      catchError((error) => {
-        console.error("HTTP Error in search:", error)
-        return of({
+      catchError(() =>
+        of({
           applications: [],
           totalCount: 0,
-        })
-      }),
+        }),
+      ),
     )
   }
 
@@ -211,8 +189,6 @@ export class AdminDashboardService {
         const itemsPerPage = 10
         const totalCount = searchResponse.totalCount
         const totalPages = Math.ceil(totalCount / itemsPerPage)
-
-        // Calculate pagination for search results
         const startIndex = (page - 1) * itemsPerPage
         const endIndex = startIndex + itemsPerPage
         const paginatedApplications = searchResponse.applications.slice(startIndex, endIndex)
@@ -238,16 +214,15 @@ export class AdminDashboardService {
     const token = this.authService.authToken()
     const headers = { Authorization: `Bearer ${token}` }
     const payload = { referenceNo, status }
-    
+
     return this.http.post<{ success: boolean; message?: string }>(
-      `${environment.apiUrl}/admin/update-application-status`, 
-      payload, 
-      { headers }
+      `${environment.apiUrl}/admin/update-application-status`,
+      payload,
+      { headers },
     ).pipe(
-      map(response => {
-        // Add notification on successful update
+      map((response) => {
         this.addNotification({
-          id: "notif_" + Date.now(),
+          id: `notif_${Date.now()}`,
           type: "status_change",
           title: "Application Status Updated",
           message: `Application ${referenceNo} marked as ${status}`,
@@ -255,85 +230,55 @@ export class AdminDashboardService {
           read: false,
           actionUrl: `/admin/applications/${referenceNo}`,
         })
-        
+
         return response
       }),
-      catchError(error => {
-        console.error("Error updating application status:", error)
-        return of({
+      catchError(() =>
+        of({
           success: false,
-          message: "Failed to update application status"
-        })
-      })
+          message: "Failed to update application status",
+        }),
+      ),
     )
   }
 
   getAllApplicationsForExport(): Observable<MerchantApplication[]> {
-    console.log("Getting all applications by fetching all pages")
-
-    // First get page 1 to know total pages
     return this.getRecentApplications(1).pipe(
       switchMap((firstPageResponse) => {
         const totalPages = firstPageResponse.totalPages
-        console.log("Total pages to fetch:", totalPages)
 
         if (totalPages <= 1) {
           return of(firstPageResponse.applications)
         }
 
-        // Create array of page numbers to fetch (excluding page 1 since we already have it)
-        const pageNumbers = Array.from({ length: totalPages - 1 }, (_, i) => i + 2)
-
-        // Fetch all remaining pages
+        const pageNumbers = Array.from({ length: totalPages - 1 }, (_, index) => index + 2)
         const pageRequests = pageNumbers.map((pageNum) => this.getRecentApplications(pageNum))
 
-        // Combine all requests
         return forkJoin(pageRequests).pipe(
-          map((allPageResponses) => {
-            // Combine first page with all other pages
-            const allApplications = [
-              ...firstPageResponse.applications,
-              ...allPageResponses.flatMap((response) => response.applications),
-            ]
-
-            console.log("Combined all pages, total applications:", allApplications.length)
-            return allApplications
-          }),
+          map((allPageResponses) => [
+            ...firstPageResponse.applications,
+            ...allPageResponses.flatMap((response) => response.applications),
+          ]),
         )
       }),
-      catchError((error) => {
-        console.error("HTTP Error in getAllApplicationsForExport:", error)
-        return of([])
-      }),
+      catchError(() => of([])),
     )
   }
 
   downloadExcelReport(): Observable<Blob> {
     const endpoint = `${environment.apiUrl}/admin/dashboard/download`
-
-    console.log("Service making download request to:", endpoint)
-
     const token = this.authService.authToken()
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     })
 
-    return this.http
-      .get(endpoint, {
-        headers,
-        responseType: "blob",
-      })
-      .pipe(
-        catchError((error) => {
-          console.error("HTTP Error in download:", error)
-          throw error
-        }),
-      )
+    return this.http.get(endpoint, {
+      headers,
+      responseType: "blob",
+    })
   }
 
   getDatabaseTotals(): Observable<{ pending: number; called: number; total: number }> {
-    console.log("Calculating totals from existing data instead of API call")
-
     return this.getRecentApplications(1).pipe(
       map((response) => {
         const applications = response.applications
@@ -341,27 +286,24 @@ export class AdminDashboardService {
         const called = applications.filter((app) => app.status === "called").length
         const total = applications.length
 
-        console.log("Calculated totals:", { pending, called, total })
-
         return {
           pending,
           called,
           total,
         }
       }),
-      catchError((error) => {
-        console.error("Error calculating totals:", error)
-        return of({
+      catchError(() =>
+        of({
           pending: 0,
           called: 0,
           total: 0,
-        })
-      }),
+        }),
+      ),
     )
   }
 
   private loadNotifications(): void {
-    const mockNotifications: AdminNotification[] = [
+    this.notifications.set([
       {
         id: "notif_001",
         type: "new_application",
@@ -380,9 +322,7 @@ export class AdminDashboardService {
         read: false,
         actionUrl: "/admin/applications/app_002",
       },
-    ]
-
-    this.notifications.set(mockNotifications)
+    ])
   }
 
   private addNotification(notification: AdminNotification): void {
@@ -392,7 +332,7 @@ export class AdminDashboardService {
 
   markNotificationAsRead(notificationId: string): void {
     const notifications = this.notifications()
-    const notificationIndex = notifications.findIndex((n) => n.id === notificationId)
+    const notificationIndex = notifications.findIndex((notification) => notification.id === notificationId)
 
     if (notificationIndex !== -1) {
       notifications[notificationIndex] = { ...notifications[notificationIndex], read: true }
@@ -400,4 +340,3 @@ export class AdminDashboardService {
     }
   }
 }
-

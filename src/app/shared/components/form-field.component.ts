@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-form-field',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="form-field">

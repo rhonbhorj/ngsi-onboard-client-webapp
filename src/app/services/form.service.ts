@@ -1,36 +1,33 @@
 import { Injectable, inject } from "@angular/core"
 import { FormBuilder, FormGroup, Validators, type AbstractControl, type ValidationErrors } from "@angular/forms"
-import { ApplicationService } from "../../../services/application.service"
-import { type Observable, of } from "rxjs"
-import { map, catchError, debounceTime, switchMap } from "rxjs/operators"
+import { catchError, debounceTime, map, of, switchMap, type Observable } from "rxjs"
+import { ApplicationService } from "./application.service"
 
 @Injectable({
   providedIn: "root",
 })
 export class FormService {
-  private fb = inject(FormBuilder)
-  private applicationService = inject(ApplicationService)
+  private readonly fb = inject(FormBuilder)
+  private readonly applicationService = inject(ApplicationService)
 
-  private contactNumberAsyncValidator = (control: AbstractControl): Observable<ValidationErrors | null> => {
+  private readonly contactNumberAsyncValidator = (control: AbstractControl): Observable<ValidationErrors | null> => {
     if (!control.value || control.value.length < 10) {
       return of(null)
     }
 
     return of(control.value).pipe(
-      debounceTime(300), // Reduced debounce time for faster response
+      debounceTime(300),
       switchMap((contactNumber) =>
         this.applicationService.checkContactNumberExists(contactNumber).pipe(
           map((exists) => (exists ? { contactNumberExists: true } : null)),
-          catchError(() => of(null)), 
+          catchError(() => of(null)),
         ),
       ),
     )
   }
 
-  // Step 1: Business Information
   createBusinessInfoForm(): FormGroup {
     return this.fb.group({
-      // Business Information fields
       contactPersonName: ["", [Validators.required, Validators.minLength(2)]],
       registeredByContactNumber: [
         "",
@@ -43,9 +40,7 @@ export class FormService {
       businessName: ["", [Validators.required, Validators.minLength(2)]],
       businessEmail: ["", [Validators.required, Validators.email]],
       businessAddress: ["", [Validators.required, Validators.minLength(10)]],
-      telephoneNo: [""], // Optional
-
-      // Payment Details fields
+      telephoneNo: [""],
       hasExistingPaymentPortal: [""],
       currentModeOfPayment: this.fb.group({
         cash: [false],

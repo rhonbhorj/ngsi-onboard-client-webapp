@@ -1,4 +1,4 @@
-import { Injectable, signal, inject, Component } from "@angular/core"
+import { ChangeDetectionStrategy, Component, Injectable, inject, signal } from "@angular/core"
 import { CommonModule } from "@angular/common"
 
 export interface ToastMessage {
@@ -57,7 +57,6 @@ export class ToastService {
 
 @Component({
   selector: 'app-toast-container',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="fixed bottom-4 right-4 z-50 space-y-3">
@@ -136,8 +135,9 @@ export class ToastService {
     .animate-slide-up {
       animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToastContainerComponent {
-  toastService = inject(ToastService)
+  readonly toastService = inject(ToastService)
 }

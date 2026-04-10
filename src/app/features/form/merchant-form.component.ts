@@ -1,20 +1,20 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, type OnInit } from "@angular/core"
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal, type OnInit } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 import { type FormGroup, ReactiveFormsModule } from "@angular/forms"
-import { CommonModule } from "@angular/common"
+import { CommonModule, NgOptimizedImage } from "@angular/common"
 import { BusinessInfoStepComponent } from "./steps/business-info-step.component"
 import { PaymentDetailsStepComponent } from "./steps/payment-details-step.component"
 import { ReviewInformationStepComponent } from "./steps/review-information-step.component"
-import { SuccessDialogComponent } from "../../shared/components/success-dialog.component"
-import { FormService } from "./services/form.service"
+import { SuccessDialogComponent } from "./components/success-dialog.component"
+import { FormService } from "../../services/form.service"
 import { ApplicationService } from "../../services/application.service"
-import type { MerchantApplicationPayload } from "./models/merchant-application.model"
+import type { MerchantApplicationPayload, PaymentMode } from "./models/merchant-application.model"
 
 @Component({
   selector: "app-merchant-onboarding",
-  standalone: true,
   imports: [
     CommonModule,
+    NgOptimizedImage,
     ReactiveFormsModule,
     BusinessInfoStepComponent,
     PaymentDetailsStepComponent,
@@ -36,14 +36,10 @@ export class MerchantOnboardingComponent implements OnInit {
   readonly showSuccessDialog = signal(false)
   readonly referenceNo = signal("")
   readonly currentStep = signal(1)
+  readonly submitButtonText = computed(() => (this.isSubmitting() ? "Submitting..." : "Submit Application"))
 
   // Form group
   businessInfoForm!: FormGroup
-
-  // Method to get submit button text
-  getSubmitButtonText(): string {
-    return this.isSubmitting() ? "Submitting..." : "Submit Application"
-  }
 
   ngOnInit() {
     this.initializeForm()
@@ -134,8 +130,8 @@ export class MerchantOnboardingComponent implements OnInit {
       })
     } else if (this.currentStep() === 2) {
       // Payment details step validation - at least one payment mode should be selected
-      const paymentModes = this.businessInfoForm.get("currentModeOfPayment")?.value
-      const hasPaymentMode = paymentModes && Object.values(paymentModes).some((mode: any) => mode === true)
+      const paymentModes = this.businessInfoForm.get("currentModeOfPayment")?.value as PaymentMode | null
+      const hasPaymentMode = paymentModes ? Object.values(paymentModes).some((mode) => mode) : false
       const hasPaymentPortal = this.businessInfoForm.get("hasExistingPaymentPortal")?.value
       const hasTransactionNumbers = this.businessInfoForm.get("estimatedTransactionNumbers")?.value
       const hasAverageAmount = this.businessInfoForm.get("estimatedAverageAmount")?.value

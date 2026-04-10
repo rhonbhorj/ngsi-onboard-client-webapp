@@ -1,37 +1,31 @@
-import { Injectable, inject, signal } from "@angular/core"
-import { Router } from "@angular/router"
+import { Injectable, computed, inject, signal } from "@angular/core"
 import { HttpClient } from "@angular/common/http"
+import { Router } from "@angular/router"
 import type { Observable } from "rxjs"
-import type { AdminUser, AdminLoginCredentials, AdminLoginResponse } from "../models/admin.model"
-import { environment } from "../../../../environments/environment"
+import { environment } from "../../environments/environment"
+import type { AdminLoginCredentials, AdminLoginResponse, AdminUser } from "../features/admin/models/admin.model"
 
 @Injectable({
   providedIn: "root",
 })
 export class AdminAuthService {
-  private router = inject(Router)
-  private http = inject(HttpClient)
+  private readonly router = inject(Router)
+  private readonly http = inject(HttpClient)
 
-  private apiUrl = environment.apiUrl 
+  private readonly apiUrl = environment.apiUrl
 
-  // State signals
   readonly currentUser = signal<AdminUser | null>(null)
-  readonly isAuthenticated = signal(false)
   readonly authToken = signal<string | null>(null)
+  readonly isAuthenticated = computed(() => this.currentUser() !== null && this.authToken() !== null)
 
-  constructor() {
-    this.checkExistingSession()
-  }
-
-  // Call backend instead of mock
   login(credentials: AdminLoginCredentials): Observable<AdminLoginResponse> {
     return this.http.post<AdminLoginResponse>(`${this.apiUrl}/auth/login`, credentials)
   }
 
   handleLoginSuccess(response: AdminLoginResponse, username: string): void {
     const user: AdminUser = {
-      id: "1", // Backend will provide this
-      username: username,
+      id: "1",
+      username,
     }
 
     this.setAuthData(user, response.token)
@@ -62,35 +56,11 @@ export class AdminAuthService {
 
   private setAuthData(user: AdminUser, token: string): void {
     this.currentUser.set(user)
-    this.isAuthenticated.set(true)
     this.authToken.set(token)
-
-    localStorage.setItem("user_accounts", JSON.stringify(user))
-    localStorage.setItem("admin_token", token)
   }
 
   private clearAuthData(): void {
     this.currentUser.set(null)
-    this.isAuthenticated.set(false)
     this.authToken.set(null)
-
-    localStorage.removeItem("user_accounts")
-    localStorage.removeItem("admin_token")
-  }
-
-  private checkExistingSession(): void {
-    const storedUser = localStorage.getItem("user_accounts")
-    const storedToken = localStorage.getItem("admin_token")
-
-    if (storedUser && storedToken) {
-      try {
-        const user = JSON.parse(storedUser)
-        this.currentUser.set(user)
-        this.isAuthenticated.set(true)
-        this.authToken.set(storedToken)
-      } catch {
-        this.clearAuthData()
-      }
-    }
   }
 }

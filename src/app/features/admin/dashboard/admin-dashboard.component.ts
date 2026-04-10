@@ -1,10 +1,11 @@
-import { Component, signal, inject, type OnInit, ChangeDetectionStrategy } from "@angular/core"
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, type OnDestroy, type OnInit } from "@angular/core"
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 import { Router, ActivatedRoute } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
-import { AdminAuthService } from "../services/admin-auth.service"
-import { AdminDashboardService } from "../services/admin-dashboard.service"
-import type { MerchantApplication } from "../../form/models/merchant-application.model"
+import { AdminAuthService } from "../../../services/admin-auth.service"
+import { AdminDashboardService } from "../../../services/admin-dashboard.service"
+import type { MerchantApplication, PaymentMode } from "../../form/models/merchant-application.model"
 import { PaginationComponent, type PaginationConfig } from "../../../shared/components/pagination/pagination.component"
 import { AdminSidebarComponent } from "../../../shared/components/admin-sidebar/admin-sidebar.component"
 import { AdminHeaderComponent } from "../../../shared/components/admin-header/admin-header.component"
@@ -13,18 +14,18 @@ import { ToastService } from "../../../shared/services/toast.service"
 
 @Component({
   selector: "app-admin-dashboard",
-  standalone: true,
   imports: [CommonModule, FormsModule, PaginationComponent, AdminSidebarComponent, AdminHeaderComponent],
   templateUrl: "./admin-dashboard.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDashboardComponent implements OnInit {
-  private authService = inject(AdminAuthService)
-  private dashboardService = inject(AdminDashboardService)
-  private router = inject(Router)
-  private route = inject(ActivatedRoute)
-  private sidebarService = inject(SidebarService)
-  private toastService = inject(ToastService)
+export class AdminDashboardComponent implements OnInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly authService = inject(AdminAuthService)
+  private readonly dashboardService = inject(AdminDashboardService)
+  private readonly router = inject(Router)
+  private readonly route = inject(ActivatedRoute)
+  private readonly sidebarService = inject(SidebarService)
+  private readonly toastService = inject(ToastService)
 
   // Sidebar state
   isSidebarCollapsed = this.sidebarService.isCollapsed
@@ -44,7 +45,7 @@ export class AdminDashboardComponent implements OnInit {
   readonly showAdminDropdown = signal(false)
   readonly searchQuery = signal("")
   readonly isExporting = signal(false)
-  private searchTimeout: any = null
+  private searchTimeout: ReturnType<typeof setTimeout> | null = null
 
   readonly totalPendingCount = signal(0)
   readonly totalCalledCount = signal(0)
@@ -74,15 +75,14 @@ export class AdminDashboardComponent implements OnInit {
   ngOnInit() {
     this.checkAuth()
 
-    this.route.url.subscribe((segments) => {
+    this.route.url.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((segments) => {
       const path = segments[0]?.path || "dashboard"
 
       if (path === "dashboard") {
         this.activeSection.set("dashboard")
-        this.route.params.subscribe((params) => {
-          const page = params["page"] ? Number.parseInt(params["page"], 10) : 1
-          this.loadDashboardData(page)
-        })
+        const pageParam = this.route.snapshot.params["page"]
+        const page = pageParam ? Number.parseInt(pageParam, 10) : 1
+        this.loadDashboardData(page)
       } else if (path === "settings") {
         this.activeSection.set("settings")
         this.loadDashboardData(1)
@@ -289,7 +289,7 @@ export class AdminDashboardComponent implements OnInit {
     window.URL.revokeObjectURL(url)
   }
 
-  getFormattedPaymentMethods(paymentMethods: any): string {
+  getFormattedPaymentMethods(paymentMethods?: PaymentMode | null): string {
     if (!paymentMethods || typeof paymentMethods !== "object") {
       return "Not specified"
     }

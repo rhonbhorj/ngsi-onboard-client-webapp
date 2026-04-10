@@ -2,13 +2,12 @@ import { Component, signal, inject, ChangeDetectionStrategy } from "@angular/cor
 import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule } from "@angular/forms"
 import { Router } from "@angular/router"
 import { CommonModule } from "@angular/common"
-import { AdminAuthService } from "../services/admin-auth.service"
+import { AdminAuthService } from "../../../services/admin-auth.service"
 import { ToastService } from "../../../shared/services/toast.service"
 import type { AdminLoginCredentials } from "../models/admin.model"
 
 @Component({
   selector: "app-admin-login",
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./admin-login.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,

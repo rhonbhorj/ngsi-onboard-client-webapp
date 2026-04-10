@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from "@angular/core"
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal, type OnInit } from "@angular/core"
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 import { CommonModule } from "@angular/common"
 import { Router, NavigationEnd } from "@angular/router"
 import { filter } from "rxjs/operators"
@@ -6,7 +7,6 @@ import { SidebarService } from "../../services/sidebar.service"
 
 @Component({
   selector: "app-admin-header",
-  standalone: true,
   imports: [CommonModule],
   template: `
     <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-6 py-4">
@@ -35,11 +35,12 @@ import { SidebarService } from "../../services/sidebar.service"
       </div>
     </header>
   `,
-
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminHeaderComponent implements OnInit {
-  private router = inject(Router)
-  private sidebarService = inject(SidebarService)
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly router = inject(Router)
+  private readonly sidebarService = inject(SidebarService)
   
   pageTitle = signal("Dashboard")
   isCollapsed = this.sidebarService.isCollapsed
@@ -50,7 +51,7 @@ export class AdminHeaderComponent implements OnInit {
     
     // Listen for route changes
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.updatePageTitle()
       })

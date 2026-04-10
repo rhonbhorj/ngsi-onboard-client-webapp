@@ -1,12 +1,12 @@
-import { Component, input } from "@angular/core"
+import { ChangeDetectionStrategy, Component, input } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { type FormControl, type FormGroup, ReactiveFormsModule } from "@angular/forms"
 
 @Component({
   selector: "app-payment-details-step",
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./payment-details-step.component.html",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentDetailsStepComponent {
   readonly form = input.required<FormGroup>()

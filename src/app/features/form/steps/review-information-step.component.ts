@@ -4,7 +4,6 @@ import { type FormGroup, ReactiveFormsModule } from "@angular/forms"
 
 @Component({
   selector: "app-review-information-step",
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./review-information-step.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -4,7 +4,6 @@ import { ToastContainerComponent } from './shared/services/toast.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, ToastContainerComponent],
   template: `
     <router-outlet />

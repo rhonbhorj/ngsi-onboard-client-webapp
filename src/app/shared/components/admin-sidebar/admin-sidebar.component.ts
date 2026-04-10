@@ -1,13 +1,12 @@
-import { Component, inject, signal, HostListener } from "@angular/core"
-import { CommonModule } from "@angular/common"
+import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core"
+import { CommonModule, NgOptimizedImage } from "@angular/common"
 import { Router, RouterModule } from "@angular/router"
-import { AdminAuthService } from "../../../features/admin/services/admin-auth.service"
+import { AdminAuthService } from "../../../services/admin-auth.service"
 import { SidebarService } from "../../services/sidebar.service"
 
 @Component({
   selector: "app-admin-sidebar",
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NgOptimizedImage],
   template: `
     <div 
       class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out"
@@ -17,15 +16,23 @@ import { SidebarService } from "../../services/sidebar.service"
       <!-- Logo and Company Section -->
       <div class="px-6 py-8 transition-all duration-300 ease-in-out">
         <div class="flex items-center space-x-4">
-          <img 
-            [src]="isCollapsed() ? 'images/ngsi-logo.png' : 'images/ngsi-name-logo.png'" 
-            alt="NGSI Logo" 
-            class="flex-shrink-0 transition-all duration-300 ease-in-out"
-            [class.w-12]="isCollapsed()"
-            [class.h-12]="isCollapsed()"
-            [class.w-auto]="!isCollapsed()"
-            [class.h-12]="!isCollapsed()"
-          />
+          @if (isCollapsed()) {
+            <img
+              ngSrc="images/ngsi-logo.png"
+              width="48"
+              height="48"
+              alt="NGSI logo"
+              class="flex-shrink-0 transition-all duration-300 ease-in-out w-12 h-12"
+            />
+          } @else {
+            <img
+              ngSrc="images/ngsi-name-logo.png"
+              width="180"
+              height="48"
+              alt="NGSI logo with wordmark"
+              class="flex-shrink-0 transition-all duration-300 ease-in-out w-auto h-12"
+            />
+          }
         </div>
         @if (!isCollapsed()) {
           <div class="mt-3 transition-all duration-300 ease-in-out opacity-100">
@@ -47,7 +54,7 @@ import { SidebarService } from "../../services/sidebar.service"
             class="nav-link flex items-center text-sm font-medium rounded-lg text-dark-text"
             [class]="isCollapsed() ? 'px-3 py-3 justify-center' : 'px-4 py-3'"
             [class.hover-gray]="!isActive('/admin/dashboard')"
-            [title]="isCollapsed() ? 'Dashboard' : ''"
+            [title]="dashboardTitle()"
           >
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
@@ -64,7 +71,7 @@ import { SidebarService } from "../../services/sidebar.service"
             class="nav-link flex items-center text-sm font-medium rounded-lg text-dark-text"
             [class]="isCollapsed() ? 'px-3 py-3 justify-center' : 'px-4 py-3'"
             [class.hover-gray]="!isActive('/admin/settings')"
-            [title]="isCollapsed() ? 'Settings' : ''"
+            [title]="settingsTitle()"
           >
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -83,7 +90,7 @@ import { SidebarService } from "../../services/sidebar.service"
           (click)="logout()"
           class="w-full flex items-center text-sm font-medium text-red-600 rounded-lg hover:bg-red-50"
           [class]="isCollapsed() ? 'px-3 py-3 justify-center' : 'px-4 py-3'"
-          [title]="isCollapsed() ? 'Sign Out' : ''"
+          [title]="logoutTitle()"
         >
           <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -100,21 +107,24 @@ import { SidebarService } from "../../services/sidebar.service"
       background-color: rgb(243 244 246); 
       color: rgb(51 65 85);                
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminSidebarComponent {
-  private router = inject(Router)
-  private authService = inject(AdminAuthService)
-  private sidebarService = inject(SidebarService)
+  private readonly router = inject(Router)
+  private readonly authService = inject(AdminAuthService)
+  private readonly sidebarService = inject(SidebarService)
 
-  // Sidebar state from service
-  isCollapsed = this.sidebarService.isCollapsed
+  readonly isCollapsed = this.sidebarService.isCollapsed
+  readonly dashboardTitle = computed(() => (this.isCollapsed() ? "Dashboard" : ""))
+  readonly settingsTitle = computed(() => (this.isCollapsed() ? "Settings" : ""))
+  readonly logoutTitle = computed(() => (this.isCollapsed() ? "Sign Out" : ""))
 
   isActive(route: string): boolean {
     return this.router.url === route
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout()
   }
 }

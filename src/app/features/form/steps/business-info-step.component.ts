@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, type OnInit } from "@angular/core"
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, type OnInit } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 import { type FormGroup, ReactiveFormsModule, type FormControl } from "@angular/forms"
 import { CommonModule } from "@angular/common"
@@ -6,9 +6,9 @@ import { FormFieldComponent } from "../../../shared/components/form-field.compon
 
 @Component({
   selector: "app-business-info-step",
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
   templateUrl: "./business-info-step.component.html",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BusinessInfoStepComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef)
